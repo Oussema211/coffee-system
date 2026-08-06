@@ -21,3 +21,68 @@
 @media (prefers-reduced-motion: reduce) {
   .steam { animation: none; opacity: 0; }
 }
+
+/* ─── Stay Connected checkbox ─────────────────────────────────── */
+.stay-connected-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Hide the native checkbox visually but keep it accessible */
+.stay-connected-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Custom box */
+.stay-connected-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;   /* 18px */
+  height: 1.125rem;
+  border-radius: 5px;
+  border: 1.5px solid #C9B99A;   /* caramel-light */
+  background: #fff;
+  color: transparent;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  flex-shrink: 0;
+}
+
+/* Checked state – driven by sibling input */
+.stay-connected-input:checked + .stay-connected-box {
+  background: #2D1A0E;   /* espresso */
+  border-color: #2D1A0E;
+  color: #F7EFE3;        /* cream */
+  box-shadow: 0 0 0 3px rgba(45, 26, 14, 0.12);
+}
+
+/* Focus-visible ring for keyboard users */
+.stay-connected-input:focus-visible + .stay-connected-box {
+  outline: 2px solid #C9A86C;
+  outline-offset: 2px;
+}
+
+.stay-connected-check {
+  width: 0.625rem;   /* 10px */
+  height: 0.5rem;    /* 8px */
+}
+
+.stay-connected-text {
+  font-size: 0.8125rem;  /* 13px */
+  font-weight: 500;
+  color: #3D2B1F;   /* espresso-light */
+  letter-spacing: 0.01em;
+}
+
+/* Hover lift on the whole label */
+.stay-connected-label:hover .stay-connected-box {
+  border-color: #2D1A0E;
+  box-shadow: 0 0 0 3px rgba(45, 26, 14, 0.08);
+}

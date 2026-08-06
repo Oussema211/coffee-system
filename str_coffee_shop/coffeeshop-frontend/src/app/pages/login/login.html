@@ -91,6 +91,25 @@
           }
         </div>
 
+        <!-- Stay Connected -->
+        <div class="flex items-center gap-3">
+          <label class="stay-connected-label" for="stayConnected">
+            <input
+              id="stayConnected"
+              type="checkbox"
+              formControlName="stayConnected"
+              class="stay-connected-input"
+            />
+            <span class="stay-connected-box">
+              <svg class="stay-connected-check" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="stay-connected-text">Stay connected</span>
+          </label>
+          <span class="text-espresso-light/40 text-xs">(keeps you logged in after closing the browser)</span>
+        </div>
+
         @if (errorMessage) {
           <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
             {{ errorMessage }}

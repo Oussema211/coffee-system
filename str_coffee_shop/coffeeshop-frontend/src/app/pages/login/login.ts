@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { AuthService } from '../../core/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   form: FormGroup;
   loading = false;
   errorMessage = '';
@@ -24,8 +24,22 @@ export class LoginComponent {
   ) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
-      password: ['', [Validators.required]]
+      password: ['', [Validators.required]],
+      stayConnected: [false]
     });
+  }
+
+  ngOnInit(): void {
+    // If a valid session already exists (token in localStorage or sessionStorage),
+    // skip the login screen and redirect the user to their dashboard.
+    if (this.authService.isLoggedIn()) {
+      const role = this.authService.getRole();
+      if (role === 'ADMIN') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/worker']);
+      }
+    }
   }
 
   togglePassword(): void {
@@ -41,7 +55,9 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    this.authService.login(this.form.value).subscribe({
+    const { username, password, stayConnected } = this.form.value;
+
+    this.authService.login({ username, password }, stayConnected).subscribe({
       next: (response) => {
         this.loading = false;
         if (response.role === 'ADMIN') {

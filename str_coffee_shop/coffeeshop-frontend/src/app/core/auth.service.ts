@@ -20,12 +20,33 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(credentials: AuthRequest): Observable<AuthResponse> {
+  /** Returns the storage currently holding the session (if any). */
+  private get storage(): Storage {
+    return localStorage.getItem('token')
+      ? localStorage
+      : sessionStorage;
+  }
+
+  /**
+   * Login with optional "remember me".
+   * - rememberMe = true  → localStorage  (persists after browser close)
+   * - rememberMe = false → sessionStorage (cleared when tab/browser closes)
+   */
+  login(credentials: AuthRequest, rememberMe = false): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/login`, credentials).pipe(
       tap(response => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('username', response.username);
-        localStorage.setItem('role', response.role);
+        const store = rememberMe ? localStorage : sessionStorage;
+        // Clear both storages to avoid stale data from a previous session type
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('username');
+        sessionStorage.removeItem('role');
+
+        store.setItem('token', response.token);
+        store.setItem('username', response.username);
+        store.setItem('role', response.role);
       })
     );
   }
@@ -34,13 +55,24 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('role');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('username');
+    sessionStorage.removeItem('role');
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token') ?? sessionStorage.getItem('token');
   }
 
   getRole(): string | null {
-    return localStorage.getItem('role');
+    return this.storage.getItem('role');
   }
 
   getUsername(): string | null {
-    return localStorage.getItem('username');
+    return this.storage.getItem('username');
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
   }
 }
