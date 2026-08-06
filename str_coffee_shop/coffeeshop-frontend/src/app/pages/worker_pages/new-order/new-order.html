@@ -1,0 +1,148 @@
+<div class="p-8 flex flex-col xl:flex-row gap-6">
+
+  <!-- Menu side -->
+  <div class="flex-1 min-w-0">
+    <div class="flex items-start justify-between mb-6">
+      <div>
+        <h1 class="font-display text-3xl text-espresso mb-1">New Order</h1>
+        <p class="text-espresso-light/60 text-sm">Tap an item to add it to the cart.</p>
+      </div>
+    </div>
+
+    <!-- Category tabs -->
+    <div class="flex gap-2 mb-6 overflow-x-auto pb-1">
+      @for (cat of categories; track cat) {
+        <button
+          (click)="activeCategory = cat"
+          [class]="activeCategory === cat
+            ? 'bg-espresso text-cream'
+            : 'bg-white text-espresso-light/70 border border-cream-dark hover:bg-cream'"
+          class="text-xs font-medium px-4 py-2.5 rounded-xl whitespace-nowrap transition"
+        >
+          {{ cat }}
+        </button>
+      }
+    </div>
+
+    <!-- Item grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+      @for (item of filteredItems; track item.id) {
+        <button
+          (click)="addToCart(item)"
+          class="bg-white rounded-2xl border border-cream-dark p-5 text-left hover:border-caramel hover:shadow-sm transition flex flex-col gap-3"
+        >
+          <span class="text-xs font-medium uppercase tracking-wide text-caramel-dark bg-caramel/10 px-2 py-1 rounded-md w-fit">
+            {{ item.category }}
+          </span>
+          <div>
+            <h3 class="font-display text-base text-espresso">{{ item.name }}</h3>
+            <p class="text-espresso-light/50 text-sm">{{ item.price | number:'1.2-2' }} $</p>
+          </div>
+        </button>
+      }
+    </div>
+
+    @if (filteredItems.length === 0) {
+      <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/50 text-sm">
+        No items in this category right now.
+      </div>
+    }
+  </div>
+
+  <!-- Cart side -->
+  <div class="xl:w-96 shrink-0">
+    <div class="bg-white rounded-2xl border border-cream-dark p-5 sticky top-6 flex flex-col gap-5">
+
+      <div class="flex items-center justify-between">
+        <h2 class="font-display text-lg text-espresso">Current order</h2>
+        @if (cart.length > 0) {
+          <button (click)="clearCart()" class="text-xs font-medium text-red-500/70 hover:text-red-600">
+            Clear
+          </button>
+        }
+      </div>
+
+      <!-- Order type -->
+      <div class="grid grid-cols-2 gap-2">
+        <button
+          (click)="orderType = 'Dine-in'"
+          [class]="orderType === 'Dine-in' ? 'bg-espresso text-cream' : 'bg-cream text-espresso-light/70'"
+          class="text-xs font-medium rounded-lg py-2.5 transition"
+        >
+          Dine-in
+        </button>
+        <button
+          (click)="orderType = 'Takeaway'; selectedTable = null"
+          [class]="orderType === 'Takeaway' ? 'bg-espresso text-cream' : 'bg-cream text-espresso-light/70'"
+          class="text-xs font-medium rounded-lg py-2.5 transition"
+        >
+          Takeaway
+        </button>
+      </div>
+
+      @if (orderType === 'Dine-in') {
+        <div>
+          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">Table</label>
+          <select
+            [(ngModel)]="selectedTable"
+            class="w-full bg-cream border border-cream-dark rounded-xl px-4 py-2.5 text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20"
+          >
+            <option [ngValue]="null">Select a table…</option>
+            @for (t of tables; track t) {
+              <option [ngValue]="t">Table {{ t }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Cart lines -->
+      <div class="flex flex-col gap-3 max-h-72 overflow-y-auto">
+        @for (line of cart; track line.item.id) {
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm text-espresso font-medium truncate">{{ line.item.name }}</p>
+              <p class="text-xs text-espresso-light/50">{{ line.item.price | number:'1.2-2' }} $ each</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button (click)="decrement(line)" class="w-7 h-7 rounded-lg bg-cream text-espresso hover:bg-cream-dark transition">−</button>
+              <span class="text-sm text-espresso w-4 text-center">{{ line.qty }}</span>
+              <button (click)="increment(line)" class="w-7 h-7 rounded-lg bg-cream text-espresso hover:bg-cream-dark transition">+</button>
+            </div>
+          </div>
+        }
+
+        @if (cart.length === 0) {
+          <p class="text-espresso-light/40 text-sm text-center py-6">Cart is empty — tap an item to add it.</p>
+        }
+      </div>
+
+      <!-- Total -->
+      <div class="border-t border-cream-dark pt-4 flex items-center justify-between">
+        <span class="text-sm text-espresso-light/60">Total ({{ cartCount }} item{{ cartCount === 1 ? '' : 's' }})</span>
+        <span class="font-display text-xl text-espresso">{{ cartTotal | number:'1.2-2' }} $</span>
+      </div>
+
+      @if (placedMessage) {
+        <div class="bg-sage/15 text-sage text-sm rounded-xl px-4 py-3">
+          {{ placedMessage }}
+        </div>
+      }
+
+      <button
+        (click)="placeOrder()"
+        [disabled]="!canPlaceOrder || placing"
+        class="w-full bg-espresso text-cream font-medium rounded-xl py-3.5
+               transition hover:bg-espresso-light active:scale-[0.99]
+               disabled:opacity-40 disabled:cursor-not-allowed
+               flex items-center justify-center gap-2"
+      >
+        @if (placing) {
+          <span class="w-4 h-4 border-2 border-cream/40 border-t-cream rounded-full animate-spin"></span>
+          Sending…
+        } @else {
+          Place order
+        }
+      </button>
+    </div>
+  </div>
+</div>

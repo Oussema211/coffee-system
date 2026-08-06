@@ -1,0 +1,95 @@
+<div class="p-8">
+  <div class="flex items-start justify-between mb-8">
+    <div>
+      <h1 class="font-display text-3xl text-espresso mb-1">Active Orders</h1>
+      <p class="text-espresso-light/60 text-sm">{{ orders.length }} orders currently in progress.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Preparing column -->
+    <div>
+      <div class="flex items-center gap-2 mb-4">
+        <span class="w-2 h-2 rounded-full bg-caramel"></span>
+        <h2 class="font-display text-lg text-espresso">Preparing</h2>
+        <span class="text-xs text-espresso-light/40">({{ preparing.length }})</span>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        @for (order of preparing; track order.id) {
+          <div class="bg-white rounded-2xl border border-cream-dark p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <p class="text-espresso font-medium">#{{ order.id }}</p>
+                <p class="text-xs text-espresso-light/50 mt-0.5">
+                  {{ order.table ? 'Table ' + order.table : 'Takeaway' }} · {{ order.time }}
+                </p>
+              </div>
+              <span [class]="typeClasses(order.type)" class="text-xs font-medium px-2.5 py-1 rounded-md">
+                {{ order.type }}
+              </span>
+            </div>
+
+            <p class="text-espresso-light/70 text-sm mb-4">{{ order.items.join(', ') }}</p>
+
+            <div class="flex items-center justify-between">
+              <span class="text-espresso font-medium text-sm">{{ order.total | number:'1.2-2' }} $</span>
+              <button (click)="advance(order)" class="text-xs font-medium text-cream bg-espresso px-4 py-2 rounded-lg hover:bg-espresso-light transition">
+                Mark ready
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (preparing.length === 0) {
+          <div class="bg-white rounded-2xl border border-cream-dark p-8 text-center text-espresso-light/40 text-sm">
+            Nothing in progress right now.
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Ready column -->
+    <div>
+      <div class="flex items-center gap-2 mb-4">
+        <span class="w-2 h-2 rounded-full bg-sage"></span>
+        <h2 class="font-display text-lg text-espresso">Ready</h2>
+        <span class="text-xs text-espresso-light/40">({{ ready.length }})</span>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        @for (order of ready; track order.id) {
+          <div class="bg-white rounded-2xl border border-sage/30 p-5">
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <p class="text-espresso font-medium">#{{ order.id }}</p>
+                <p class="text-xs text-espresso-light/50 mt-0.5">
+                  {{ order.table ? 'Table ' + order.table : 'Takeaway' }} · {{ order.time }}
+                </p>
+              </div>
+              <span [class]="typeClasses(order.type)" class="text-xs font-medium px-2.5 py-1 rounded-md">
+                {{ order.type }}
+              </span>
+            </div>
+
+            <p class="text-espresso-light/70 text-sm mb-4">{{ order.items.join(', ') }}</p>
+
+            <div class="flex items-center justify-between">
+              <span class="text-espresso font-medium text-sm">{{ order.total | number:'1.2-2' }} $</span>
+              <button (click)="advance(order)" class="text-xs font-medium text-sage bg-sage/15 px-4 py-2 rounded-lg hover:bg-sage/25 transition">
+                Mark served
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (ready.length === 0) {
+          <div class="bg-white rounded-2xl border border-cream-dark p-8 text-center text-espresso-light/40 text-sm">
+            Nothing waiting for pickup.
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

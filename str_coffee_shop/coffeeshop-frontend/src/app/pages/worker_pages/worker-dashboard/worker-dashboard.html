@@ -1,0 +1,64 @@
+<div class="p-8">
+
+  <!-- Header + clock in/out -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="font-display text-3xl text-espresso mb-1">Hey{{ username ? ', ' + username : '' }} 👋</h1>
+      <p class="text-espresso-light/60 text-sm">
+        @if (clockedIn) {
+          On shift since {{ shiftStart }} — let's make some coffee.
+        } @else {
+          You're off the clock. Clock in to start your shift.
+        }
+      </p>
+    </div>
+
+    <button
+      (click)="toggleClock()"
+      [class]="clockedIn
+        ? 'bg-white border border-cream-dark text-espresso hover:bg-cream'
+        : 'bg-espresso text-cream hover:bg-espresso-light'"
+      class="text-sm font-medium rounded-xl px-6 py-3.5 transition flex items-center gap-2 justify-center"
+    >
+      <span
+        [class]="clockedIn ? 'bg-sage' : 'bg-cream/50'"
+        class="w-2 h-2 rounded-full"
+      ></span>
+      {{ clockedIn ? 'Clock out' : 'Clock in' }}
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+    @for (stat of stats; track stat.label) {
+      <div class="bg-white rounded-2xl border border-cream-dark p-5">
+        <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">{{ stat.label }}</p>
+        <p class="font-display text-2xl text-espresso">{{ stat.value }}</p>
+        <p class="text-xs text-espresso-light/50 mt-1">{{ stat.sub }}</p>
+      </div>
+    }
+  </div>
+
+  <!-- Quick actions -->
+  <h2 class="font-display text-lg text-espresso mb-4">Quick actions</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    @for (action of quickActions; track action.route) {
+      <a
+        [routerLink]="action.route"
+        class="bg-white rounded-2xl border border-cream-dark p-5 flex flex-col gap-2 hover:border-caramel hover:shadow-sm transition group"
+      >
+        <span class="w-9 h-9 rounded-full bg-caramel/10 text-caramel-dark flex items-center justify-center font-display text-sm group-hover:bg-caramel/20 transition">
+          {{ action.label.charAt(0) }}
+        </span>
+        <h3 class="font-display text-base text-espresso">{{ action.label }}</h3>
+        <p class="text-espresso-light/50 text-xs leading-relaxed">{{ action.desc }}</p>
+      </a>
+    }
+  </div>
+
+  @if (!clockedIn) {
+    <div class="mt-8 bg-caramel/10 border border-caramel/30 text-espresso text-sm rounded-xl px-5 py-4">
+      Reminder: clock in before taking orders so shifts stay accurate for the shop owner.
+    </div>
+  }
+</div>

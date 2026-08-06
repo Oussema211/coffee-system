@@ -1,0 +1,44 @@
+<div class="p-8">
+  <div class="flex items-start justify-between mb-8">
+    <div>
+      <h1 class="font-display text-3xl text-espresso mb-1">Tables</h1>
+      <p class="text-espresso-light/60 text-sm">{{ counts.available }} available · {{ counts.occupied }} occupied</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+    @for (table of tables; track table.id) {
+      <div class="bg-white rounded-2xl border border-cream-dark p-5 flex flex-col gap-3">
+        <div class="flex items-start justify-between">
+          <span class="font-display text-2xl text-espresso">T{{ table.number }}</span>
+          <span [class]="statusClasses(table.status)" class="text-xs font-medium px-2.5 py-1 rounded-md">
+            {{ table.status }}
+          </span>
+        </div>
+
+        <p class="text-espresso-light/50 text-sm">{{ table.seats }} seats</p>
+        @if (table.since) {
+          <p class="text-espresso-light/40 text-xs">Since {{ table.since }}</p>
+        }
+
+        <div class="flex gap-2 mt-auto pt-2 border-t border-cream-dark">
+          @if (table.status === 'Reserved') {
+            <button (click)="seatReserved(table)" class="flex-1 text-xs font-medium text-espresso/70 hover:text-espresso py-2 rounded-lg hover:bg-cream transition">
+              Seat now
+            </button>
+          } @else {
+            <button (click)="cycleStatus(table)" class="flex-1 text-xs font-medium text-espresso/70 hover:text-espresso py-2 rounded-lg hover:bg-cream transition">
+              Change status
+            </button>
+          }
+
+          @if (table.status === 'Available') {
+            <button (click)="startOrder(table)" class="flex-1 text-xs font-medium text-cream bg-espresso py-2 rounded-lg hover:bg-espresso-light transition">
+              Start order
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

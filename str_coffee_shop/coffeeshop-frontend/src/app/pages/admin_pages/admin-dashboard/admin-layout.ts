@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../core/auth.service';
+import { AuthService } from '../../../core/auth.service';
 import { Router } from '@angular/router';
 
 @Component({

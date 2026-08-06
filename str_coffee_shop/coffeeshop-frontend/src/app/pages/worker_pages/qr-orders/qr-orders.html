@@ -1,0 +1,60 @@
+<div class="p-8">
+  <div class="flex items-start justify-between mb-8">
+    <div>
+      <h1 class="font-display text-3xl text-espresso mb-1">QR Orders</h1>
+      <p class="text-espresso-light/60 text-sm">Orders customers placed by scanning the table code — confirm before they hit the counter.</p>
+    </div>
+    @if (pending.length > 0) {
+      <span class="bg-caramel/15 text-caramel-dark text-xs font-medium px-3 py-1.5 rounded-md">
+        {{ pending.length }} waiting
+      </span>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    @for (order of pending; track order.id) {
+      <div class="bg-white rounded-2xl border border-caramel/30 p-5 flex flex-col gap-3">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="font-display text-lg text-espresso">Table {{ order.table }}</p>
+            <p class="text-xs text-espresso-light/50 mt-0.5">Order #{{ order.id }} · {{ order.time }}</p>
+          </div>
+          <span class="bg-caramel/10 text-caramel-dark text-xs font-medium px-2.5 py-1 rounded-md">
+            Via QR
+          </span>
+        </div>
+
+        <p class="text-espresso-light/70 text-sm">{{ order.items.join(', ') }}</p>
+
+        @if (order.note) {
+          <p class="text-xs text-espresso-light/50 bg-cream rounded-lg px-3 py-2">📝 {{ order.note }}</p>
+        }
+
+        <div class="flex items-center justify-between pt-2 border-t border-cream-dark">
+          <span class="text-espresso font-medium text-sm">{{ order.total | number:'1.2-2' }} $</span>
+          <div class="flex gap-2">
+            <button
+              (click)="reject(order)"
+              class="text-xs font-medium text-red-500/70 hover:text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition"
+            >
+              Decline
+            </button>
+            <button
+              (click)="accept(order)"
+              [disabled]="acceptingId === order.id"
+              class="text-xs font-medium text-cream bg-espresso px-4 py-2 rounded-lg hover:bg-espresso-light transition disabled:opacity-50"
+            >
+              {{ acceptingId === order.id ? 'Sending…' : 'Accept' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (pending.length === 0) {
+    <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/50 text-sm">
+      No pending QR orders — you're all caught up.
+    </div>
+  }
+</div>
