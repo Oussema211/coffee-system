@@ -1,14 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-interface Worker {
-  id: number;
-  name: string;
-  username: string;
-  status: 'Active' | 'Off shift';
-  joined: string;
-}
+import { WorkerService, WorkerModel } from '../../../core/worker.service';
 
 @Component({
   selector: 'app-workers',
@@ -16,17 +9,18 @@ interface Worker {
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './workers.html'
 })
-export class Workers {
-  workers: Worker[] = [
-    { id: 1, name: 'Sarah Miller', username: 'sarah.m', status: 'Active', joined: 'Jan 2026' },
-    { id: 2, name: 'James Cooper', username: 'james.c', status: 'Off shift', joined: 'Mar 2026' },
-    { id: 3, name: 'Alex Johnson', username: 'alex.j', status: 'Active', joined: 'May 2026' }
-  ];
-
+export class Workers implements OnInit {
+  workers: WorkerModel[] = [];
+  loading = false;
+  saving = false;
+  errorMessage = '';
   showModal = false;
   form: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private workerService: WorkerService
+  ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
       username: ['', Validators.required],
@@ -34,8 +28,28 @@ export class Workers {
     });
   }
 
+  ngOnInit(): void {
+    this.loadWorkers();
+  }
+
+  loadWorkers(): void {
+    this.loading = true;
+    this.errorMessage = '';
+    this.workerService.getWorkers().subscribe({
+      next: (data) => {
+        this.workers = data;
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Failed to load workers from server.';
+        this.loading = false;
+      }
+    });
+  }
+
   openAddModal(): void {
     this.form.reset();
+    this.errorMessage = '';
     this.showModal = true;
   }
 
@@ -48,22 +62,40 @@ export class Workers {
       this.form.markAllAsTouched();
       return;
     }
-    const value = this.form.value;
-    this.workers.push({
-      id: Math.max(0, ...this.workers.map(w => w.id)) + 1,
-      name: value.name,
-      username: value.username,
-      status: 'Off shift',
-      joined: 'Just now'
+
+    this.saving = true;
+    this.errorMessage = '';
+
+    this.workerService.addWorker(this.form.value).subscribe({
+      next: (createdWorker) => {
+        this.workers.push(createdWorker);
+        this.saving = false;
+        this.closeModal();
+      },
+      error: (err) => {
+        this.saving = false;
+        this.errorMessage = err?.error?.message || 'Failed to create worker. Username may already exist.';
+      }
     });
-    this.closeModal();
   }
 
-  removeWorker(worker: Worker): void {
-    this.workers = this.workers.filter(w => w.id !== worker.id);
+  removeWorker(worker: WorkerModel): void {
+    if (!confirm(`Are you sure you want to remove worker "${worker.name}"?`)) {
+      return;
+    }
+
+    this.workerService.deleteWorker(worker.id).subscribe({
+      next: () => {
+        this.workers = this.workers.filter(w => w.id !== worker.id);
+      },
+      error: () => {
+        alert('Failed to remove worker.');
+      }
+    });
   }
 
   initials(name: string): string {
+    if (!name) return 'W';
     return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   }
 }

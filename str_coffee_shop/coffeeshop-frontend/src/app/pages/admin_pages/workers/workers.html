@@ -9,48 +9,58 @@
     </button>
   </div>
 
-  <div class="bg-white rounded-2xl border border-cream-dark overflow-hidden">
-    <table class="w-full text-sm">
-      <thead>
-        <tr class="border-b border-cream-dark text-left">
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Worker</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Username</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Status</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Joined</th>
-          <th class="px-6 py-4"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (worker of workers; track worker.id) {
-          <tr class="border-b border-cream-dark last:border-0 hover:bg-cream/50 transition">
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full bg-caramel/15 text-caramel-dark flex items-center justify-center text-xs font-medium">
-                  {{ initials(worker.name) }}
-                </div>
-                <span class="text-espresso font-medium">{{ worker.name }}</span>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-espresso-light/70">&#64;{{ worker.username }}</td>
-            <td class="px-6 py-4">
-              <span
-                [class]="worker.status === 'Active' ? 'bg-sage/15 text-sage' : 'bg-cream-dark text-espresso-light/60'"
-                class="text-xs font-medium px-2.5 py-1 rounded-md"
-              >
-                {{ worker.status }}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-espresso-light/50">{{ worker.joined }}</td>
-            <td class="px-6 py-4 text-right">
-              <button (click)="removeWorker(worker)" class="text-xs font-medium text-red-500/70 hover:text-red-600">
-                Remove
-              </button>
-            </td>
+  @if (loading) {
+    <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/60 text-sm">
+      Loading workers...
+    </div>
+  } @else if (workers.length === 0) {
+    <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/60 text-sm">
+      No workers found. Click "+ Add worker" to create your first worker account.
+    </div>
+  } @else {
+    <div class="bg-white rounded-2xl border border-cream-dark overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-cream-dark text-left">
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Worker</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Username</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Status</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Joined</th>
+            <th class="px-6 py-4"></th>
           </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          @for (worker of workers; track worker.id) {
+            <tr class="border-b border-cream-dark last:border-0 hover:bg-cream/50 transition">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-caramel/15 text-caramel-dark flex items-center justify-center text-xs font-medium">
+                    {{ initials(worker.name) }}
+                  </div>
+                  <span class="text-espresso font-medium">{{ worker.name }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-espresso-light/70">&#64;{{ worker.username }}</td>
+              <td class="px-6 py-4">
+                <span
+                  [class]="worker.status === 'Active' ? 'bg-sage/15 text-sage' : 'bg-cream-dark text-espresso-light/60'"
+                  class="text-xs font-medium px-2.5 py-1 rounded-md"
+                >
+                  {{ worker.status }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-espresso-light/50">{{ worker.joined }}</td>
+              <td class="px-6 py-4 text-right">
+                <button (click)="removeWorker(worker)" class="text-xs font-medium text-red-500/70 hover:text-red-600">
+                  Remove
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </div>
 
 @if (showModal) {
@@ -77,12 +87,18 @@
             class="w-full bg-cream border border-cream-dark rounded-xl px-4 py-2.5 text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20" />
         </div>
 
+        @if (errorMessage) {
+          <div class="bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl p-3">
+            {{ errorMessage }}
+          </div>
+        }
+
         <div class="flex gap-3 pt-2">
           <button type="button" (click)="closeModal()" class="flex-1 text-sm font-medium text-espresso/70 py-3 rounded-xl border border-cream-dark hover:bg-cream transition">
             Cancel
           </button>
-          <button type="submit" class="flex-1 text-sm font-medium text-cream bg-espresso py-3 rounded-xl hover:bg-espresso-light transition">
-            Add worker
+          <button type="submit" [disabled]="saving" class="flex-1 text-sm font-medium text-cream bg-espresso py-3 rounded-xl hover:bg-espresso-light transition disabled:opacity-50">
+            {{ saving ? 'Saving...' : 'Add worker' }}
           </button>
         </div>
       </form>
