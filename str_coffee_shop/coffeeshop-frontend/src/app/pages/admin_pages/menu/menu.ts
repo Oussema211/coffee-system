@@ -1,59 +1,94 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-interface MenuItem {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  available: boolean;
-}
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
+import { MenuService, MenuItem } from '../../../core/menu.service';
 
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './menu.html'
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  templateUrl: './menu.html',
+  styleUrl: './menu.css'
 })
-export class Menu {
-  items: MenuItem[] = [
-    { id: 1, name: 'Espresso', category: 'Coffee', price: 2.5, available: true },
-    { id: 2, name: 'Cappuccino', category: 'Coffee', price: 3.5, available: true },
-    { id: 3, name: 'Latte', category: 'Coffee', price: 3.8, available: true },
-    { id: 4, name: 'Iced Americano', category: 'Coffee', price: 3.0, available: false },
-    { id: 5, name: 'Croissant', category: 'Pastry', price: 2.2, available: true },
-    { id: 6, name: 'Blueberry Muffin', category: 'Pastry', price: 2.8, available: true }
-  ];
-
-  categories = ['Coffee', 'Pastry', 'Cold Drinks', 'Tea'];
-
-  showModal = false;
+export class Menu implements OnInit {
+  items: MenuItem[] = [];
+  categories: string[] = ['All', 'Coffee', 'Pastry', 'Cold Drinks', 'Tea'];
+  formCategories: string[] = ['Coffee', 'Pastry', 'Cold Drinks', 'Tea'];
+  
+  selectedCategory: string = 'All';
+  searchQuery: string = '';
+  
+  isLoading: boolean = false;
+  errorMessage: string = '';
+  showModal: boolean = false;
+  isSaving: boolean = false;
   editingItem: MenuItem | null = null;
   form: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private menuService: MenuService
+  ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
       category: ['Coffee', Validators.required],
-      price: [0, [Validators.required, Validators.min(0.1)]]
+      price: [0, [Validators.required, Validators.min(0.01)]],
+      available: [true]
     });
+  }
+
+  ngOnInit(): void {
+    this.loadMenuItems();
+  }
+
+  loadMenuItems(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.menuService.getMenuItems().subscribe({
+      next: (data) => {
+        this.items = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load menu items:', err);
+        this.errorMessage = 'Failed to load menu items. Please ensure the backend is running.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  get filteredItems(): MenuItem[] {
+    return this.items.filter(item => {
+      const matchesCategory = this.selectedCategory === 'All' || item.category.toLowerCase() === this.selectedCategory.toLowerCase();
+      const matchesSearch = !this.searchQuery || item.name.toLowerCase().includes(this.searchQuery.toLowerCase()) || item.category.toLowerCase().includes(this.searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }
+
+  setCategory(cat: string): void {
+    this.selectedCategory = cat;
   }
 
   openAddModal(): void {
     this.editingItem = null;
-    this.form.reset({ name: '', category: 'Coffee', price: 0 });
+    this.form.reset({ name: '', category: 'Coffee', price: 0, available: true });
     this.showModal = true;
   }
 
   openEditModal(item: MenuItem): void {
     this.editingItem = item;
-    this.form.reset({ name: item.name, category: item.category, price: item.price });
+    this.form.reset({
+      name: item.name,
+      category: item.category,
+      price: item.price,
+      available: item.available
+    });
     this.showModal = true;
   }
 
   closeModal(): void {
     this.showModal = false;
+    this.editingItem = null;
   }
 
   saveItem(): void {
@@ -61,29 +96,69 @@ export class Menu {
       this.form.markAllAsTouched();
       return;
     }
+
     const value = this.form.value;
+    this.isSaving = true;
 
     if (this.editingItem) {
-      this.editingItem.name = value.name;
-      this.editingItem.category = value.category;
-      this.editingItem.price = value.price;
+      this.menuService.updateMenuItem(this.editingItem.id, value).subscribe({
+        next: (updatedItem) => {
+          const index = this.items.findIndex(i => i.id === updatedItem.id);
+          if (index !== -1) {
+            this.items[index] = updatedItem;
+          }
+          this.isSaving = false;
+          this.closeModal();
+        },
+        error: (err) => {
+          console.error('Failed to update menu item:', err);
+          this.isSaving = false;
+          alert('Failed to update menu item.');
+        }
+      });
     } else {
-      this.items.push({
-        id: Math.max(0, ...this.items.map(i => i.id)) + 1,
-        name: value.name,
-        category: value.category,
-        price: value.price,
-        available: true
+      this.menuService.createMenuItem(value).subscribe({
+        next: (newItem) => {
+          this.items.push(newItem);
+          this.isSaving = false;
+          this.closeModal();
+        },
+        error: (err) => {
+          console.error('Failed to create menu item:', err);
+          this.isSaving = false;
+          alert('Failed to create menu item.');
+        }
       });
     }
-    this.closeModal();
   }
 
   toggleAvailability(item: MenuItem): void {
-    item.available = !item.available;
+    const previousState = item.available;
+    item.available = !previousState;
+
+    this.menuService.toggleAvailability(item.id).subscribe({
+      next: (updatedItem) => {
+        item.available = updatedItem.available;
+      },
+      error: (err) => {
+        console.error('Failed to toggle availability:', err);
+        item.available = previousState;
+        alert('Failed to toggle availability status.');
+      }
+    });
   }
 
   deleteItem(item: MenuItem): void {
-    this.items = this.items.filter(i => i.id !== item.id);
+    if (confirm(`Are you sure you want to delete "${item.name}"?`)) {
+      this.menuService.deleteMenuItem(item.id).subscribe({
+        next: () => {
+          this.items = this.items.filter(i => i.id !== item.id);
+        },
+        error: (err) => {
+          console.error('Failed to delete menu item:', err);
+          alert('Failed to delete menu item.');
+        }
+      });
+    }
   }
 }
