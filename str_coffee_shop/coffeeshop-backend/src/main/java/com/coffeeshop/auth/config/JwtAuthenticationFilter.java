@@ -1,6 +1,6 @@
-package com.coffeeshop.config;
+package com.coffeeshop.auth.config;
 
-import com.coffeeshop.service.UserService;
+import com.coffeeshop.auth.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

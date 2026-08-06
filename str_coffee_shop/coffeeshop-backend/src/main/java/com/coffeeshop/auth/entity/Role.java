@@ -1,4 +1,4 @@
-package com.coffeeshop.entity;
+package com.coffeeshop.auth.entity;
 
 public enum Role {
     ADMIN,

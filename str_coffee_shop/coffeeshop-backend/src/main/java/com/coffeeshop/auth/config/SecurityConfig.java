@@ -1,6 +1,6 @@
-package com.coffeeshop.config;
+package com.coffeeshop.auth.config;
 
-import com.coffeeshop.service.UserService;
+import com.coffeeshop.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

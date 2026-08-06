@@ -1,8 +1,8 @@
-package com.coffeeshop.controller;
+package com.coffeeshop.auth.controller;
 
-import com.coffeeshop.dto.AuthRequest;
-import com.coffeeshop.dto.AuthResponse;
-import com.coffeeshop.service.AuthService;
+import com.coffeeshop.auth.dto.AuthRequest;
+import com.coffeeshop.auth.dto.AuthResponse;
+import com.coffeeshop.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

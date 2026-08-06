@@ -1,4 +1,4 @@
-package com.coffeeshop.dto;
+package com.coffeeshop.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

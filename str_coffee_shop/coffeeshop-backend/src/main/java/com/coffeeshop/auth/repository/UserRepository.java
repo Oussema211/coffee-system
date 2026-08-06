@@ -1,6 +1,6 @@
-package com.coffeeshop.repository;
+package com.coffeeshop.auth.repository;
 
-import com.coffeeshop.entity.User;
+import com.coffeeshop.auth.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

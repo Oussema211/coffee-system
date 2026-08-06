@@ -1,6 +1,6 @@
-package com.coffeeshop.service;
+package com.coffeeshop.auth.service;
 
-import com.coffeeshop.repository.UserRepository;
+import com.coffeeshop.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

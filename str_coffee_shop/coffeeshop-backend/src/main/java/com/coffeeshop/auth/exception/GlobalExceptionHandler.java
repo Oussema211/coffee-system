@@ -1,4 +1,4 @@
-package com.coffeeshop.exception;
+package com.coffeeshop.auth.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

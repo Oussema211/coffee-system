@@ -1,11 +1,11 @@
-package com.coffeeshop.service;
+package com.coffeeshop.auth.service;
 
-import com.coffeeshop.config.JwtService;
-import com.coffeeshop.dto.AuthRequest;
-import com.coffeeshop.dto.AuthResponse;
-import com.coffeeshop.entity.Role;
-import com.coffeeshop.entity.User;
-import com.coffeeshop.repository.UserRepository;
+import com.coffeeshop.auth.config.JwtService;
+import com.coffeeshop.auth.dto.AuthRequest;
+import com.coffeeshop.auth.dto.AuthResponse;
+import com.coffeeshop.auth.entity.Role;
+import com.coffeeshop.auth.entity.User;
+import com.coffeeshop.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

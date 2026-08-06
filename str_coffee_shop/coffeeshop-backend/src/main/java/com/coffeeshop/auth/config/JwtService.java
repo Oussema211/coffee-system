@@ -1,4 +1,4 @@
-package com.coffeeshop.config;
+package com.coffeeshop.auth.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
