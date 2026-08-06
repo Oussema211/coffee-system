@@ -7,6 +7,7 @@ import { Menu } from './pages/admin_pages/menu/menu';
 import { Orders } from './pages/admin_pages/orders/orders';
 import { Workers } from './pages/admin_pages/workers/workers';
 import { Reports } from './pages/admin_pages/reports/reports';
+import { Categories } from './pages/admin_pages/categories/categories';
 
 import { WorkerLayoutComponent } from './pages/worker_pages/worker-dashboard/worker-layout';
 import { WorkerDashboardComponent } from './pages/worker_pages/worker-dashboard/worker-dashboard';
@@ -27,6 +28,7 @@ export const routes: Routes = [
       { path: 'orders', component: Orders },
       { path: 'workers', component: Workers },
       { path: 'reports', component: Reports },
+      { path: 'categories', component: Categories },
     ]
   },
   {

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { MenuService, MenuItem } from '../../../core/menu.service';
+import { CategoryService } from '../../../core/category.service';
 
 @Component({
   selector: 'app-menu',
@@ -12,8 +13,10 @@ import { MenuService, MenuItem } from '../../../core/menu.service';
 })
 export class Menu implements OnInit {
   items: MenuItem[] = [];
-  categories: string[] = ['All', 'Coffee', 'Pastry', 'Cold Drinks', 'Tea'];
-  formCategories: string[] = ['Coffee', 'Pastry', 'Cold Drinks', 'Tea'];
+  // Filter tabs: 'All' + names from backend
+  categories: string[] = ['All'];
+  // Form dropdown: only the real category names (no 'All')
+  formCategories: string[] = [];
   
   selectedCategory: string = 'All';
   searchQuery: string = '';
@@ -27,18 +30,39 @@ export class Menu implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private categoryService: CategoryService
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
-      category: ['Coffee', Validators.required],
+      category: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0.01)]],
       available: [true]
     });
   }
 
   ngOnInit(): void {
+    this.loadCategories();
     this.loadMenuItems();
+  }
+
+  loadCategories(): void {
+    this.categoryService.getCategories().subscribe({
+      next: (cats) => {
+        this.formCategories = cats.map(c => c.name);
+        this.categories = ['All', ...this.formCategories];
+        // Set form default to the first category if available
+        if (this.formCategories.length > 0) {
+          this.form.patchValue({ category: this.formCategories[0] });
+        }
+      },
+      error: () => {
+        // Fallback if categories API fails
+        this.formCategories = ['Coffee', 'Pastry', 'Cold Drinks', 'Tea'];
+        this.categories = ['All', ...this.formCategories];
+        this.form.patchValue({ category: this.formCategories[0] });
+      }
+    });
   }
 
   loadMenuItems(): void {
@@ -71,7 +95,12 @@ export class Menu implements OnInit {
 
   openAddModal(): void {
     this.editingItem = null;
-    this.form.reset({ name: '', category: 'Coffee', price: 0, available: true });
+    this.form.reset({
+      name: '',
+      category: this.formCategories[0] || '',
+      price: 0,
+      available: true
+    });
     this.showModal = true;
   }
 
