@@ -23,8 +23,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody AuthRequest request) {
-        // For simplicity, default role is CUSTOMER
-        return ResponseEntity.ok(authService.register(request, "CUSTOMER"));
+        // For simplicity, default role is WORKER
+        return ResponseEntity.ok(authService.register(request, "WORKER"));
     }
 
     @PostMapping("/register/admin")

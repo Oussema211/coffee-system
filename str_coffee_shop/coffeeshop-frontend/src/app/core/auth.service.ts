@@ -10,7 +10,7 @@ export interface AuthRequest {
 export interface AuthResponse {
   token: string;
   username: string;
-  role: 'ADMIN' | 'CUSTOMER';
+  role: 'ADMIN' | 'WORKER';
   userId: number;
 }
 
