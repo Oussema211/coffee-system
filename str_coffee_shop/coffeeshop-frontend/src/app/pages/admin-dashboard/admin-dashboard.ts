@@ -1,28 +1,33 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  template: `
-    <div class="min-h-screen bg-cream flex flex-col items-center justify-center gap-6 font-body">
-      <h1 class="font-display text-4xl text-espresso">Hi Admin 👋</h1>
-      <button
-        (click)="logout()"
-        class="bg-espresso text-cream text-sm font-medium rounded-xl px-6 py-3
-               transition hover:bg-espresso-light active:scale-[0.99]"
-      >
-        Log out
-      </button>
-    </div>
-  `
+  imports: [CommonModule, RouterLink],
+  templateUrl: './admin-dashboard.html',
+  styleUrl: './admin-dashboard.css'
 })
 export class AdminDashboardComponent {
-  constructor(private auth: AuthService, private router: Router) {}
+  username: string | null;
 
-  logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/login']);
+  stats = [
+    { label: "Today's revenue",  value: '$148.20', sub: '+12% vs yesterday',  trend: 'up' },
+    { label: 'Orders today',     value: '24',       sub: '2 pending',           trend: 'up' },
+    { label: 'Active workers',   value: '2',        sub: 'of 3 staff',          trend: 'neutral' },
+    { label: 'Menu items',       value: '6',        sub: '1 hidden',            trend: 'neutral' },
+  ];
+
+  recentOrders = [
+    { id: 1046, items: 'Cappuccino',                worker: 'Sarah M.',  total: 3.50, status: 'Completed' },
+    { id: 1045, items: 'Iced Americano',             worker: 'James C.',  total: 3.00, status: 'Refunded'  },
+    { id: 1044, items: 'Latte, Blueberry Muffin',   worker: 'Sarah M.',  total: 6.60, status: 'Completed' },
+    { id: 1043, items: 'Espresso',                   worker: 'James C.',  total: 2.50, status: 'Completed' },
+  ];
+
+  constructor(private auth: AuthService) {
+    this.username = this.auth.getUsername();
   }
 }

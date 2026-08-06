@@ -1,0 +1,46 @@
+<div class="p-8">
+  <div class="flex items-start justify-between mb-8">
+    <div>
+      <h1 class="font-display text-3xl text-espresso mb-1">Orders</h1>
+      <p class="text-espresso-light/60 text-sm">Today's transactions, {{ orders.length }} orders so far.</p>
+    </div>
+    <div class="bg-white border border-cream-dark rounded-xl px-5 py-3 text-right">
+      <p class="text-xs uppercase tracking-wide text-espresso-light/50">Today's total</p>
+      <p class="font-display text-xl text-espresso">{{ todaysTotal | number:'1.2-2' }} $</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-cream-dark overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-cream-dark text-left">
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Order</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Items</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Worker</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Time</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Total</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (order of orders; track order.id) {
+          <tr class="border-b border-cream-dark last:border-0 hover:bg-cream/50 transition">
+            <td class="px-6 py-4 text-espresso font-medium">#{{ order.id }}</td>
+            <td class="px-6 py-4 text-espresso-light/70">{{ order.items.join(', ') }}</td>
+            <td class="px-6 py-4 text-espresso-light/70">{{ order.worker }}</td>
+            <td class="px-6 py-4 text-espresso-light/50">{{ order.time }}</td>
+            <td class="px-6 py-4 text-espresso font-medium">{{ order.total | number:'1.2-2' }} $</td>
+            <td class="px-6 py-4">
+              <span
+                [class]="order.status === 'Completed' ? 'bg-sage/15 text-sage' : 'bg-red-50 text-red-500'"
+                class="text-xs font-medium px-2.5 py-1 rounded-md"
+              >
+                {{ order.status }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

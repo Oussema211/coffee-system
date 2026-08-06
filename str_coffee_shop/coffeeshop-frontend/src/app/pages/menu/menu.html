@@ -1,0 +1,91 @@
+<div class="p-8">
+  <div class="flex items-start justify-between mb-8">
+    <div>
+      <h1 class="font-display text-3xl text-espresso mb-1">Menu</h1>
+      <p class="text-espresso-light/60 text-sm">Manage what's for sale — prices, categories, availability.</p>
+    </div>
+    <button (click)="openAddModal()" class="bg-espresso text-cream text-sm font-medium rounded-xl px-5 py-3 hover:bg-espresso-light transition">
+      + Add item
+    </button>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+    @for (item of items; track item.id) {
+      <div class="bg-white rounded-2xl border border-cream-dark p-5 flex flex-col gap-3">
+        <div class="flex items-start justify-between">
+          <span class="text-xs font-medium uppercase tracking-wide text-caramel-dark bg-caramel/10 px-2 py-1 rounded-md">
+            {{ item.category }}
+          </span>
+          <button
+            (click)="toggleAvailability(item)"
+            [class]="item.available ? 'bg-sage/15 text-sage' : 'bg-red-50 text-red-500'"
+            class="text-xs font-medium px-2 py-1 rounded-md"
+          >
+            {{ item.available ? 'Available' : 'Hidden' }}
+          </button>
+        </div>
+
+        <div>
+          <h3 class="font-display text-lg text-espresso">{{ item.name }}</h3>
+          <p class="text-espresso-light/50 text-sm">{{ item.price | number:'1.2-2' }} $</p>
+        </div>
+
+        <div class="flex gap-2 mt-auto pt-2 border-t border-cream-dark">
+          <button (click)="openEditModal(item)" class="flex-1 text-xs font-medium text-espresso/70 hover:text-espresso py-2 rounded-lg hover:bg-cream transition">
+            Edit
+          </button>
+          <button (click)="deleteItem(item)" class="flex-1 text-xs font-medium text-red-500/70 hover:text-red-600 py-2 rounded-lg hover:bg-red-50 transition">
+            Delete
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (items.length === 0) {
+    <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/50 text-sm">
+      No items yet — add your first menu item.
+    </div>
+  }
+</div>
+
+@if (showModal) {
+  <div class="fixed inset-0 bg-espresso/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md p-6">
+      <h2 class="font-display text-xl text-espresso mb-5">{{ editingItem ? 'Edit item' : 'Add new item' }}</h2>
+
+      <form [formGroup]="form" (ngSubmit)="saveItem()" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">Name</label>
+          <input type="text" formControlName="name" placeholder="Cappuccino"
+            class="w-full bg-cream border border-cream-dark rounded-xl px-4 py-2.5 text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">Category</label>
+          <select formControlName="category"
+            class="w-full bg-cream border border-cream-dark rounded-xl px-4 py-2.5 text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20">
+            @for (cat of categories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">Price ($)</label>
+          <input type="number" step="0.1" formControlName="price"
+            class="w-full bg-cream border border-cream-dark rounded-xl px-4 py-2.5 text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20" />
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" (click)="closeModal()" class="flex-1 text-sm font-medium text-espresso/70 py-3 rounded-xl border border-cream-dark hover:bg-cream transition">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 text-sm font-medium text-cream bg-espresso py-3 rounded-xl hover:bg-espresso-light transition">
+            {{ editingItem ? 'Save changes' : 'Add item' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

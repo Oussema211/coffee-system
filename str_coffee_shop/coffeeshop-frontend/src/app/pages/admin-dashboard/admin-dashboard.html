@@ -1,1 +1,105 @@
-<p>admin-dashboard works!</p>
+<div class="p-8">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="font-display text-3xl text-espresso mb-1">
+      Good morning{{ username ? ', ' + username : '' }} ☕
+    </h1>
+    <p class="text-espresso-light/60 text-sm">Here's what's happening at the shop today.</p>
+  </div>
+
+  <!-- Stats grid -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    @for (stat of stats; track stat.label) {
+      <div class="bg-white rounded-2xl border border-cream-dark p-5">
+        <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">{{ stat.label }}</p>
+        <p class="font-display text-2xl text-espresso mb-1">{{ stat.value }}</p>
+        <p class="text-xs"
+           [class]="stat.trend === 'up' ? 'text-sage' : 'text-espresso-light/40'">
+          {{ stat.sub }}
+        </p>
+      </div>
+    }
+  </div>
+
+  <!-- Recent orders + Quick links -->
+  <div class="grid lg:grid-cols-3 gap-6">
+
+    <!-- Recent orders table -->
+    <div class="lg:col-span-2 bg-white rounded-2xl border border-cream-dark overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-cream-dark">
+        <h2 class="font-display text-lg text-espresso">Recent orders</h2>
+        <a routerLink="/admin/orders"
+           class="text-xs font-medium text-caramel hover:text-caramel-dark transition">
+          View all →
+        </a>
+      </div>
+      <table class="w-full text-sm">
+        <tbody>
+          @for (order of recentOrders; track order.id) {
+            <tr class="border-b border-cream-dark last:border-0 hover:bg-cream/50 transition">
+              <td class="px-6 py-3 text-espresso font-medium">#{{ order.id }}</td>
+              <td class="px-6 py-3 text-espresso-light/70">{{ order.items }}</td>
+              <td class="px-6 py-3 text-espresso-light/50">{{ order.worker }}</td>
+              <td class="px-6 py-3 text-espresso font-medium text-right">{{ order.total | number:'1.2-2' }} $</td>
+              <td class="px-6 py-3">
+                <span
+                  [class]="order.status === 'Completed' ? 'bg-sage/15 text-sage' : 'bg-red-50 text-red-500'"
+                  class="text-xs font-medium px-2.5 py-1 rounded-md">
+                  {{ order.status }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Quick links -->
+    <div class="flex flex-col gap-3">
+      <h2 class="font-display text-lg text-espresso px-1">Quick actions</h2>
+
+      <a routerLink="/admin/menu"
+         class="bg-white rounded-2xl border border-cream-dark p-5 flex items-center gap-4 hover:border-caramel/50 hover:shadow-sm transition group">
+        <div class="w-10 h-10 rounded-xl bg-caramel/10 flex items-center justify-center text-caramel group-hover:bg-caramel/20 transition">
+          <svg class="w-5 h-5" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-medium text-espresso text-sm">Manage Menu</p>
+          <p class="text-xs text-espresso-light/50">Prices, items, availability</p>
+        </div>
+      </a>
+
+      <a routerLink="/admin/workers"
+         class="bg-white rounded-2xl border border-cream-dark p-5 flex items-center gap-4 hover:border-caramel/50 hover:shadow-sm transition group">
+        <div class="w-10 h-10 rounded-xl bg-caramel/10 flex items-center justify-center text-caramel group-hover:bg-caramel/20 transition">
+          <svg class="w-5 h-5" viewBox="0 0 20 20" fill="none">
+            <circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M2 17c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-medium text-espresso text-sm">Workers</p>
+          <p class="text-xs text-espresso-light/50">Add or remove staff</p>
+        </div>
+      </a>
+
+      <a routerLink="/admin/reports"
+         class="bg-white rounded-2xl border border-cream-dark p-5 flex items-center gap-4 hover:border-caramel/50 hover:shadow-sm transition group">
+        <div class="w-10 h-10 rounded-xl bg-caramel/10 flex items-center justify-center text-caramel group-hover:bg-caramel/20 transition">
+          <svg class="w-5 h-5" viewBox="0 0 20 20" fill="none">
+            <path d="M4 15V10M8 15V7M12 15V9M16 15V5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-medium text-espresso text-sm">Reports</p>
+          <p class="text-xs text-espresso-light/50">Sales & performance</p>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</div>
