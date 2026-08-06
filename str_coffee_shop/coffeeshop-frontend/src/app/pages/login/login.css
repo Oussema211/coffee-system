@@ -1,0 +1,23 @@
+.steam {
+  position: absolute;
+  bottom: 0;
+  width: 3px;
+  height: 60px;
+  background: linear-gradient(to top, transparent, #F7EFE3, transparent);
+  border-radius: 999px;
+  animation: rise 4s ease-in-out infinite;
+}
+
+.steam-1 { left: -20px; animation-delay: 0s; }
+.steam-2 { left: 0px; animation-delay: 1.3s; }
+.steam-3 { left: 20px; animation-delay: 2.6s; }
+
+@keyframes rise {
+  0% { transform: translateY(0) scaleX(1); opacity: 0; }
+  20% { opacity: 0.6; }
+  100% { transform: translateY(-140px) scaleX(1.8); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steam { animation: none; opacity: 0; }
+}

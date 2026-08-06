@@ -1,0 +1,122 @@
+<div class="min-h-screen flex flex-col lg:flex-row font-body">
+
+  <!-- Left brand panel -->
+  <div class="relative lg:w-1/2 bg-espresso text-cream flex flex-col justify-between overflow-hidden px-10 py-12 lg:px-16 lg:py-16">
+
+    <!-- steam animation -->
+    <div class="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 opacity-30">
+      <div class="steam steam-1"></div>
+      <div class="steam steam-2"></div>
+      <div class="steam steam-3"></div>
+    </div>
+
+    <div class="relative z-10">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full border-2 border-caramel flex items-center justify-center">
+          <span class="font-display text-caramel text-lg">B</span>
+        </div>
+        <span class="font-display text-xl tracking-wide">Brewhouse</span>
+      </div>
+    </div>
+
+    <div class="relative z-10 max-w-md">
+      <h1 class="font-display text-5xl lg:text-6xl leading-[1.05] font-medium">
+        Every shift<br />starts with<br /><span class="text-caramel">a good pour.</span>
+      </h1>
+      <p class="mt-6 text-cream/60 text-sm leading-relaxed">
+        One counter, two logins. Owners keep an eye on the whole shop —
+        staff clock in and get straight to the espresso machine.
+      </p>
+    </div>
+
+    <div class="relative z-10 flex items-center gap-2 text-xs text-cream/40 tracking-wide uppercase">
+      <span class="w-1.5 h-1.5 rounded-full bg-caramel"></span>
+      Roasted daily, served honestly
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="lg:w-1/2 bg-cream flex items-center justify-center px-6 py-14 lg:px-16">
+    <div class="w-full max-w-sm">
+
+      <div class="mb-10">
+        <h2 class="font-display text-3xl text-espresso font-medium">Welcome back</h2>
+        <p class="text-espresso-light/70 text-sm mt-2">Sign in with your shop account to continue.</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+
+        <!-- Username -->
+        <div>
+          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">
+            Username
+          </label>
+          <input
+            type="text"
+            formControlName="username"
+            placeholder="johndoe"
+            class="w-full bg-white border border-cream-dark rounded-xl px-4 py-3 text-espresso
+                   placeholder:text-espresso-light/30 outline-none transition
+                   focus:border-caramel focus:ring-2 focus:ring-caramel/20"
+          />
+          @if (form.get('username')?.invalid && form.get('username')?.touched) {
+            <p class="text-xs text-red-600 mt-1.5">Username is required.</p>
+          }
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">
+            Password
+          </label>
+          <div class="relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              class="w-full bg-white border border-cream-dark rounded-xl px-4 py-3 pr-11 text-espresso
+                     placeholder:text-espresso-light/30 outline-none transition
+                     focus:border-caramel focus:ring-2 focus:ring-caramel/20"
+            />
+            <button
+              type="button"
+              (click)="togglePassword()"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-espresso-light/50 hover:text-espresso text-xs uppercase tracking-wide"
+            >
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          @if (form.get('password')?.invalid && form.get('password')?.touched) {
+            <p class="text-xs text-red-600 mt-1.5">Password is required.</p>
+          }
+        </div>
+
+        @if (errorMessage) {
+          <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+            {{ errorMessage }}
+          </div>
+        }
+
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="w-full bg-espresso text-cream font-medium rounded-xl py-3.5 mt-2
+                 transition hover:bg-espresso-light active:scale-[0.99]
+                 disabled:opacity-60 disabled:cursor-not-allowed
+                 flex items-center justify-center gap-2"
+        >
+          @if (loading) {
+            <span class="w-4 h-4 border-2 border-cream/40 border-t-cream rounded-full animate-spin"></span>
+            Signing in…
+          } @else {
+            Sign in
+          }
+        </button>
+      </form>
+
+      <p class="text-center text-xs text-espresso-light/50 mt-8">
+        Role is assigned by the shop owner — you'll land on the right dashboard automatically.
+      </p>
+    </div>
+  </div>
+</div>
