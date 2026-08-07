@@ -1,93 +1,99 @@
-<div class="p-8 flex flex-col xl:flex-row gap-6">
+<div class="p-6 md:p-8 max-w-7xl mx-auto flex flex-col xl:flex-row gap-8">
 
   <!-- Menu side -->
   <div class="flex-1 min-w-0">
-    <div class="flex items-start justify-between mb-6">
+    <!-- Header with Back Button -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
-        <h1 class="font-display text-3xl text-espresso mb-1">New Order</h1>
-        <p class="text-espresso-light/60 text-sm">Tap an item to add it to the cart.</p>
+        <div class="flex items-center gap-3 mb-1">
+          <a routerLink="/worker" class="inline-flex items-center gap-2 px-4 py-2 bg-cream-dark hover:bg-caramel/20 text-espresso rounded-xl font-bold text-sm transition active:scale-95">
+            ← Back to Menu
+          </a>
+          <h1 class="font-display text-3xl font-bold text-espresso">New Order (POS)</h1>
+        </div>
+        <p class="text-espresso-light/70 text-base">Tap any menu item to add it to the cart.</p>
       </div>
     </div>
 
-    <!-- Category tabs -->
-    <div class="flex gap-2 mb-6 overflow-x-auto pb-1">
+    <!-- Category tabs (Large touch targets) -->
+    <div class="flex gap-3 mb-6 overflow-x-auto pb-2 scrollbar-none">
       @for (cat of categories; track cat) {
         <button
           (click)="activeCategory = cat"
           [class]="activeCategory === cat
-            ? 'bg-espresso text-cream'
-            : 'bg-white text-espresso-light/70 border border-cream-dark hover:bg-cream'"
-          class="text-xs font-medium px-4 py-2.5 rounded-xl whitespace-nowrap transition"
+            ? 'bg-espresso text-cream font-bold shadow-sm'
+            : 'bg-white text-espresso-light/80 border-2 border-cream-dark hover:bg-cream font-semibold'"
+          class="text-sm md:text-base px-6 py-3.5 rounded-2xl whitespace-nowrap active:scale-95 transition cursor-pointer min-h-[50px]"
         >
           {{ cat }}
         </button>
       }
     </div>
 
-    <!-- Item grid -->
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <!-- Item grid (Enlarged tactile cards) -->
+    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-5">
       @for (item of filteredItems; track item.id) {
         <button
           (click)="addToCart(item)"
-          class="bg-white rounded-2xl border border-cream-dark p-5 text-left hover:border-caramel hover:shadow-sm transition flex flex-col gap-3"
+          class="bg-white rounded-3xl border-2 border-cream-dark p-6 text-left hover:border-caramel active:scale-95 transition flex flex-col justify-between gap-4 cursor-pointer min-h-[130px] shadow-xs group"
         >
-          <span class="text-xs font-medium uppercase tracking-wide text-caramel-dark bg-caramel/10 px-2 py-1 rounded-md w-fit">
+          <span class="text-xs font-bold uppercase tracking-wider text-caramel-dark bg-caramel/15 px-3 py-1 rounded-lg w-fit">
             {{ item.category }}
           </span>
           <div>
-            <h3 class="font-display text-base text-espresso">{{ item.name }}</h3>
-            <p class="text-espresso-light/50 text-sm">{{ item.price | number:'1.2-2' }} $</p>
+            <h3 class="font-display text-lg md:text-xl font-bold text-espresso group-hover:text-caramel-dark transition-colors">{{ item.name }}</h3>
+            <p class="text-espresso font-extrabold text-base md:text-lg mt-1">{{ item.price | number:'1.2-2' }} $</p>
           </div>
         </button>
       }
     </div>
 
     @if (filteredItems.length === 0) {
-      <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/50 text-sm">
+      <div class="bg-white rounded-3xl border-2 border-cream-dark p-12 text-center text-espresso-light/60 text-base font-medium">
         No items in this category right now.
       </div>
     }
   </div>
 
-  <!-- Cart side -->
-  <div class="xl:w-96 shrink-0">
-    <div class="bg-white rounded-2xl border border-cream-dark p-5 sticky top-6 flex flex-col gap-5">
+  <!-- Cart side (POS Panel) -->
+  <div class="xl:w-105 shrink-0">
+    <div class="bg-white rounded-3xl border-2 border-cream-dark p-6 sticky top-24 flex flex-col gap-6 shadow-sm">
 
-      <div class="flex items-center justify-between">
-        <h2 class="font-display text-lg text-espresso">Current order</h2>
+      <div class="flex items-center justify-between border-b border-cream-dark pb-4">
+        <h2 class="font-display text-2xl font-bold text-espresso">Current Order Cart</h2>
         @if (cart.length > 0) {
-          <button (click)="clearCart()" class="text-xs font-medium text-red-500/70 hover:text-red-600">
-            Clear
+          <button (click)="clearCart()" class="text-sm font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+            Clear All
           </button>
         }
       </div>
 
-      <!-- Order type -->
-      <div class="grid grid-cols-2 gap-2">
+      <!-- Order type toggle buttons -->
+      <div class="grid grid-cols-2 gap-3">
         <button
           (click)="orderType = 'Dine-in'"
-          [class]="orderType === 'Dine-in' ? 'bg-espresso text-cream' : 'bg-cream text-espresso-light/70'"
-          class="text-xs font-medium rounded-lg py-2.5 transition"
+          [class]="orderType === 'Dine-in' ? 'bg-espresso text-cream font-bold' : 'bg-cream text-espresso-light/70 font-semibold'"
+          class="text-base rounded-2xl py-3.5 active:scale-95 transition cursor-pointer min-h-[50px]"
         >
-          Dine-in
+          🍽️ Dine-in
         </button>
         <button
           (click)="orderType = 'Takeaway'; selectedTable = null"
-          [class]="orderType === 'Takeaway' ? 'bg-espresso text-cream' : 'bg-cream text-espresso-light/70'"
-          class="text-xs font-medium rounded-lg py-2.5 transition"
+          [class]="orderType === 'Takeaway' ? 'bg-espresso text-cream font-bold' : 'bg-cream text-espresso-light/70 font-semibold'"
+          class="text-base rounded-2xl py-3.5 active:scale-95 transition cursor-pointer min-h-[50px]"
         >
-          Takeaway
+          🛍️ Takeaway
         </button>
       </div>
 
       @if (orderType === 'Dine-in') {
         <div>
-          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">Table</label>
+          <label class="block text-xs font-bold uppercase tracking-wider text-espresso-light/70 mb-2">Table Selection</label>
           <select
             [(ngModel)]="selectedTable"
-            class="w-full bg-cream border border-cream-dark rounded-xl px-4 py-2.5 text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20"
+            class="w-full bg-cream border-2 border-cream-dark rounded-2xl px-5 py-3.5 text-base font-bold text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20 min-h-[52px]"
           >
-            <option [ngValue]="null">Select a table…</option>
+            <option [ngValue]="null">Select Table…</option>
             @for (t of tables; track t) {
               <option [ngValue]="t">Table {{ t }}</option>
             }
@@ -95,52 +101,55 @@
         </div>
       }
 
-      <!-- Cart lines -->
-      <div class="flex flex-col gap-3 max-h-72 overflow-y-auto">
+      <!-- Cart lines list -->
+      <div class="flex flex-col gap-4 max-h-80 overflow-y-auto pr-1">
         @for (line of cart; track line.item.id) {
-          <div class="flex items-center justify-between gap-3">
-            <div class="min-w-0">
-              <p class="text-sm text-espresso font-medium truncate">{{ line.item.name }}</p>
-              <p class="text-xs text-espresso-light/50">{{ line.item.price | number:'1.2-2' }} $ each</p>
+          <div class="flex items-center justify-between gap-3 bg-cream/30 p-3.5 rounded-2xl border border-cream-dark/60">
+            <div class="min-w-0 flex-1">
+              <p class="text-base text-espresso font-bold truncate">{{ line.item.name }}</p>
+              <p class="text-xs text-espresso-light/60 font-semibold">{{ line.item.price | number:'1.2-2' }} $ each</p>
             </div>
-            <div class="flex items-center gap-2 shrink-0">
-              <button (click)="decrement(line)" class="w-7 h-7 rounded-lg bg-cream text-espresso hover:bg-cream-dark transition">−</button>
-              <span class="text-sm text-espresso w-4 text-center">{{ line.qty }}</span>
-              <button (click)="increment(line)" class="w-7 h-7 rounded-lg bg-cream text-espresso hover:bg-cream-dark transition">+</button>
+            <div class="flex items-center gap-3 shrink-0">
+              <button (click)="decrement(line)" class="w-10 h-10 rounded-xl bg-white border border-cream-dark text-espresso hover:bg-cream-dark text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer">−</button>
+              <span class="text-base font-bold text-espresso w-6 text-center">{{ line.qty }}</span>
+              <button (click)="increment(line)" class="w-10 h-10 rounded-xl bg-white border border-cream-dark text-espresso hover:bg-cream-dark text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer">+</button>
             </div>
           </div>
         }
 
         @if (cart.length === 0) {
-          <p class="text-espresso-light/40 text-sm text-center py-6">Cart is empty — tap an item to add it.</p>
+          <div class="py-10 text-center">
+            <span class="text-3xl">☕</span>
+            <p class="text-espresso-light/60 text-base font-medium mt-2">Cart is empty — tap items to add them.</p>
+          </div>
         }
       </div>
 
-      <!-- Total -->
-      <div class="border-t border-cream-dark pt-4 flex items-center justify-between">
-        <span class="text-sm text-espresso-light/60">Total ({{ cartCount }} item{{ cartCount === 1 ? '' : 's' }})</span>
-        <span class="font-display text-xl text-espresso">{{ cartTotal | number:'1.2-2' }} $</span>
+      <!-- Total & Submit -->
+      <div class="border-t-2 border-cream-dark pt-5 flex items-center justify-between">
+        <span class="text-base text-espresso-light/70 font-semibold">Total ({{ cartCount }} item{{ cartCount === 1 ? '' : 's' }})</span>
+        <span class="font-display text-3xl font-bold text-espresso">{{ cartTotal | number:'1.2-2' }} $</span>
       </div>
 
       @if (placedMessage) {
-        <div class="bg-sage/15 text-sage text-sm rounded-xl px-4 py-3">
-          {{ placedMessage }}
+        <div class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-base font-bold rounded-2xl px-5 py-4 flex items-center gap-3">
+          <span>✓</span> {{ placedMessage }}
         </div>
       }
 
       <button
         (click)="placeOrder()"
         [disabled]="!canPlaceOrder || placing"
-        class="w-full bg-espresso text-cream font-medium rounded-xl py-3.5
-               transition hover:bg-espresso-light active:scale-[0.99]
-               disabled:opacity-40 disabled:cursor-not-allowed
-               flex items-center justify-center gap-2"
+        class="w-full bg-emerald-600 text-white font-bold text-lg rounded-2xl py-4
+               transition hover:bg-emerald-700 active:scale-95 shadow-md shadow-emerald-600/20
+               disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer min-h-[60px]
+               flex items-center justify-center gap-3"
       >
         @if (placing) {
-          <span class="w-4 h-4 border-2 border-cream/40 border-t-cream rounded-full animate-spin"></span>
-          Sending…
+          <span class="w-5 h-5 border-3 border-white/40 border-t-white rounded-full animate-spin"></span>
+          Sending Order…
         } @else {
-          Place order
+          <span>Place Order Now</span>
         }
       </button>
     </div>

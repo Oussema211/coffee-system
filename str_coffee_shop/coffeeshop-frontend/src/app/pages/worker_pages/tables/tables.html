@@ -1,40 +1,49 @@
-<div class="p-8">
-  <div class="flex items-start justify-between mb-8">
+<div class="p-6 md:p-8 max-w-7xl mx-auto">
+
+  <!-- Header with Page Title & Back Button -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
     <div>
-      <h1 class="font-display text-3xl text-espresso mb-1">Tables</h1>
-      <p class="text-espresso-light/60 text-sm">{{ counts.available }} available · {{ counts.occupied }} occupied</p>
+      <div class="flex items-center gap-3 mb-1">
+        <a routerLink="/worker" class="inline-flex items-center gap-2 px-4 py-2 bg-cream-dark hover:bg-caramel/20 text-espresso rounded-xl font-bold text-sm transition active:scale-95">
+          ← Back to Menu
+        </a>
+        <h1 class="font-display text-3xl font-bold text-espresso">Tables Floor Plan</h1>
+      </div>
+      <p class="text-espresso-light/70 text-base">{{ counts.available }} free tables · {{ counts.occupied }} occupied</p>
     </div>
   </div>
 
-  <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
     @for (table of tables; track table.id) {
-      <div class="bg-white rounded-2xl border border-cream-dark p-5 flex flex-col gap-3">
+      <div class="bg-white rounded-3xl border-2 border-cream-dark p-6 flex flex-col justify-between gap-4 shadow-xs">
         <div class="flex items-start justify-between">
-          <span class="font-display text-2xl text-espresso">T{{ table.number }}</span>
-          <span [class]="statusClasses(table.status)" class="text-xs font-medium px-2.5 py-1 rounded-md">
+          <span class="font-display text-3xl font-extrabold text-espresso">Table {{ table.number }}</span>
+          <span [class]="statusClasses(table.status)" class="text-xs font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-xl shadow-xs">
             {{ table.status }}
           </span>
         </div>
 
-        <p class="text-espresso-light/50 text-sm">{{ table.seats }} seats</p>
-        @if (table.since) {
-          <p class="text-espresso-light/40 text-xs">Since {{ table.since }}</p>
-        }
+        <div>
+          <p class="text-espresso font-semibold text-base">🪑 {{ table.seats }} Seats</p>
+          @if (table.since) {
+            <p class="text-espresso-light/60 text-sm font-medium mt-1">Seated since {{ table.since }}</p>
+          }
+        </div>
 
-        <div class="flex gap-2 mt-auto pt-2 border-t border-cream-dark">
+        <div class="flex flex-col gap-2.5 mt-auto pt-3 border-t-2 border-cream-dark">
           @if (table.status === 'Reserved') {
-            <button (click)="seatReserved(table)" class="flex-1 text-xs font-medium text-espresso/70 hover:text-espresso py-2 rounded-lg hover:bg-cream transition">
-              Seat now
+            <button (click)="seatReserved(table)" class="w-full text-sm font-bold text-espresso bg-cream hover:bg-cream-dark py-3 rounded-2xl active:scale-95 transition min-h-[48px] cursor-pointer">
+              Seat Guest Now
             </button>
           } @else {
-            <button (click)="cycleStatus(table)" class="flex-1 text-xs font-medium text-espresso/70 hover:text-espresso py-2 rounded-lg hover:bg-cream transition">
-              Change status
+            <button (click)="cycleStatus(table)" class="w-full text-sm font-bold text-espresso border-2 border-cream-dark hover:bg-cream py-3 rounded-2xl active:scale-95 transition min-h-[48px] cursor-pointer">
+              Change Status
             </button>
           }
 
           @if (table.status === 'Available') {
-            <button (click)="startOrder(table)" class="flex-1 text-xs font-medium text-cream bg-espresso py-2 rounded-lg hover:bg-espresso-light transition">
-              Start order
+            <button (click)="startOrder(table)" class="w-full text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 py-3 rounded-2xl active:scale-95 transition shadow-sm min-h-[48px] cursor-pointer flex items-center justify-center gap-2">
+              🛒 Start New Order
             </button>
           }
         </div>

@@ -3,10 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 
-interface QuickAction {
-  label: string;
-  desc: string;
+interface TouchCard {
+  id: string;
+  title: string;
+  subtitle: string;
   route: string;
+  badge?: string;
+  badgeColor?: string;
+  theme: string;
 }
 
 @Component({
@@ -18,8 +22,8 @@ interface QuickAction {
 })
 export class WorkerDashboardComponent {
   username: string | null;
-  clockedIn = false;
-  shiftStart: string | null = null;
+  clockedIn = true;
+  shiftStart: string | null = '08:30 AM';
 
   stats = [
     { label: 'Orders served', value: '18', sub: 'this shift' },
@@ -27,11 +31,43 @@ export class WorkerDashboardComponent {
     { label: 'QR orders pending', value: '2', sub: 'need attention' },
   ];
 
-  quickActions: QuickAction[] = [
-    { label: 'New Order', desc: 'Start a dine-in or takeaway order', route: '/worker/new-order' },
-    { label: 'Tables', desc: 'Check table status at a glance', route: '/worker/tables' },
-    { label: 'Active Orders', desc: 'Track orders currently in progress', route: '/worker/active-orders' },
-    { label: 'QR Orders', desc: 'Review orders customers placed by scanning', route: '/worker/qr-orders' },
+  touchCards: TouchCard[] = [
+    {
+      id: 'card-new-order',
+      title: 'New Order (POS)',
+      subtitle: 'Tap to start a new dine-in or takeaway order',
+      route: '/worker/new-order',
+      badge: 'START HERE',
+      badgeColor: 'bg-emerald-500 text-white',
+      theme: 'card-primary'
+    },
+    {
+      id: 'card-active-orders',
+      title: 'Active Orders',
+      subtitle: 'View and manage orders currently in progress',
+      route: '/worker/active-orders',
+      badge: '3 IN PROGRESS',
+      badgeColor: 'bg-amber-500 text-white',
+      theme: 'card-amber'
+    },
+    {
+      id: 'card-qr-orders',
+      title: 'QR Customer Orders',
+      subtitle: 'Review incoming customer mobile QR orders',
+      route: '/worker/qr-orders',
+      badge: '2 PENDING',
+      badgeColor: 'bg-rose-500 text-white',
+      theme: 'card-rose'
+    },
+    {
+      id: 'card-tables',
+      title: 'Tables Management',
+      subtitle: 'Check floor tables, occupied seats and availability',
+      route: '/worker/tables',
+      badge: '5 FREE TABLES',
+      badgeColor: 'bg-blue-500 text-white',
+      theme: 'card-blue'
+    }
   ];
 
   constructor(private auth: AuthService) {

@@ -1,64 +1,96 @@
-<div class="p-8">
+<div class="p-6 md:p-10 max-w-7xl mx-auto">
 
-  <!-- Header + clock in/out -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-    <div>
-      <h1 class="font-display text-3xl text-espresso mb-1">Hey{{ username ? ', ' + username : '' }} 👋</h1>
-      <p class="text-espresso-light/60 text-sm">
-        @if (clockedIn) {
-          On shift since {{ shiftStart }} — let's make some coffee.
-        } @else {
-          You're off the clock. Clock in to start your shift.
-        }
-      </p>
+  <!-- Greeting & Tactile Shift Toggle Header -->
+  <div class="bg-white rounded-3xl p-6 md:p-8 border-2 border-cream-dark shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="flex items-center gap-5">
+      <div class="w-16 h-16 rounded-2xl bg-espresso text-cream flex items-center justify-center font-display text-2xl font-bold shrink-0 shadow-md">
+        ☕
+      </div>
+      <div>
+        <h1 class="font-display text-3xl md:text-4xl text-espresso font-bold">Welcome, {{ username || 'Worker' }} 👋</h1>
+        <p class="text-espresso-light/70 text-base mt-1">
+          @if (clockedIn) {
+            <span class="inline-flex items-center gap-2 text-emerald-700 font-semibold">
+              <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+              On shift since {{ shiftStart }}
+            </span>
+          } @else {
+            <span class="text-amber-700 font-semibold">Off the clock — please clock in before taking orders</span>
+          }
+        </p>
+      </div>
     </div>
 
+    <!-- Giant Tactile Clock In / Clock Out Button -->
     <button
       (click)="toggleClock()"
       [class]="clockedIn
-        ? 'bg-white border border-cream-dark text-espresso hover:bg-cream'
-        : 'bg-espresso text-cream hover:bg-espresso-light'"
-      class="text-sm font-medium rounded-xl px-6 py-3.5 transition flex items-center gap-2 justify-center"
+        ? 'bg-rose-100 hover:bg-rose-200 text-rose-800 border-2 border-rose-300'
+        : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/30 border-2 border-emerald-500'"
+      class="py-4 px-8 rounded-2xl text-lg font-bold transition active:scale-95 flex items-center justify-center gap-3 shrink-0 cursor-pointer min-h-[64px]"
+      id="btn-clock-toggle"
     >
       <span
-        [class]="clockedIn ? 'bg-sage' : 'bg-cream/50'"
-        class="w-2 h-2 rounded-full"
+        [class]="clockedIn ? 'bg-rose-500' : 'bg-white'"
+        class="w-3.5 h-3.5 rounded-full"
       ></span>
-      {{ clockedIn ? 'Clock out' : 'Clock in' }}
+      <span>{{ clockedIn ? 'Clock Out' : 'Clock In Now' }}</span>
     </button>
   </div>
 
-  <!-- Stats -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+  <!-- Big Tactile Page Cards Grid -->
+  <div class="mb-6">
+    <h2 class="text-xl font-bold text-espresso uppercase tracking-wider text-espresso/70 mb-4 px-1">
+      Select Action (Tap any card to open page)
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      @for (card of touchCards; track card.id) {
+        <a
+          [routerLink]="card.route"
+          [id]="card.id"
+          class="touch-card-item rounded-3xl p-7 md:p-8 flex flex-col justify-between transition-all duration-200 active:scale-95 cursor-pointer relative overflow-hidden group border-3 shadow-sm hover:shadow-md min-h-[180px]"
+          [ngClass]="card.theme"
+        >
+          <!-- Badge Header -->
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs md:text-sm font-extrabold uppercase tracking-widest px-3.5 py-1.5 rounded-full shadow-xs" [ngClass]="card.badgeColor">
+              {{ card.badge }}
+            </span>
+            <div class="w-12 h-12 rounded-2xl bg-white/80 backdrop-blur-xs flex items-center justify-center text-espresso text-2xl font-bold group-hover:scale-110 transition-transform shadow-xs">
+              @if (card.id === 'card-new-order') { 🛒 }
+              @else if (card.id === 'card-active-orders') { 📋 }
+              @else if (card.id === 'card-qr-orders') { 📱 }
+              @else if (card.id === 'card-tables') { 🪑 }
+            </div>
+          </div>
+
+          <!-- Title & Subtitle -->
+          <div>
+            <h3 class="font-display text-2xl md:text-3xl font-bold text-espresso mb-2 flex items-center justify-between">
+              <span>{{ card.title }}</span>
+              <span class="text-caramel font-sans text-2xl group-hover:translate-x-2 transition-transform">→</span>
+            </h3>
+            <p class="text-espresso-light/80 text-base font-medium leading-snug">
+              {{ card.subtitle }}
+            </p>
+          </div>
+        </a>
+      }
+    </div>
+  </div>
+
+  <!-- Quick Shift Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
     @for (stat of stats; track stat.label) {
-      <div class="bg-white rounded-2xl border border-cream-dark p-5">
-        <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">{{ stat.label }}</p>
-        <p class="font-display text-2xl text-espresso">{{ stat.value }}</p>
-        <p class="text-xs text-espresso-light/50 mt-1">{{ stat.sub }}</p>
+      <div class="bg-white rounded-2xl border border-cream-dark p-5 flex items-center justify-between shadow-xs">
+        <div>
+          <p class="text-xs uppercase tracking-wider font-semibold text-espresso-light/60 mb-1">{{ stat.label }}</p>
+          <p class="font-display text-3xl font-bold text-espresso">{{ stat.value }}</p>
+          <p class="text-xs text-espresso-light/60 mt-0.5">{{ stat.sub }}</p>
+        </div>
       </div>
     }
   </div>
 
-  <!-- Quick actions -->
-  <h2 class="font-display text-lg text-espresso mb-4">Quick actions</h2>
-  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-    @for (action of quickActions; track action.route) {
-      <a
-        [routerLink]="action.route"
-        class="bg-white rounded-2xl border border-cream-dark p-5 flex flex-col gap-2 hover:border-caramel hover:shadow-sm transition group"
-      >
-        <span class="w-9 h-9 rounded-full bg-caramel/10 text-caramel-dark flex items-center justify-center font-display text-sm group-hover:bg-caramel/20 transition">
-          {{ action.label.charAt(0) }}
-        </span>
-        <h3 class="font-display text-base text-espresso">{{ action.label }}</h3>
-        <p class="text-espresso-light/50 text-xs leading-relaxed">{{ action.desc }}</p>
-      </a>
-    }
-  </div>
-
-  @if (!clockedIn) {
-    <div class="mt-8 bg-caramel/10 border border-caramel/30 text-espresso text-sm rounded-xl px-5 py-4">
-      Reminder: clock in before taking orders so shifts stay accurate for the shop owner.
-    </div>
-  }
 </div>

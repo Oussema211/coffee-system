@@ -1,94 +1,48 @@
 <div class="worker-shell">
 
-  <!-- ───── Sidebar ───── -->
-  <aside class="sidebar">
-
-    <!-- Brand -->
-    <div class="sidebar-brand">
-      <div class="brand-icon">B</div>
-      <div class="brand-details">
-        <span class="brand-name">Brewhouse</span>
-        <span class="brand-tag">POS & Orders</span>
-      </div>
+  <!-- ───── Top Tactile Navigation Header ───── -->
+  <header class="worker-topbar">
+    <div class="topbar-left">
+      @if (isSubPage()) {
+        <!-- Always visible giant Back Button on child pages -->
+        <button (click)="goBack()" class="back-btn" id="btn-header-back">
+          <svg class="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          <span>← Back to Menu</span>
+        </button>
+      } @else {
+        <!-- Main Brand Logo / Hub Title -->
+        <div class="worker-brand">
+          <div class="brand-avatar">B</div>
+          <div>
+            <h1 class="brand-title">Brewhouse</h1>
+            <p class="brand-subtitle">Worker Tactile Screen POS</p>
+          </div>
+        </div>
+      }
     </div>
 
-    <!-- Nav -->
-    <nav class="sidebar-nav">
-
-      <!-- Dashboard -->
-      <a routerLink="/worker" routerLinkActive="nav-active"
-         [routerLinkActiveOptions]="{ exact: true }"
-         class="nav-item" id="nav-dashboard">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
-          <rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
-          <rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
-          <rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
-          <rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/>
-        </svg>
-        Dashboard
-      </a>
-
-      <!-- Active Orders -->
-      <a routerLink="/worker/active-orders" routerLinkActive="nav-active"
-         class="nav-item" id="nav-active-orders">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
-          <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
-          <path d="M7 8h6M7 12h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-        Active Orders
-      </a>
-
-      <!-- New Order -->
-      <a routerLink="/worker/new-order" routerLinkActive="nav-active"
-         class="nav-item" id="nav-new-order">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/>
-          <path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-        New Order
-      </a>
-
-      <!-- QR Orders -->
-      <a routerLink="/worker/qr-orders" routerLinkActive="nav-active"
-         class="nav-item" id="nav-qr-orders">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
-          <path d="M3 3h5v5H3V3zM12 3h5v5h-5V3zM3 12h5v5H3v-5z" stroke="currentColor" stroke-width="1.6"/>
-          <path d="M12 12h2v2h-2v-2zM15 15h2v2h-2v-2zM15 12h2v2h-2v-2zM12 15h2v2h-2v-2z" fill="currentColor"/>
-        </svg>
-        QR Orders
-      </a>
-
-      <!-- Tables -->
-      <a routerLink="/worker/tables" routerLinkActive="nav-active"
-         class="nav-item" id="nav-tables">
-        <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
-          <rect x="2" y="3" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
-          <path d="M5 13v4M15 13v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-        Tables
-      </a>
-
-    </nav>
-
-    <!-- User / Logout -->
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="user-avatar">{{ (username || 'W')[0].toUpperCase() }}</div>
-        <div class="user-info">
-          <span class="user-name">{{ username || 'Worker' }}</span>
-          <span class="user-role">Shift Staff</span>
+    <!-- Top Right Worker Info & Logout -->
+    <div class="topbar-right">
+      <div class="worker-badge">
+        <div class="worker-avatar-badge">{{ (username || 'W')[0].toUpperCase() }}</div>
+        <div class="hidden sm:flex flex-col text-left">
+          <span class="worker-name">{{ username || 'Worker' }}</span>
+          <span class="worker-role font-sans text-xs opacity-75">Staff</span>
         </div>
       </div>
-      <button class="logout-btn" (click)="logout()" id="btn-logout" title="Log out">
-        <svg viewBox="0 0 20 20" fill="none">
-          <path d="M7 3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h3M13 14l3-4-3-4M16 10H8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <button class="topbar-logout-btn" (click)="logout()" id="btn-logout" title="Log out">
+        <svg viewBox="0 0 20 20" fill="none" class="w-5 h-5">
+          <path d="M7 3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h3M13 14l3-4-3-4M16 10H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
+        <span class="hidden md:inline font-medium">Exit</span>
       </button>
     </div>
+  </header>
 
-  </aside>
-
-  <!-- ───── Main Content ───── -->
+  <!-- ───── Main Content Area ───── -->
   <main class="worker-main">
     <router-outlet />
   </main>

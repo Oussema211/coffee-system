@@ -1,1 +1,44 @@
 /* worker-dashboard styles */
+
+/* worker-dashboard tactile screen styles */
+
+.touch-card-item {
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card-primary {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F0FDF4 100%);
+  border-color: #86EFAC;
+}
+
+.card-primary:hover {
+  border-color: #22C55E;
+}
+
+.card-amber {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFFBEB 100%);
+  border-color: #FDE68A;
+}
+
+.card-amber:hover {
+  border-color: #F59E0B;
+}
+
+.card-rose {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF1F2 100%);
+  border-color: #FECDD3;
+}
+
+.card-rose:hover {
+  border-color: #F43F5E;
+}
+
+.card-blue {
+  background: linear-gradient(135deg, #FFFFFF 0%, #EFF6FF 100%);
+  border-color: #BFDBFE;
+}
+
+.card-blue:hover {
+  border-color: #3B82F6;
+}
