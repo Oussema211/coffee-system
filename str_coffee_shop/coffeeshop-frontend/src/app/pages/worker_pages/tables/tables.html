@@ -8,6 +8,14 @@
     </div>
   </div>
 
+  <!-- Payment success toast -->
+  @if (paymentSuccess) {
+    <div class="payment-toast">
+      <span class="text-xl">✓</span>
+      <span class="font-semibold text-sm">{{ paymentSuccessMessage }}</span>
+    </div>
+  }
+
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
     @for (table of tables; track table.id) {
       <div class="bg-white rounded-3xl border-2 border-cream-dark p-6 flex flex-col justify-between gap-4 shadow-xs">
@@ -22,6 +30,24 @@
           <p class="text-espresso font-semibold text-base">🪑 {{ table.seats }} Seats</p>
           @if (table.since) {
             <p class="text-espresso-light/60 text-sm font-medium mt-1">Seated since {{ table.since }}</p>
+          }
+          <!-- Show bill total for occupied tables -->
+          @if (table.status === 'Occupied' && table.orderItems.length > 0) {
+            <div class="mt-3 bg-caramel/8 rounded-2xl px-4 py-3 border border-caramel/20">
+              <p class="text-xs font-bold uppercase tracking-wider text-caramel-dark/70 mb-1.5">Current Bill</p>
+              @for (item of table.orderItems; track item.id) {
+                @if (!item.paid) {
+                  <div class="flex justify-between items-center text-sm font-medium text-espresso py-0.5">
+                    <span class="truncate">{{ item.qty }}× {{ item.name }}</span>
+                    <span class="text-caramel-dark font-bold ml-2 shrink-0">{{ (item.price * item.qty) | number:'1.2-2' }}</span>
+                  </div>
+                }
+              }
+              <div class="border-t border-caramel/20 mt-2 pt-2 flex justify-between items-center">
+                <span class="text-xs font-bold uppercase tracking-wider text-espresso-light/60">Total</span>
+                <span class="font-display text-lg font-extrabold text-espresso">{{ tableTotal(table) | number:'1.2-2' }} TND</span>
+              </div>
+            </div>
           }
         </div>
 
@@ -41,8 +67,207 @@
               🛒 Start New Order
             </button>
           }
+
+          @if (table.status === 'Occupied' && table.orderItems.length > 0) {
+            <button (click)="openPayment(table)" class="w-full text-sm font-bold text-cream bg-caramel-dark hover:bg-caramel py-3 rounded-2xl active:scale-95 transition shadow-sm min-h-[48px] cursor-pointer flex items-center justify-center gap-2">
+              💳 Pay Bill
+            </button>
+          }
         </div>
       </div>
     }
   </div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PAYMENT MODAL
+     ═══════════════════════════════════════════════════════════════ -->
+@if (paymentModalOpen && activePaymentTable) {
+  <!-- Backdrop -->
+  <div class="modal-backdrop" (click)="closePayment()"></div>
+
+  <!-- Sheet -->
+  <div class="payment-sheet" role="dialog" aria-modal="true">
+
+    <!-- Drag handle -->
+    <div class="flex justify-center pt-4 pb-2">
+      <div class="w-10 h-1.5 rounded-full bg-espresso/15"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 pb-4 border-b-2 border-cream-dark">
+      <div>
+        <h2 class="font-display text-2xl font-bold text-espresso">
+          💳 Table {{ activePaymentTable.number }} — Payment
+        </h2>
+        <p class="text-sm text-espresso-light/60 font-medium mt-0.5">{{ activePaymentTable.seats }} seats · Since {{ activePaymentTable.since }}</p>
+      </div>
+      <button (click)="closePayment()" class="w-10 h-10 rounded-xl bg-cream-dark hover:bg-espresso/10 text-espresso text-xl font-bold flex items-center justify-center transition cursor-pointer">
+        ✕
+      </button>
+    </div>
+
+    <!-- Mode tabs -->
+    <div class="flex gap-3 px-6 pt-5 pb-3">
+      <button
+        (click)="switchMode('full')"
+        [class]="paymentMode === 'full' ? 'bg-espresso text-cream shadow-sm' : 'bg-cream border-2 border-cream-dark text-espresso-light/70 hover:bg-cream-dark'"
+        class="flex-1 text-sm font-bold py-3 rounded-2xl transition active:scale-95 cursor-pointer min-h-[46px]"
+      >
+        🧾 Full Table Bill
+      </button>
+      <button
+        (click)="switchMode('split')"
+        [class]="paymentMode === 'split' ? 'bg-espresso text-cream shadow-sm' : 'bg-cream border-2 border-cream-dark text-espresso-light/70 hover:bg-cream-dark'"
+        class="flex-1 text-sm font-bold py-3 rounded-2xl transition active:scale-95 cursor-pointer min-h-[46px]"
+      >
+        ✂️ Split Bill
+      </button>
+    </div>
+
+    <!-- Scrollable content -->
+    <div class="overflow-y-auto flex-1 px-6 pb-2">
+
+      <!-- ─── Items list ─── -->
+      <div class="mb-5">
+        <p class="text-xs font-bold uppercase tracking-wider text-espresso-light/50 mb-3">
+          @if (paymentMode === 'split') { Select items this person is paying for } @else { Items on this table }
+        </p>
+
+        <div class="flex flex-col gap-2">
+          @for (item of unpaidItems; track item.id) {
+            <div
+              (click)="paymentMode === 'split' ? (item.selected = !item.selected) : null"
+              [class]="paymentMode === 'split' ? (item.selected ? 'border-caramel bg-caramel/8' : 'border-cream-dark bg-white hover:bg-cream/60') : 'border-cream-dark bg-cream/40'"
+              class="flex items-center gap-4 rounded-2xl border-2 px-4 py-3.5 transition"
+              [class.cursor-pointer]="paymentMode === 'split'"
+            >
+              <!-- Split mode checkbox -->
+              @if (paymentMode === 'split') {
+                <div [class]="item.selected ? 'bg-caramel border-caramel' : 'bg-white border-cream-dark'" class="w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition">
+                  @if (item.selected) {
+                    <span class="text-white text-xs font-black">✓</span>
+                  }
+                </div>
+              }
+
+              <div class="flex-1 min-w-0">
+                <p class="text-base font-bold text-espresso truncate">{{ item.name }}</p>
+                @if (item.seatLabel) {
+                  <p class="text-xs text-espresso-light/50 font-medium">{{ item.seatLabel }} · {{ item.qty }}×</p>
+                } @else {
+                  <p class="text-xs text-espresso-light/50 font-medium">Qty: {{ item.qty }}</p>
+                }
+              </div>
+              <span class="font-bold text-base text-espresso shrink-0">{{ (item.price * item.qty) | number:'1.2-2' }} TND</span>
+            </div>
+          }
+
+          @if (unpaidItems.length === 0) {
+            <div class="py-8 text-center text-espresso-light/60 text-base font-medium">
+              ✓ All items have been paid for.
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ─── Total summary ─── -->
+      <div class="rounded-2xl border-2 border-cream-dark bg-cream/40 px-5 py-4 mb-5">
+        @if (paymentMode === 'split') {
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-sm text-espresso-light/60 font-semibold">Full table total</span>
+            <span class="font-bold text-espresso">{{ fullTotal | number:'1.2-2' }} TND</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-espresso-light/60 font-semibold">This person's items</span>
+            <span class="font-display text-2xl font-extrabold text-espresso">{{ splitTotal | number:'1.2-2' }} TND</span>
+          </div>
+        } @else {
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-espresso-light/60 font-semibold">Grand Total</span>
+            <span class="font-display text-2xl font-extrabold text-espresso">{{ fullTotal | number:'1.2-2' }} TND</span>
+          </div>
+        }
+      </div>
+
+      <!-- ─── Amount given input ─── -->
+      @if (unpaidItems.length > 0 && (paymentMode === 'full' || hasSplitSelection)) {
+        <div class="mb-4">
+          <label class="block text-xs font-bold uppercase tracking-wider text-espresso-light/50 mb-2">
+            Amount Given by Customer (TND)
+          </label>
+          <div class="relative">
+            <input
+              type="number"
+              [(ngModel)]="amountGiven"
+              min="0"
+              step="0.5"
+              placeholder="0.00"
+              class="amount-input"
+              id="amount-given-input"
+            />
+            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-espresso-light/40 font-bold text-base pointer-events-none">TND</span>
+          </div>
+
+          <!-- Quick amount buttons -->
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <p class="text-xs text-espresso-light/50 font-semibold w-full mb-1">Quick amounts:</p>
+            @for (qa of quickAmounts; track qa) {
+              <button
+                (click)="setQuickAmount(qa)"
+                [class]="amountGiven === qa ? 'bg-espresso text-cream' : 'bg-white border-2 border-cream-dark text-espresso hover:bg-cream-dark'"
+                class="text-sm font-bold px-4 py-2.5 rounded-xl transition active:scale-95 cursor-pointer min-h-[42px]"
+              >
+                {{ qa | number:'1.2-2' }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- ─── Change / shortfall badge ─── -->
+        @if (amountGiven !== null) {
+          @if (amountGiven >= currentTotal) {
+            <div class="change-badge change-ok mb-5">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider opacity-70 mb-0.5">Return to Customer</p>
+                <p class="font-display text-3xl font-extrabold">{{ change | number:'1.2-2' }} TND</p>
+              </div>
+              <span class="text-4xl">💚</span>
+            </div>
+          } @else {
+            <div class="change-badge change-short mb-5">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider opacity-70 mb-0.5">Still Needs</p>
+                <p class="font-display text-3xl font-extrabold">{{ shortfall | number:'1.2-2' }} TND</p>
+              </div>
+              <span class="text-4xl">⚠️</span>
+            </div>
+          }
+        }
+      }
+
+    </div>
+
+    <!-- ─── Confirm button (sticky footer) ─── -->
+    <div class="px-6 pb-6 pt-3 border-t-2 border-cream-dark">
+      @if (paymentMode === 'full') {
+        <button
+          (click)="confirmFullPayment()"
+          [disabled]="!canConfirm"
+          class="confirm-btn"
+        >
+          ✓ Confirm Full Payment
+        </button>
+      } @else {
+        <button
+          (click)="confirmSplitPayment()"
+          [disabled]="!canConfirm"
+          class="confirm-btn"
+        >
+          ✓ Confirm Partial Payment ({{ unpaidItems.filter(i => i.selected).length }} item{{ unpaidItems.filter(i => i.selected).length === 1 ? '' : 's' }})
+        </button>
+      }
+    </div>
+
+  </div>
+}
