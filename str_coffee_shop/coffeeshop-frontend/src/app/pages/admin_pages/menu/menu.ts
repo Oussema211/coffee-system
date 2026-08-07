@@ -28,6 +28,10 @@ export class Menu implements OnInit {
   editingItem: MenuItem | null = null;
   form: FormGroup;
 
+  // File upload & preview state
+  selectedFile: File | null = null;
+  imagePreviewUrl: string | null = null;
+
   constructor(
     private fb: FormBuilder,
     private menuService: MenuService,
@@ -93,8 +97,29 @@ export class Menu implements OnInit {
     this.selectedCategory = cat;
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      this.selectedFile = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreviewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imagePreviewUrl = null;
+  }
+
   openAddModal(): void {
     this.editingItem = null;
+    this.selectedFile = null;
+    this.imagePreviewUrl = null;
     this.form.reset({
       name: '',
       category: this.formCategories[0] || '',
@@ -106,6 +131,8 @@ export class Menu implements OnInit {
 
   openEditModal(item: MenuItem): void {
     this.editingItem = item;
+    this.selectedFile = null;
+    this.imagePreviewUrl = item.imageUrl || null;
     this.form.reset({
       name: item.name,
       category: item.category,
@@ -118,6 +145,8 @@ export class Menu implements OnInit {
   closeModal(): void {
     this.showModal = false;
     this.editingItem = null;
+    this.selectedFile = null;
+    this.imagePreviewUrl = null;
   }
 
   saveItem(): void {
@@ -126,8 +155,34 @@ export class Menu implements OnInit {
       return;
     }
 
-    const value = this.form.value;
     this.isSaving = true;
+
+    if (this.selectedFile) {
+      // Upload picture first, then save item with uploaded image URL
+      this.menuService.uploadImage(this.selectedFile).subscribe({
+        next: (res) => {
+          this.executeSave(res.imageUrl);
+        },
+        error: (err) => {
+          console.error('Failed to upload image:', err);
+          this.isSaving = false;
+          alert('Failed to upload image. Please try again.');
+        }
+      });
+    } else {
+      // Use existing or empty image URL
+      const currentImageUrl = this.imagePreviewUrl && !this.imagePreviewUrl.startsWith('data:') 
+        ? this.imagePreviewUrl 
+        : (this.editingItem?.imageUrl || '');
+      this.executeSave(currentImageUrl);
+    }
+  }
+
+  private executeSave(imageUrl: string): void {
+    const value = {
+      ...this.form.value,
+      imageUrl: imageUrl || ''
+    };
 
     if (this.editingItem) {
       this.menuService.updateMenuItem(this.editingItem.id, value).subscribe({

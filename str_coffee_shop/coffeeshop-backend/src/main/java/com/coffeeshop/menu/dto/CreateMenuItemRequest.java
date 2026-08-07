@@ -25,4 +25,5 @@ public class CreateMenuItemRequest {
     private BigDecimal price;
 
     private Boolean available;
+    private String imageUrl;
 }

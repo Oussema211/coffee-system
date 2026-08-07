@@ -65,18 +65,36 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
       @for (item of filteredItems; track item.id) {
         <div class="bg-white rounded-2xl border border-cream-dark hover:border-caramel/30 hover:shadow-md transition duration-200 p-5 flex flex-col justify-between gap-4 group">
-          <!-- Top Row: Category & Status Badge -->
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-caramel-dark bg-caramel/10 px-2.5 py-1 rounded-lg">
+          
+          <!-- Item Picture Banner -->
+          <div class="relative w-full h-36 rounded-xl overflow-hidden bg-cream/40 border border-cream-dark/60 flex items-center justify-center">
+            @if (item.imageUrl) {
+              <img [src]="item.imageUrl" [alt]="item.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+            } @else {
+              <div class="flex flex-col items-center justify-center text-espresso/30 gap-1">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span class="text-[10px] uppercase font-semibold tracking-wider">No Image</span>
+              </div>
+            }
+
+            <!-- Category Badge overlay -->
+            <span class="absolute top-2.5 left-2.5 text-[10px] font-bold uppercase tracking-wider text-caramel-dark bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-cream-dark/80 shadow-xs">
               {{ item.category }}
             </span>
+          </div>
+
+          <!-- Status & Title Row -->
+          <div class="flex items-center justify-between pt-1">
+            <h3 class="font-display text-lg font-semibold text-espresso group-hover:text-caramel-dark transition duration-150 truncate">{{ item.name }}</h3>
 
             <button
               (click)="toggleAvailability(item)"
               [class]="item.available 
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60 hover:bg-emerald-100' 
                 : 'bg-stone-100 text-stone-500 border-stone-200 hover:bg-stone-200'"
-              class="text-xs font-medium px-2.5 py-1 rounded-lg border transition flex items-center gap-1.5 cursor-pointer"
+              class="text-xs font-medium px-2.5 py-1 rounded-lg border transition flex items-center gap-1.5 cursor-pointer shrink-0 ml-2"
               title="Click to toggle availability"
             >
               <span [class]="item.available ? 'bg-emerald-500' : 'bg-stone-400'" class="w-1.5 h-1.5 rounded-full"></span>
@@ -84,10 +102,9 @@
             </button>
           </div>
 
-          <!-- Item Details -->
+          <!-- Price -->
           <div>
-            <h3 class="font-display text-lg font-semibold text-espresso group-hover:text-caramel-dark transition duration-150">{{ item.name }}</h3>
-            <p class="text-xl font-bold text-espresso mt-1">{{ item.price | number:'1.2-2' }} TND</p>
+            <p class="text-xl font-bold text-espresso">{{ item.price | number:'1.2-2' }} TND</p>
           </div>
 
           <!-- Card Actions -->
@@ -136,7 +153,7 @@
 <!-- Modal Form Dialog -->
 @if (showModal) {
   <div class="fixed inset-0 bg-espresso/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-cream-dark relative">
+    <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-cream-dark relative max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-5 border-b border-cream-dark pb-4">
         <h2 class="font-display text-xl font-semibold text-espresso">
           {{ editingItem ? 'Edit Menu Item' : 'Add New Item' }}
@@ -160,6 +177,49 @@
           />
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
             <p class="text-xs text-red-500 mt-1">Item name is required.</p>
+          }
+        </div>
+
+        <!-- Item Picture Field -->
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-espresso-light/70 mb-1.5">Item Picture</label>
+          
+          @if (imagePreviewUrl) {
+            <div class="relative rounded-xl border border-cream-dark p-2 bg-cream/30 flex items-center gap-3">
+              <img [src]="imagePreviewUrl" alt="Preview" class="w-16 h-16 rounded-lg object-cover border border-cream-dark shrink-0" />
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-semibold text-espresso truncate">
+                  {{ selectedFile ? selectedFile.name : 'Current Image' }}
+                </p>
+                <p class="text-[11px] text-espresso-light/60">
+                  {{ selectedFile ? (selectedFile.size / 1024 | number:'1.0-1') + ' KB' : 'Image attached' }}
+                </p>
+              </div>
+              <div class="flex items-center gap-1">
+                <label class="p-1.5 rounded-lg text-xs font-medium text-espresso/70 hover:bg-cream hover:text-espresso transition cursor-pointer" title="Change Picture">
+                  <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" />
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                  </svg>
+                </label>
+                <button type="button" (click)="removeImage()" class="p-1.5 rounded-lg text-xs font-medium text-red-500 hover:bg-red-50 transition cursor-pointer" title="Remove Picture">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          } @else {
+            <label class="border-2 border-dashed border-cream-dark hover:border-caramel/50 bg-cream/20 hover:bg-cream/40 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition text-center group">
+              <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" />
+              <div class="w-10 h-10 rounded-full bg-cream flex items-center justify-center text-espresso/40 group-hover:text-caramel-dark mb-1.5 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <span class="text-xs font-semibold text-espresso">Choose Picture from PC</span>
+              <span class="text-[11px] text-espresso-light/60 mt-0.5">PNG, JPG, WEBP up to 5MB</span>
+            </label>
           }
         </div>
 

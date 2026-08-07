@@ -30,14 +30,19 @@
       @for (item of filteredItems; track item.id) {
         <button
           (click)="addToCart(item)"
-          class="bg-white rounded-3xl border-2 border-cream-dark p-6 text-left hover:border-caramel active:scale-95 transition flex flex-col justify-between gap-4 cursor-pointer min-h-[130px] shadow-xs group"
+          class="bg-white rounded-3xl border-2 border-cream-dark p-5 text-left hover:border-caramel active:scale-95 transition flex flex-col justify-between gap-3 cursor-pointer min-h-[140px] shadow-xs group relative overflow-hidden"
         >
-          <span class="text-xs font-bold uppercase tracking-wider text-caramel-dark bg-caramel/12 px-3 py-1 rounded-lg w-fit">
-            {{ item.category }}
-          </span>
+          <div class="flex items-start justify-between gap-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-caramel-dark bg-caramel/12 px-3 py-1 rounded-lg w-fit">
+              {{ item.category }}
+            </span>
+            @if (item.imageUrl) {
+              <img [src]="item.imageUrl" [alt]="item.name" class="w-12 h-12 rounded-2xl object-cover border border-cream-dark shadow-xs group-hover:scale-105 transition duration-200" />
+            }
+          </div>
           <div>
-            <h3 class="font-display text-lg md:text-xl font-bold text-espresso group-hover:text-caramel-dark transition-colors">{{ item.name }}</h3>
-            <p class="text-caramel-dark font-extrabold text-base md:text-lg mt-1">{{ item.price | number:'1.2-2' }} $</p>
+            <h3 class="font-display text-lg md:text-xl font-bold text-espresso group-hover:text-caramel-dark transition-colors truncate">{{ item.name }}</h3>
+            <p class="text-caramel-dark font-extrabold text-base md:text-lg mt-1">{{ item.price | number:'1.2-2' }} TND</p>
           </div>
         </button>
       }

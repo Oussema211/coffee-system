@@ -3,13 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-interface MenuItem {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  available: boolean;
-}
+import { MenuItem } from '../../../core/menu.service';
 
 interface CartLine {
   item: MenuItem;

@@ -8,6 +8,7 @@ export interface MenuItem {
   category: string;
   price: number;
   available: boolean;
+  imageUrl?: string;
 }
 
 export interface CreateMenuItemPayload {
@@ -15,6 +16,7 @@ export interface CreateMenuItemPayload {
   category: string;
   price: number;
   available?: boolean;
+  imageUrl?: string;
 }
 
 export interface UpdateMenuItemPayload {
@@ -22,6 +24,7 @@ export interface UpdateMenuItemPayload {
   category: string;
   price: number;
   available?: boolean;
+  imageUrl?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -36,6 +39,12 @@ export class MenuService {
 
   getMenuItemById(id: number): Observable<MenuItem> {
     return this.http.get<MenuItem>(`${this.baseUrl}/${id}`);
+  }
+
+  uploadImage(file: File): Observable<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ imageUrl: string }>(`${this.baseUrl}/upload-image`, formData);
   }
 
   createMenuItem(payload: CreateMenuItemPayload): Observable<MenuItem> {

@@ -43,6 +43,7 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .category(request.getCategory().trim())
                 .price(request.getPrice())
                 .available(request.getAvailable() != null ? request.getAvailable() : true)
+                .imageUrl(request.getImageUrl())
                 .build();
 
         MenuItem saved = menuItemRepository.save(item);
@@ -60,6 +61,7 @@ public class MenuItemServiceImpl implements MenuItemService {
         if (request.getAvailable() != null) {
             item.setAvailable(request.getAvailable());
         }
+        item.setImageUrl(request.getImageUrl());
 
         MenuItem updated = menuItemRepository.save(item);
         return mapToDTO(updated);
@@ -90,6 +92,7 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .category(item.getCategory())
                 .price(item.getPrice())
                 .available(item.isAvailable())
+                .imageUrl(item.getImageUrl())
                 .build();
     }
 }
