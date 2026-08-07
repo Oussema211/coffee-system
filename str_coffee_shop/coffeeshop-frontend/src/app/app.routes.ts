@@ -16,12 +16,16 @@ import { NewOrderComponent } from './pages/worker_pages/new-order/new-order';
 import { QrOrdersComponent } from './pages/worker_pages/qr-orders/qr-orders';
 import { TablesComponent } from './pages/worker_pages/tables/tables';
 
+import { authGuard } from './core/auth.guard';
+import { roleGuard } from './core/role.guard';
+
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   {
     path: 'admin',
     component: AdminLayoutComponent,
+    canActivate: [authGuard, roleGuard('ADMIN')],
     children: [
       { path: '', component: AdminDashboardComponent },
       { path: 'menu', component: Menu },
@@ -34,6 +38,7 @@ export const routes: Routes = [
   {
     path: 'worker',
     component: WorkerLayoutComponent,
+    canActivate: [authGuard, roleGuard('WORKER')],
     children: [
       { path: '', component: WorkerDashboardComponent },
       { path: 'active-orders', component: ActiveOrdersComponent },
