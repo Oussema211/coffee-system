@@ -87,7 +87,7 @@
           <!-- Item Details -->
           <div>
             <h3 class="font-display text-lg font-semibold text-espresso group-hover:text-caramel-dark transition duration-150">{{ item.name }}</h3>
-            <p class="text-xl font-bold text-espresso mt-1">${{ item.price | number:'1.2-2' }}</p>
+            <p class="text-xl font-bold text-espresso mt-1">{{ item.price | number:'1.2-2' }} TND</p>
           </div>
 
           <!-- Card Actions -->
@@ -178,7 +178,7 @@
 
         <!-- Price -->
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-espresso-light/70 mb-1.5">Price ($)</label>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-espresso-light/70 mb-1.5">Price (TND)</label>
           <input 
             type="number" 
             step="0.01" 
@@ -187,7 +187,7 @@
             class="w-full bg-cream/40 border border-cream-dark rounded-xl px-4 py-2.5 text-sm text-espresso outline-none focus:bg-white focus:border-caramel focus:ring-2 focus:ring-caramel/20 transition" 
           />
           @if (form.get('price')?.invalid && form.get('price')?.touched) {
-            <p class="text-xs text-red-500 mt-1">Please enter a valid price greater than $0.</p>
+            <p class="text-xs text-red-500 mt-1">Please enter a valid price greater than 0 TND.</p>
           }
         </div>
 
