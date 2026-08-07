@@ -2,15 +2,10 @@
 
   <!-- Menu side -->
   <div class="flex-1 min-w-0">
-    <!-- Header with Back Button -->
+    <!-- Page title -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
-        <div class="flex items-center gap-3 mb-1">
-          <a routerLink="/worker" class="inline-flex items-center gap-2 px-4 py-2 bg-cream-dark hover:bg-caramel/20 text-espresso rounded-xl font-bold text-sm transition active:scale-95">
-            ← Back to Menu
-          </a>
-          <h1 class="font-display text-3xl font-bold text-espresso">New Order (POS)</h1>
-        </div>
+        <h1 class="font-display text-3xl font-bold text-espresso mb-1">New Order <span class="text-caramel">POS</span></h1>
         <p class="text-espresso-light/70 text-base">Tap any menu item to add it to the cart.</p>
       </div>
     </div>
@@ -22,7 +17,7 @@
           (click)="activeCategory = cat"
           [class]="activeCategory === cat
             ? 'bg-espresso text-cream font-bold shadow-sm'
-            : 'bg-white text-espresso-light/80 border-2 border-cream-dark hover:bg-cream font-semibold'"
+            : 'bg-white text-espresso-light/80 border-2 border-cream-dark hover:bg-cream-dark font-semibold'"
           class="text-sm md:text-base px-6 py-3.5 rounded-2xl whitespace-nowrap active:scale-95 transition cursor-pointer min-h-[50px]"
         >
           {{ cat }}
@@ -37,12 +32,12 @@
           (click)="addToCart(item)"
           class="bg-white rounded-3xl border-2 border-cream-dark p-6 text-left hover:border-caramel active:scale-95 transition flex flex-col justify-between gap-4 cursor-pointer min-h-[130px] shadow-xs group"
         >
-          <span class="text-xs font-bold uppercase tracking-wider text-caramel-dark bg-caramel/15 px-3 py-1 rounded-lg w-fit">
+          <span class="text-xs font-bold uppercase tracking-wider text-caramel-dark bg-caramel/12 px-3 py-1 rounded-lg w-fit">
             {{ item.category }}
           </span>
           <div>
             <h3 class="font-display text-lg md:text-xl font-bold text-espresso group-hover:text-caramel-dark transition-colors">{{ item.name }}</h3>
-            <p class="text-espresso font-extrabold text-base md:text-lg mt-1">{{ item.price | number:'1.2-2' }} $</p>
+            <p class="text-caramel-dark font-extrabold text-base md:text-lg mt-1">{{ item.price | number:'1.2-2' }} $</p>
           </div>
         </button>
       }
@@ -59,10 +54,10 @@
   <div class="xl:w-105 shrink-0">
     <div class="bg-white rounded-3xl border-2 border-cream-dark p-6 sticky top-24 flex flex-col gap-6 shadow-sm">
 
-      <div class="flex items-center justify-between border-b border-cream-dark pb-4">
-        <h2 class="font-display text-2xl font-bold text-espresso">Current Order Cart</h2>
+      <div class="flex items-center justify-between border-b-2 border-cream-dark pb-4">
+        <h2 class="font-display text-2xl font-bold text-espresso">Current Order</h2>
         @if (cart.length > 0) {
-          <button (click)="clearCart()" class="text-sm font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+          <button (click)="clearCart()" class="text-sm font-bold text-espresso-light/70 hover:text-espresso bg-cream-dark hover:bg-espresso/10 px-3.5 py-1.5 rounded-xl transition cursor-pointer">
             Clear All
           </button>
         }
@@ -72,14 +67,14 @@
       <div class="grid grid-cols-2 gap-3">
         <button
           (click)="orderType = 'Dine-in'"
-          [class]="orderType === 'Dine-in' ? 'bg-espresso text-cream font-bold' : 'bg-cream text-espresso-light/70 font-semibold'"
+          [class]="orderType === 'Dine-in' ? 'bg-espresso text-cream font-bold shadow-inner' : 'bg-cream text-espresso-light/70 font-semibold border-2 border-cream-dark hover:bg-cream-dark'"
           class="text-base rounded-2xl py-3.5 active:scale-95 transition cursor-pointer min-h-[50px]"
         >
           🍽️ Dine-in
         </button>
         <button
           (click)="orderType = 'Takeaway'; selectedTable = null"
-          [class]="orderType === 'Takeaway' ? 'bg-espresso text-cream font-bold' : 'bg-cream text-espresso-light/70 font-semibold'"
+          [class]="orderType === 'Takeaway' ? 'bg-espresso text-cream font-bold shadow-inner' : 'bg-cream text-espresso-light/70 font-semibold border-2 border-cream-dark hover:bg-cream-dark'"
           class="text-base rounded-2xl py-3.5 active:scale-95 transition cursor-pointer min-h-[50px]"
         >
           🛍️ Takeaway
@@ -104,15 +99,15 @@
       <!-- Cart lines list -->
       <div class="flex flex-col gap-4 max-h-80 overflow-y-auto pr-1">
         @for (line of cart; track line.item.id) {
-          <div class="flex items-center justify-between gap-3 bg-cream/30 p-3.5 rounded-2xl border border-cream-dark/60">
+          <div class="flex items-center justify-between gap-3 bg-cream/50 p-3.5 rounded-2xl border border-cream-dark">
             <div class="min-w-0 flex-1">
               <p class="text-base text-espresso font-bold truncate">{{ line.item.name }}</p>
-              <p class="text-xs text-espresso-light/60 font-semibold">{{ line.item.price | number:'1.2-2' }} $ each</p>
+              <p class="text-xs text-caramel font-semibold">{{ line.item.price | number:'1.2-2' }} $ each</p>
             </div>
             <div class="flex items-center gap-3 shrink-0">
-              <button (click)="decrement(line)" class="w-10 h-10 rounded-xl bg-white border border-cream-dark text-espresso hover:bg-cream-dark text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer">−</button>
+              <button (click)="decrement(line)" class="w-10 h-10 rounded-xl bg-white border-2 border-cream-dark text-espresso hover:bg-cream-dark text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer">−</button>
               <span class="text-base font-bold text-espresso w-6 text-center">{{ line.qty }}</span>
-              <button (click)="increment(line)" class="w-10 h-10 rounded-xl bg-white border border-cream-dark text-espresso hover:bg-cream-dark text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer">+</button>
+              <button (click)="increment(line)" class="w-10 h-10 rounded-xl bg-espresso text-cream text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer hover:bg-espresso-light">+</button>
             </div>
           </div>
         }
@@ -132,7 +127,7 @@
       </div>
 
       @if (placedMessage) {
-        <div class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-base font-bold rounded-2xl px-5 py-4 flex items-center gap-3">
+        <div class="bg-caramel/10 text-caramel-dark border border-caramel/30 text-base font-bold rounded-2xl px-5 py-4 flex items-center gap-3">
           <span>✓</span> {{ placedMessage }}
         </div>
       }
@@ -140,18 +135,19 @@
       <button
         (click)="placeOrder()"
         [disabled]="!canPlaceOrder || placing"
-        class="w-full bg-emerald-600 text-white font-bold text-lg rounded-2xl py-4
-               transition hover:bg-emerald-700 active:scale-95 shadow-md shadow-emerald-600/20
+        class="w-full bg-espresso text-cream font-bold text-lg rounded-2xl py-4
+               transition hover:bg-espresso-light active:scale-95 shadow-md
                disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer min-h-[60px]
                flex items-center justify-center gap-3"
       >
         @if (placing) {
-          <span class="w-5 h-5 border-3 border-white/40 border-t-white rounded-full animate-spin"></span>
+          <span class="w-5 h-5 border-2 border-cream/40 border-t-cream rounded-full animate-spin"></span>
           Sending Order…
         } @else {
-          <span>Place Order Now</span>
+          ☕ Place Order Now
         }
       </button>
     </div>
   </div>
+
 </div>

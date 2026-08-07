@@ -38,8 +38,8 @@ export class WorkerDashboardComponent {
       subtitle: 'Tap to start a new dine-in or takeaway order',
       route: '/worker/new-order',
       badge: 'START HERE',
-      badgeColor: 'bg-emerald-500 text-white',
-      theme: 'card-primary'
+      badgeColor: 'bg-espresso text-cream',
+      theme: 'card-new-order'
     },
     {
       id: 'card-active-orders',
@@ -47,8 +47,8 @@ export class WorkerDashboardComponent {
       subtitle: 'View and manage orders currently in progress',
       route: '/worker/active-orders',
       badge: '3 IN PROGRESS',
-      badgeColor: 'bg-amber-500 text-white',
-      theme: 'card-amber'
+      badgeColor: 'bg-caramel text-white',
+      theme: 'card-active-orders'
     },
     {
       id: 'card-qr-orders',
@@ -56,8 +56,8 @@ export class WorkerDashboardComponent {
       subtitle: 'Review incoming customer mobile QR orders',
       route: '/worker/qr-orders',
       badge: '2 PENDING',
-      badgeColor: 'bg-rose-500 text-white',
-      theme: 'card-rose'
+      badgeColor: 'bg-caramel-dark text-cream',
+      theme: 'card-qr-orders'
     },
     {
       id: 'card-tables',
@@ -65,8 +65,8 @@ export class WorkerDashboardComponent {
       subtitle: 'Check floor tables, occupied seats and availability',
       route: '/worker/tables',
       badge: '5 FREE TABLES',
-      badgeColor: 'bg-blue-500 text-white',
-      theme: 'card-blue'
+      badgeColor: 'bg-sage text-cream',
+      theme: 'card-tables'
     }
   ];
 

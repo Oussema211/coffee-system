@@ -10,12 +10,12 @@
         <h1 class="font-display text-3xl md:text-4xl text-espresso font-bold">Welcome, {{ username || 'Worker' }} 👋</h1>
         <p class="text-espresso-light/70 text-base mt-1">
           @if (clockedIn) {
-            <span class="inline-flex items-center gap-2 text-emerald-700 font-semibold">
-              <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="inline-flex items-center gap-2 text-caramel-dark font-semibold">
+              <span class="w-3 h-3 rounded-full bg-caramel animate-pulse"></span>
               On shift since {{ shiftStart }}
             </span>
           } @else {
-            <span class="text-amber-700 font-semibold">Off the clock — please clock in before taking orders</span>
+            <span class="text-espresso-light/60 font-semibold">Off the clock — please clock in before taking orders</span>
           }
         </p>
       </div>
@@ -25,13 +25,13 @@
     <button
       (click)="toggleClock()"
       [class]="clockedIn
-        ? 'bg-rose-100 hover:bg-rose-200 text-rose-800 border-2 border-rose-300'
-        : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/30 border-2 border-emerald-500'"
+        ? 'bg-cream-dark hover:bg-espresso/10 text-espresso-light border-2 border-espresso/20'
+        : 'bg-espresso hover:bg-espresso-light text-cream border-2 border-espresso shadow-lg'"
       class="py-4 px-8 rounded-2xl text-lg font-bold transition active:scale-95 flex items-center justify-center gap-3 shrink-0 cursor-pointer min-h-[64px]"
       id="btn-clock-toggle"
     >
       <span
-        [class]="clockedIn ? 'bg-rose-500' : 'bg-white'"
+        [class]="clockedIn ? 'bg-caramel' : 'bg-caramel'"
         class="w-3.5 h-3.5 rounded-full"
       ></span>
       <span>{{ clockedIn ? 'Clock Out' : 'Clock In Now' }}</span>
@@ -40,8 +40,8 @@
 
   <!-- Big Tactile Page Cards Grid -->
   <div class="mb-6">
-    <h2 class="text-xl font-bold text-espresso uppercase tracking-wider text-espresso/70 mb-4 px-1">
-      Select Action (Tap any card to open page)
+    <h2 class="text-sm font-bold text-espresso uppercase tracking-widest text-espresso/60 mb-4 px-1">
+      Select Action — Tap a card to open
     </h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -49,15 +49,15 @@
         <a
           [routerLink]="card.route"
           [id]="card.id"
-          class="touch-card-item rounded-3xl p-7 md:p-8 flex flex-col justify-between transition-all duration-200 active:scale-95 cursor-pointer relative overflow-hidden group border-3 shadow-sm hover:shadow-md min-h-[180px]"
+          class="touch-card-item rounded-3xl p-7 md:p-8 flex flex-col justify-between transition-all duration-200 active:scale-95 cursor-pointer relative overflow-hidden group border-2 shadow-sm hover:shadow-md min-h-[180px]"
           [ngClass]="card.theme"
         >
           <!-- Badge Header -->
           <div class="flex items-center justify-between mb-4">
-            <span class="text-xs md:text-sm font-extrabold uppercase tracking-widest px-3.5 py-1.5 rounded-full shadow-xs" [ngClass]="card.badgeColor">
+            <span class="text-xs md:text-sm font-extrabold uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-espresso/10 text-espresso-light shadow-xs" [ngClass]="card.badgeColor">
               {{ card.badge }}
             </span>
-            <div class="w-12 h-12 rounded-2xl bg-white/80 backdrop-blur-xs flex items-center justify-center text-espresso text-2xl font-bold group-hover:scale-110 transition-transform shadow-xs">
+            <div class="w-12 h-12 rounded-2xl bg-espresso/8 border border-espresso/10 backdrop-blur-xs flex items-center justify-center text-espresso text-2xl font-bold group-hover:scale-110 transition-transform shadow-xs">
               @if (card.id === 'card-new-order') { 🛒 }
               @else if (card.id === 'card-active-orders') { 📋 }
               @else if (card.id === 'card-qr-orders') { 📱 }
@@ -71,7 +71,7 @@
               <span>{{ card.title }}</span>
               <span class="text-caramel font-sans text-2xl group-hover:translate-x-2 transition-transform">→</span>
             </h3>
-            <p class="text-espresso-light/80 text-base font-medium leading-snug">
+            <p class="text-espresso-light/70 text-base font-medium leading-snug">
               {{ card.subtitle }}
             </p>
           </div>
@@ -89,6 +89,7 @@
           <p class="font-display text-3xl font-bold text-espresso">{{ stat.value }}</p>
           <p class="text-xs text-espresso-light/60 mt-0.5">{{ stat.sub }}</p>
         </div>
+        <div class="w-10 h-10 rounded-xl bg-caramel/10 flex items-center justify-center text-caramel text-lg">☕</div>
       </div>
     }
   </div>

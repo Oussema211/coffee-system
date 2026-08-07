@@ -55,9 +55,9 @@ export class TablesComponent {
   statusClasses(status: TableInfo['status']): string {
     switch (status) {
       case 'Available': return 'bg-sage/15 text-sage';
-      case 'Occupied': return 'bg-caramel/15 text-caramel-dark';
-      case 'Reserved': return 'bg-blue-50 text-blue-500';
-      case 'Cleaning': return 'bg-red-50 text-red-500';
+      case 'Occupied': return 'bg-caramel/20 text-caramel-dark';
+      case 'Reserved': return 'bg-espresso/10 text-espresso-light';
+      case 'Cleaning': return 'bg-espresso/6 text-espresso-light/70';
     }
   }
 

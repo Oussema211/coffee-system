@@ -13,12 +13,13 @@
   justify-content: space-between;
   height: 4.5rem;
   padding: 0 1.5rem;
-  background: #2B1B14; /* espresso */
+  background: #2B1B14; /* espresso — matches admin sidebar */
   color: #F7EFE3;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 12px rgba(43, 27, 20, 0.35);
   position: sticky;
   top: 0;
   z-index: 50;
+  border-bottom: 1px solid rgba(201, 133, 43, 0.12);
 }
 
 .topbar-left {
@@ -38,7 +39,7 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
-  border: 2px solid #C9852B;
+  border: 1.5px solid #C9852B;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,15 +51,17 @@
 
 .brand-title {
   font-family: var(--font-display, serif);
-  font-size: 1.25rem;
+  font-size: 1.0625rem;
   font-weight: 700;
   color: #F7EFE3;
   line-height: 1.1;
+  letter-spacing: 0.02em;
 }
 
 .brand-subtitle {
-  font-size: 0.75rem;
-  color: rgba(247, 239, 227, 0.5);
+  font-size: 0.6875rem;
+  color: rgba(247, 239, 227, 0.4);
+  letter-spacing: 0.01em;
 }
 
 /* ── Giant Tactile Back Button ───────────────────────────────── */
@@ -68,21 +71,21 @@
   gap: 0.75rem;
   padding: 0.75rem 1.5rem;
   min-height: 3.25rem;
-  background-color: #C9852B; /* caramel */
-  color: #FFFFFF;
-  font-size: 1.125rem;
+  background-color: rgba(201, 133, 43, 0.18); /* caramel tinted — matches nav-active */
+  color: #C9852B;
+  font-size: 1rem;
   font-weight: 700;
-  border-radius: 1rem;
-  border: none;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(201, 133, 43, 0.3);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(201, 133, 43, 0.35);
-  transition: transform 0.1s ease, background-color 0.15s ease;
+  transition: background-color 0.15s ease, transform 0.1s ease;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
 .back-btn:hover {
-  background-color: #b07221;
+  background-color: rgba(201, 133, 43, 0.28);
+  color: #e09830;
 }
 
 .back-btn:active {
@@ -96,55 +99,75 @@
   gap: 1rem;
 }
 
+/* Worker badge — mirrors admin sidebar-user style */
 .worker-badge {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  padding: 0.375rem 0.875rem;
-  background: rgba(247, 239, 227, 0.08);
-  border-radius: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  background: rgba(247, 239, 227, 0.07);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(247, 239, 227, 0.08);
 }
 
+/* Avatar — caramel like admin user-avatar */
 .worker-avatar-badge {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: rgba(107, 122, 94, 0.4);
-  color: #8CA07B;
-  font-size: 0.875rem;
+  background: rgba(201, 133, 43, 0.2);
+  color: #C9852B;
+  font-size: 0.8125rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .worker-name {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 500;
   color: #F7EFE3;
+  white-space: nowrap;
 }
 
+.worker-role {
+  font-size: 0.6875rem;
+  color: rgba(247, 239, 227, 0.4);
+}
+
+/* Logout button — mirrors admin logout-btn */
 .topbar-logout-btn {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  min-height: 2.75rem;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  background: rgba(239, 68, 68, 0.1);
-  color: #FCA5A5;
+  padding: 0.5rem 0.875rem;
+  min-height: 2.5rem;
+  border-radius: 0.625rem;
+  border: none;
+  background: transparent;
+  color: rgba(247, 239, 227, 0.45);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.16s ease, color 0.16s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .topbar-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #FFFFFF;
+  background: rgba(247, 239, 227, 0.08);
+  color: #F7EFE3;
 }
 
 .topbar-logout-btn:active {
   transform: scale(0.95);
+}
+
+.topbar-logout-btn svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
 }
 
 /* ── Main content area ───────────────────────────────────────── */
