@@ -1,62 +1,61 @@
-/* ── Worker Dashboard — Tactile POS Screen ─────────────────── */
+/* ── Worker Dashboard — Light & Warm Coffee Touch Cards ─────────────────── */
 
-/* Touch card base */
 .touch-card-item {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ── Coffee-palette action cards ─────────────────────────────── */
+/* ── Warm Coffee-palette action cards (Light, clear & elegant) ─────────────────── */
 
-/* New Order — caramel/espresso warm */
+/* New Order — Warm Caramel Cream */
 .card-new-order {
-  background: linear-gradient(135deg, #FFFDF9 0%, #FDF5E6 100%);
-  border-color: #E8C88A;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FDF8F0 100%);
+  border-color: #E8D5B7;
 }
 .card-new-order:hover {
   border-color: #C9852B;
-  box-shadow: 0 6px 20px rgba(201, 133, 43, 0.18);
+  box-shadow: 0 8px 24px rgba(201, 133, 43, 0.15);
 }
 
-/* Active Orders — espresso mocha dark */
+/* Active Orders — Warm Mocha Latte */
 .card-active-orders {
-  background: linear-gradient(135deg, #FAF4EE 0%, #F2E8D8 100%);
-  border-color: #D4B58A;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF3E8 100%);
+  border-color: #E0CBAE;
 }
 .card-active-orders:hover {
   border-color: #A8691E;
-  box-shadow: 0 6px 20px rgba(168, 105, 30, 0.18);
+  box-shadow: 0 8px 24px rgba(168, 105, 30, 0.15);
 }
 
-/* QR Orders — soft latte */
+/* QR Orders — Soft Espresso Latte */
 .card-qr-orders {
-  background: linear-gradient(135deg, #F9F5F0 0%, #EDE1CC 100%);
-  border-color: #C9A87A;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F7EFE3 100%);
+  border-color: #D9C4A9;
 }
 .card-qr-orders:hover {
   border-color: #8A6340;
-  box-shadow: 0 6px 20px rgba(138, 99, 64, 0.18);
+  box-shadow: 0 8px 24px rgba(138, 99, 64, 0.15);
 }
 
-/* Tables — sage/cream neutral */
+/* Tables — Warm Sage Cream */
 .card-tables {
-  background: linear-gradient(135deg, #F7EFE3 0%, #EBE0CE 100%);
-  border-color: #BDB09A;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F4F6F1 100%);
+  border-color: #C7D1C0;
 }
 .card-tables:hover {
   border-color: #6B7A5E;
-  box-shadow: 0 6px 20px rgba(107, 122, 94, 0.18);
+  box-shadow: 0 8px 24px rgba(107, 122, 94, 0.15);
 }
 
-/* Legacy aliases kept for backward-compat (map old Tailwind colours) */
-.card-primary   { background: linear-gradient(135deg, #FFFDF9 0%, #FDF5E6 100%); border-color: #E8C88A; }
+/* Legacy aliases */
+.card-primary   { background: linear-gradient(135deg, #FFFFFF 0%, #FDF8F0 100%); border-color: #E8D5B7; }
 .card-primary:hover { border-color: #C9852B; }
 
-.card-amber     { background: linear-gradient(135deg, #FAF4EE 0%, #F2E8D8 100%); border-color: #D4B58A; }
+.card-amber     { background: linear-gradient(135deg, #FFFFFF 0%, #FAF3E8 100%); border-color: #E0CBAE; }
 .card-amber:hover { border-color: #A8691E; }
 
-.card-rose      { background: linear-gradient(135deg, #F9F5F0 0%, #EDE1CC 100%); border-color: #C9A87A; }
+.card-rose      { background: linear-gradient(135deg, #FFFFFF 0%, #F7EFE3 100%); border-color: #D9C4A9; }
 .card-rose:hover { border-color: #8A6340; }
 
-.card-blue      { background: linear-gradient(135deg, #F7EFE3 0%, #EBE0CE 100%); border-color: #BDB09A; }
+.card-blue      { background: linear-gradient(135deg, #FFFFFF 0%, #F4F6F1 100%); border-color: #C7D1C0; }
 .card-blue:hover { border-color: #6B7A5E; }

@@ -1,1 +1,13 @@
-/* admin-dashboard overview page — no extra styles needed, uses global design tokens */
+/* ── Admin Dashboard — Lighter Warm Cards ─────────────────── */
+
+.admin-card {
+  background: #FFFFFF;
+  border: 1px solid #EDE1CC;
+  border-radius: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-card:hover {
+  border-color: rgba(201, 133, 43, 0.4);
+  box-shadow: 0 4px 16px rgba(43, 27, 20, 0.06);
+}
