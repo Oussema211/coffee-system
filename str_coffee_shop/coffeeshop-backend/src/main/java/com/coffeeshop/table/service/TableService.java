@@ -9,4 +9,5 @@ public interface TableService {
     List<TableDTO> getAllTables();
     TableDTO createTable(CreateTableRequest request);
     void deleteTable(Long id);
+    TableDTO updateTableStatus(Long id, String status);
 }

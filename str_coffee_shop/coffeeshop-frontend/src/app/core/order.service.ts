@@ -53,6 +53,10 @@ export class OrderService {
     return this.http.get<OrderDTO[]>(this.baseUrl);
   }
 
+  getAllOrders(): Observable<OrderDTO[]> {
+    return this.http.get<OrderDTO[]>(`${this.baseUrl}/all`);
+  }
+
   updateOrderStatus(orderId: number, status: string): Observable<OrderDTO> {
     return this.http.patch<OrderDTO>(`${this.baseUrl}/${orderId}/status`, { status });
   }

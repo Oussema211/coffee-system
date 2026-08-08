@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { OrderItemDTO } from './order.service';
 
 export interface TableItem {
   id: number;
   number: number;
   seats: number;
   status: string;
+  activeOrderId?: number | null;
+  since?: string;
+  orderItems?: OrderItemDTO[];
 }
 
 export interface CreateTablePayload {
@@ -36,8 +40,14 @@ export class TableService {
     return this.http.delete<void>(`${this.adminUrl}/${id}`);
   }
 
-  /** Worker — list all tables (read-only) */
+  /** Worker — list all tables */
   getWorkerTables(): Observable<TableItem[]> {
     return this.http.get<TableItem[]>(this.workerUrl);
   }
+
+  /** Worker — update table status */
+  updateTableStatus(id: number, status: string): Observable<TableItem> {
+    return this.http.patch<TableItem>(`${this.workerUrl}/${id}/status`, { status });
+  }
 }
+

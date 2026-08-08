@@ -46,10 +46,24 @@ public class TableController {
         }
     }
 
-    // ── Worker endpoint (read-only) ───────────────────────────────────────────────
+    // ── Worker endpoints ─────────────────────────────────────────────────────────
 
     @GetMapping("/api/worker/tables")
     public ResponseEntity<List<TableDTO>> getAllTablesWorker() {
         return ResponseEntity.ok(tableService.getAllTables());
+    }
+
+    @PatchMapping("/api/worker/tables/{id}/status")
+    public ResponseEntity<?> updateTableStatusWorker(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            String status = body.get("status");
+            if (status == null || status.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Status is required"));
+            }
+            TableDTO updated = tableService.updateTableStatus(id, status);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        }
     }
 }

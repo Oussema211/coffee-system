@@ -1,4 +1,4 @@
-/* ── Worker shell layout ─────────────────────────────────────── */
+/* ── Worker shell layout ───────────────────────────────────────── */
 .worker-shell {
   display: flex;
   flex-direction: column;
@@ -35,18 +35,13 @@
   gap: 0.75rem;
 }
 
-.brand-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
+.brand-logo-topbar {
+  width: 3.25rem;
+  height: 3.25rem;
   border-radius: 50%;
-  border: 1.5px solid #C9852B;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #C9852B;
-  font-family: var(--font-display, serif);
-  font-size: 1.25rem;
-  font-weight: bold;
+  object-fit: cover;
+  border: 2px solid rgba(201, 133, 43, 0.6);
+  flex-shrink: 0;
 }
 
 .brand-title {
@@ -60,7 +55,7 @@
 
 .brand-subtitle {
   font-size: 0.6875rem;
-  color: rgba(247, 239, 227, 0.4);
+  color: rgba(247, 239, 227, 0.5);
   letter-spacing: 0.01em;
 }
 
@@ -71,7 +66,7 @@
   gap: 0.75rem;
   padding: 0.75rem 1.5rem;
   min-height: 3.25rem;
-  background-color: rgba(201, 133, 43, 0.18); /* caramel tinted — matches nav-active */
+  background-color: rgba(201, 133, 43, 0.18);
   color: #C9852B;
   font-size: 1rem;
   font-weight: 700;
@@ -99,7 +94,7 @@
   gap: 1rem;
 }
 
-/* Worker badge — mirrors admin sidebar-user style */
+/* Worker badge */
 .worker-badge {
   display: flex;
   align-items: center;
@@ -110,7 +105,7 @@
   border: 1px solid rgba(247, 239, 227, 0.08);
 }
 
-/* Avatar — caramel like admin user-avatar */
+/* Avatar */
 .worker-avatar-badge {
   width: 2rem;
   height: 2rem;
@@ -137,7 +132,7 @@
   color: rgba(247, 239, 227, 0.4);
 }
 
-/* Logout button — mirrors admin logout-btn */
+/* Logout button */
 .topbar-logout-btn {
   flex-shrink: 0;
   display: flex;

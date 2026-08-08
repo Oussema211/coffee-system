@@ -28,9 +28,9 @@ export class WorkerDashboardComponent implements OnInit {
   shiftStart: string | null = '08:30 AM';
 
   stats = [
-    { label: 'Orders served', value: '18', sub: 'this shift' },
-    { label: 'Tables active', value: '3', sub: 'of 0 tables' },
-    { label: 'QR orders pending', value: '2', sub: 'need attention' },
+    { label: 'Orders served', value: '0', sub: 'this shift' },
+    { label: 'Tables active', value: '0', sub: 'of 0 tables' },
+    { label: 'QR orders pending', value: '0', sub: 'need attention' },
   ];
 
   touchCards: TouchCard[] = [
@@ -48,7 +48,7 @@ export class WorkerDashboardComponent implements OnInit {
       title: 'Active Orders',
       subtitle: 'View and manage orders currently in progress',
       route: '/worker/active-orders',
-      badge: '3 IN PROGRESS',
+      badge: '0 IN PROGRESS',
       badgeColor: 'bg-caramel text-white',
       theme: 'card-active-orders'
     },
@@ -57,7 +57,7 @@ export class WorkerDashboardComponent implements OnInit {
       title: 'QR Customer Orders',
       subtitle: 'Review incoming customer mobile QR orders',
       route: '/worker/qr-orders',
-      badge: '2 PENDING',
+      badge: '0 PENDING',
       badgeColor: 'bg-caramel-dark text-cream',
       theme: 'card-qr-orders'
     },
@@ -84,10 +84,12 @@ export class WorkerDashboardComponent implements OnInit {
     this.tableService.getWorkerTables().subscribe({
       next: (tables) => {
         const total = tables.length;
+        const active = tables.filter(t => t.status === 'Occupied').length;
         const free = tables.filter(t => t.status === 'Available').length;
 
         const tableStat = this.stats.find(s => s.label === 'Tables active');
         if (tableStat) {
+          tableStat.value = String(active);
           tableStat.sub = `of ${total} table${total === 1 ? '' : 's'}`;
         }
 
@@ -99,15 +101,38 @@ export class WorkerDashboardComponent implements OnInit {
       error: () => {}
     });
 
-    this.orderService.getActiveOrders().subscribe({
-      next: (orders) => {
-        const inProgress = orders.filter(
+    this.orderService.getAllOrders().subscribe({
+      next: (allOrders) => {
+        const inProgress = allOrders.filter(
           o => o.status === 'Preparing' || o.status === 'Ready'
         ).length;
+
+        const qrPending = allOrders.filter(
+          o => o.type === 'QR' && (o.status === 'Preparing' || o.status === 'Ready')
+        ).length;
+
+        const served = allOrders.filter(
+          o => o.status === 'Served' || o.status === 'Completed'
+        ).length;
+
+        const servedStat = this.stats.find(s => s.label === 'Orders served');
+        if (servedStat) {
+          servedStat.value = String(served);
+        }
+
+        const qrStat = this.stats.find(s => s.label === 'QR orders pending');
+        if (qrStat) {
+          qrStat.value = String(qrPending);
+        }
 
         const activeCard = this.touchCards.find(c => c.id === 'card-active-orders');
         if (activeCard) {
           activeCard.badge = `${inProgress} IN PROGRESS`;
+        }
+
+        const qrCard = this.touchCards.find(c => c.id === 'card-qr-orders');
+        if (qrCard) {
+          qrCard.badge = `${qrPending} PENDING`;
         }
       },
       error: () => {}

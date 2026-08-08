@@ -6,6 +6,7 @@ import com.coffeeshop.order.dto.*;
 import com.coffeeshop.order.entity.Order;
 import com.coffeeshop.order.entity.OrderItem;
 import com.coffeeshop.order.repository.OrderRepository;
+import com.coffeeshop.table.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,26 +23,48 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
+    private final RestaurantTableRepository tableRepository;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
 
     @Transactional
     public OrderDTO createOrder(CreateOrderRequest request) {
-        Order order = Order.builder()
-                .orderType(request.getOrderType())
-                .tableNumber("Dine-in".equalsIgnoreCase(request.getOrderType()) ? request.getTableNumber() : null)
-                .status("Preparing")
-                .totalAmount(BigDecimal.ZERO)
-                .items(new ArrayList<>())
-                .build();
+        Integer tableNum = "Dine-in".equalsIgnoreCase(request.getOrderType()) ? request.getTableNumber() : null;
 
-        BigDecimal total = BigDecimal.ZERO;
+        Order order;
+        boolean isExisting = false;
+
+        if (tableNum != null) {
+            List<Order> existingActive = orderRepository.findByTableNumberAndStatusNot(tableNum, "Completed");
+            if (!existingActive.isEmpty()) {
+                order = existingActive.get(0);
+                isExisting = true;
+            } else {
+                order = Order.builder()
+                        .orderType(request.getOrderType())
+                        .tableNumber(tableNum)
+                        .status("Preparing")
+                        .totalAmount(BigDecimal.ZERO)
+                        .items(new ArrayList<>())
+                        .build();
+            }
+        } else {
+            order = Order.builder()
+                    .orderType(request.getOrderType())
+                    .tableNumber(null)
+                    .status("Preparing")
+                    .totalAmount(BigDecimal.ZERO)
+                    .items(new ArrayList<>())
+                    .build();
+        }
+
+        BigDecimal additionalTotal = BigDecimal.ZERO;
 
         for (CreateOrderItemRequest itemReq : request.getItems()) {
             MenuItem menuItem = menuItemRepository.findById(itemReq.getMenuItemId())
                     .orElseThrow(() -> new IllegalArgumentException("Menu item not found with id: " + itemReq.getMenuItemId()));
 
             BigDecimal lineTotal = menuItem.getPrice().multiply(BigDecimal.valueOf(itemReq.getQuantity()));
-            total = total.add(lineTotal);
+            additionalTotal = additionalTotal.add(lineTotal);
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
@@ -55,14 +78,36 @@ public class OrderService {
             order.getItems().add(orderItem);
         }
 
-        order.setTotalAmount(total);
+        order.setTotalAmount(order.getTotalAmount().add(additionalTotal));
+        if (isExisting && "Served".equalsIgnoreCase(order.getStatus())) {
+            order.setStatus("Preparing");
+        }
+
         Order savedOrder = orderRepository.save(order);
+
+        if (savedOrder.getTableNumber() != null) {
+            tableRepository.findByNumber(savedOrder.getTableNumber()).ifPresent(t -> {
+                if ("Available".equalsIgnoreCase(t.getStatus()) || "Cleaning".equalsIgnoreCase(t.getStatus())) {
+                    t.setStatus("Occupied");
+                    tableRepository.save(t);
+                }
+            });
+        }
+
         return mapToDTO(savedOrder);
     }
 
     @Transactional(readOnly = true)
     public List<OrderDTO> getActiveOrders() {
         return orderRepository.findByStatusNotOrderByCreatedAtDesc("Completed")
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getAllOrders() {
+        return orderRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
@@ -79,28 +124,51 @@ public class OrderService {
 
     @Transactional
     public OrderDTO payOrder(Long orderId, PaymentRequest paymentRequest) {
-        Order order = orderRepository.findById(orderId)
+        Order targetOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + orderId));
 
+        List<Order> ordersToPay = new ArrayList<>();
+        if (targetOrder.getTableNumber() != null) {
+            ordersToPay = orderRepository.findByTableNumberAndStatusNot(targetOrder.getTableNumber(), "Completed");
+        }
+        if (ordersToPay.isEmpty()) {
+            ordersToPay.add(targetOrder);
+        }
+
         if ("full".equalsIgnoreCase(paymentRequest.getPaymentType())) {
-            for (OrderItem item : order.getItems()) {
-                item.setPaid(true);
-            }
-            order.setStatus("Completed");
-        } else if ("split".equalsIgnoreCase(paymentRequest.getPaymentType()) && paymentRequest.getItemIds() != null) {
-            for (OrderItem item : order.getItems()) {
-                if (paymentRequest.getItemIds().contains(item.getId())) {
+            for (Order o : ordersToPay) {
+                for (OrderItem item : o.getItems()) {
                     item.setPaid(true);
                 }
+                o.setStatus("Completed");
+                orderRepository.save(o);
             }
-            boolean allPaid = order.getItems().stream().allMatch(OrderItem::isPaid);
-            if (allPaid) {
-                order.setStatus("Completed");
+        } else if ("split".equalsIgnoreCase(paymentRequest.getPaymentType()) && paymentRequest.getItemIds() != null) {
+            for (Order o : ordersToPay) {
+                for (OrderItem item : o.getItems()) {
+                    if (paymentRequest.getItemIds().contains(item.getId())) {
+                        item.setPaid(true);
+                    }
+                }
+                boolean allPaid = o.getItems().stream().allMatch(OrderItem::isPaid);
+                if (allPaid) {
+                    o.setStatus("Completed");
+                }
+                orderRepository.save(o);
             }
         }
 
-        Order saved = orderRepository.save(order);
-        return mapToDTO(saved);
+        if (targetOrder.getTableNumber() != null) {
+            List<Order> remainingActive = orderRepository.findByTableNumberAndStatusNot(targetOrder.getTableNumber(), "Completed");
+            if (remainingActive.isEmpty()) {
+                tableRepository.findByNumber(targetOrder.getTableNumber()).ifPresent(t -> {
+                    t.setStatus("Cleaning");
+                    tableRepository.save(t);
+                });
+            }
+        }
+
+        return mapToDTO(targetOrder);
     }
 
     private OrderDTO mapToDTO(Order order) {
@@ -134,3 +202,4 @@ public class OrderService {
                 .build();
     }
 }
+

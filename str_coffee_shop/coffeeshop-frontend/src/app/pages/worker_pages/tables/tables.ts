@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TableService } from '../../../core/table.service';
+import { OrderService } from '../../../core/order.service';
 
 export interface OrderItem {
   id: number;
@@ -20,6 +21,7 @@ interface TableInfo {
   seats: number;
   status: 'Available' | 'Occupied' | 'Reserved' | 'Cleaning';
   since?: string;
+  activeOrderId?: number;
   orderItems: OrderItem[];
 }
 
@@ -45,9 +47,17 @@ export class TablesComponent implements OnInit {
   paymentSuccess = false;
   paymentSuccessMessage = '';
 
-  constructor(private router: Router, private tableService: TableService) {}
+  constructor(
+    private router: Router,
+    private tableService: TableService,
+    private orderService: OrderService
+  ) {}
 
   ngOnInit(): void {
+    this.loadTables();
+  }
+
+  loadTables(): void {
     this.tableService.getWorkerTables().subscribe({
       next: (data) => {
         this.tables = data.map(t => ({
@@ -55,7 +65,16 @@ export class TablesComponent implements OnInit {
           number: t.number,
           seats: t.seats,
           status: (t.status as TableInfo['status']) || 'Available',
-          orderItems: []
+          since: t.since,
+          activeOrderId: t.activeOrderId ?? undefined,
+          orderItems: (t.orderItems || []).map(item => ({
+            id: item.id!,
+            name: item.name,
+            price: item.price,
+            qty: item.qty,
+            paid: item.paid,
+            selected: false
+          }))
         }));
         this.tablesLoading = false;
       },
@@ -154,56 +173,85 @@ export class TablesComponent implements OnInit {
   confirmFullPayment(): void {
     if (!this.canConfirm || !this.activePaymentTable) return;
     const table = this.activePaymentTable;
-    // Mark all items paid
-    table.orderItems.forEach(i => (i.paid = true));
-    this.flashSuccess(`Table ${table.number} fully paid. Change: ${this.change.toFixed(2)} TND`);
-    this.closePayment();
-    table.status = 'Cleaning';
-    table.since = undefined;
+    const changeAmt = this.change;
+
+    if (!table.activeOrderId) {
+      table.orderItems.forEach(i => (i.paid = true));
+      this.flashSuccess(`Table ${table.number} fully paid. Change: ${changeAmt.toFixed(2)} TND`);
+      this.closePayment();
+      table.status = 'Cleaning';
+      table.since = undefined;
+      return;
+    }
+
+    this.orderService.payOrder(table.activeOrderId, { paymentType: 'full' }).subscribe({
+      next: () => {
+        this.flashSuccess(`Table ${table.number} fully paid. Change: ${changeAmt.toFixed(2)} TND`);
+        this.closePayment();
+        this.loadTables();
+      },
+      error: (err) => {
+        alert('Payment failed: ' + (err.error?.message || 'Server error'));
+      }
+    });
   }
 
   confirmSplitPayment(): void {
     if (!this.canConfirm || !this.activePaymentTable) return;
     const table = this.activePaymentTable;
-    const selectedItems = table.orderItems.filter(i => i.selected && !i.paid);
-    selectedItems.forEach(i => {
-      i.paid = true;
-      i.selected = false;
-    });
-
     const changeAmt = this.change;
-    // If everything is now paid, clear the table
-    const allPaid = table.orderItems.every(i => i.paid);
-    if (allPaid) {
-      this.flashSuccess(`All items paid. Change: ${changeAmt.toFixed(2)} TND. Table cleared!`);
-      this.closePayment();
-      table.status = 'Cleaning';
-      table.since = undefined;
-    } else {
-      this.flashSuccess(`Partial payment confirmed. Change: ${changeAmt.toFixed(2)} TND`);
-      // Reset for next person
-      this.amountGiven = null;
+    const selectedItemIds = table.orderItems.filter(i => i.selected && !i.paid).map(i => i.id);
+
+    if (!table.activeOrderId) {
+      table.orderItems.filter(i => i.selected && !i.paid).forEach(i => {
+        i.paid = true;
+        i.selected = false;
+      });
+      const allPaid = table.orderItems.every(i => i.paid);
+      if (allPaid) {
+        this.flashSuccess(`All items paid. Change: ${changeAmt.toFixed(2)} TND. Table cleared!`);
+        this.closePayment();
+        table.status = 'Cleaning';
+        table.since = undefined;
+      } else {
+        this.flashSuccess(`Partial payment confirmed. Change: ${changeAmt.toFixed(2)} TND`);
+        this.amountGiven = null;
+      }
+      return;
     }
+
+    this.orderService.payOrder(table.activeOrderId, { paymentType: 'split', itemIds: selectedItemIds }).subscribe({
+      next: (updatedOrder) => {
+        const allPaid = updatedOrder.status === 'Completed';
+        if (allPaid) {
+          this.flashSuccess(`All items paid. Change: ${changeAmt.toFixed(2)} TND. Table cleared!`);
+          this.closePayment();
+        } else {
+          this.flashSuccess(`Partial payment confirmed. Change: ${changeAmt.toFixed(2)} TND`);
+          this.amountGiven = null;
+        }
+        this.loadTables();
+      },
+      error: (err) => {
+        alert('Split payment failed: ' + (err.error?.message || 'Server error'));
+      }
+    });
   }
 
   setQuickAmount(amount: number): void {
     this.amountGiven = amount;
   }
 
-  // ── Table status cycling ─────────────────────────────────────────────────────
-  cycleStatus(table: TableInfo): void {
-    if (table.status === 'Reserved') return;
-    const order: TableInfo['status'][] = ['Available', 'Occupied', 'Cleaning'];
-    const idx = order.indexOf(table.status);
-    table.status = order[(idx + 1) % order.length];
-    table.since = table.status === 'Occupied'
-      ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      : undefined;
-  }
-
-  seatReserved(table: TableInfo): void {
-    table.status = 'Occupied';
-    table.since = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  // ── Table status actions ──────────────────────────────────────────────────────
+  updateStatus(table: TableInfo, newStatus: TableInfo['status']): void {
+    this.tableService.updateTableStatus(table.id, newStatus).subscribe({
+      next: () => {
+        this.loadTables();
+      },
+      error: (err) => {
+        console.error('Failed to update table status', err);
+      }
+    });
   }
 
   startOrder(table: TableInfo): void {

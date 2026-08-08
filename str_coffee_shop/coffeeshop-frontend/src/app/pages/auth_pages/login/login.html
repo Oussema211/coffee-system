@@ -1,54 +1,64 @@
-<div class="min-h-screen flex flex-col lg:flex-row font-body">
+<div class="min-h-screen flex flex-col lg:flex-row font-body bg-espresso">
 
-  <!-- Left brand panel -->
-  <div class="relative lg:w-1/2 bg-espresso text-cream flex flex-col justify-between overflow-hidden px-10 py-12 lg:px-16 lg:py-16">
+  <!-- Left brand panel (Dark Espresso with Large Hero Logo) -->
+  <div class="relative lg:w-1/2 bg-espresso text-cream flex flex-col justify-between items-center text-center overflow-hidden px-8 py-12 lg:px-16 lg:py-16">
 
-    <!-- steam animation -->
-    <div class="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 opacity-30">
+    <!-- Steam animation -->
+    <div class="pointer-events-none absolute top-10 left-1/2 -translate-x-1/2 opacity-30">
       <div class="steam steam-1"></div>
       <div class="steam steam-2"></div>
       <div class="steam steam-3"></div>
     </div>
 
-    <div class="relative z-10">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full border-2 border-caramel flex items-center justify-center">
-          <span class="font-display text-caramel text-lg">B</span>
-        </div>
-        <span class="font-display text-xl tracking-wide">Brewhouse</span>
-      </div>
+    <!-- Top Badge / Accent -->
+    <div class="relative z-10 w-full flex items-center justify-center gap-2 text-xs text-caramel tracking-widest uppercase font-semibold">
+      <span class="w-1.5 h-1.5 rounded-full bg-caramel animate-pulse"></span>
+      Black Bear Coffee Shop
     </div>
 
-    <div class="relative z-10 max-w-md">
-      <h1 class="font-display text-5xl lg:text-6xl leading-[1.05] font-medium">
-        Every shift<br />starts with<br /><span class="text-caramel">a good pour.</span>
+    <!-- Center Hero Logo & Title -->
+    <div class="relative z-10 my-auto flex flex-col items-center justify-center max-w-lg">
+      <div class="logo-wrapper mb-6 relative">
+        <div class="logo-glow"></div>
+        <img
+          src="logo_one.jpg"
+          alt="Black Bear Coffee Shop Logo"
+          class="hero-logo-left"
+        />
+      </div>
+
+      <h1 class="font-display text-4xl lg:text-5xl font-bold tracking-tight text-cream uppercase">
+        Black Bear
       </h1>
-      <p class="mt-6 text-cream/60 text-sm leading-relaxed">
-        One counter, two logins. Owners keep an eye on the whole shop —
-        staff clock in and get straight to the espresso machine.
+      <p class="text-caramel text-xs lg:text-sm font-semibold tracking-[0.25em] uppercase mt-1">
+        — Coffee Shop —
+      </p>
+
+      <p class="mt-6 text-cream/70 text-base leading-relaxed max-w-md">
+        Bold brews, fierce roasts, no compromises. Owners command the den — staff clock in and get straight to the grind.
       </p>
     </div>
 
+    <!-- Bottom Tagline -->
     <div class="relative z-10 flex items-center gap-2 text-xs text-cream/40 tracking-wide uppercase">
-      <span class="w-1.5 h-1.5 rounded-full bg-caramel"></span>
-      Roasted daily, served honestly
+      Dark roasts · Bold spirits · Premium Quality
     </div>
   </div>
 
-  <!-- Right form panel -->
+  <!-- Right form panel (Warm Cream, clear readable inputs) -->
   <div class="lg:w-1/2 bg-cream flex items-center justify-center px-6 py-14 lg:px-16">
     <div class="w-full max-w-sm">
 
       <div class="mb-10">
-        <h2 class="font-display text-3xl text-espresso font-medium">Welcome back</h2>
-        <p class="text-espresso-light/70 text-sm mt-2">Sign in with your shop account to continue.</p>
+        <h2 class="font-display text-3xl text-espresso font-bold">Welcome back</h2>
+        <p class="text-espresso-light/70 text-sm mt-2">Sign in to your Black Bear account to continue.</p>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5" novalidate>
 
         <!-- Username -->
         <div>
-          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">
+          <label class="block text-xs font-semibold uppercase tracking-wide text-espresso-light/80 mb-2">
             Username
           </label>
           <input
@@ -56,17 +66,17 @@
             formControlName="username"
             placeholder="johndoe"
             class="w-full bg-white border border-cream-dark rounded-xl px-4 py-3 text-espresso
-                   placeholder:text-espresso-light/30 outline-none transition
-                   focus:border-caramel focus:ring-2 focus:ring-caramel/20"
+                   placeholder:text-espresso-light/40 outline-none transition
+                   focus:border-caramel focus:ring-2 focus:ring-caramel/30 font-medium"
           />
           @if (form.get('username')?.invalid && form.get('username')?.touched) {
-            <p class="text-xs text-red-600 mt-1.5">Username is required.</p>
+            <p class="text-xs text-red-600 mt-1.5 font-medium">Username is required.</p>
           }
         </div>
 
         <!-- Password -->
         <div>
-          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">
+          <label class="block text-xs font-semibold uppercase tracking-wide text-espresso-light/80 mb-2">
             Password
           </label>
           <div class="relative">
@@ -74,25 +84,25 @@
               [type]="showPassword ? 'text' : 'password'"
               formControlName="password"
               placeholder="••••••••"
-              class="w-full bg-white border border-cream-dark rounded-xl px-4 py-3 pr-11 text-espresso
-                     placeholder:text-espresso-light/30 outline-none transition
-                     focus:border-caramel focus:ring-2 focus:ring-caramel/20"
+              class="w-full bg-white border border-cream-dark rounded-xl px-4 py-3 pr-14 text-espresso
+                     placeholder:text-espresso-light/40 outline-none transition
+                     focus:border-caramel focus:ring-2 focus:ring-caramel/30 font-medium"
             />
             <button
               type="button"
               (click)="togglePassword()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-espresso-light/50 hover:text-espresso text-xs uppercase tracking-wide"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-caramel-dark hover:text-espresso text-xs font-bold uppercase tracking-wider"
             >
               {{ showPassword ? 'Hide' : 'Show' }}
             </button>
           </div>
           @if (form.get('password')?.invalid && form.get('password')?.touched) {
-            <p class="text-xs text-red-600 mt-1.5">Password is required.</p>
+            <p class="text-xs text-red-600 mt-1.5 font-medium">Password is required.</p>
           }
         </div>
 
         <!-- Stay Connected -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center justify-between pt-1">
           <label class="stay-connected-label" for="stayConnected">
             <input
               id="stayConnected"
@@ -102,27 +112,28 @@
             />
             <span class="stay-connected-box">
               <svg class="stay-connected-check" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </span>
             <span class="stay-connected-text">Stay connected</span>
           </label>
-          <span class="text-espresso-light/40 text-xs">(keeps you logged in after closing the browser)</span>
+          <span class="text-espresso-light/50 text-xs">(keep logged in)</span>
         </div>
 
         @if (errorMessage) {
-          <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+          <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 font-medium">
             {{ errorMessage }}
           </div>
         }
 
         <button
           type="submit"
+          id="btn-sign-in"
           [disabled]="loading"
-          class="w-full bg-espresso text-cream font-medium rounded-xl py-3.5 mt-2
-                 transition hover:bg-espresso-light active:scale-[0.99]
+          class="w-full bg-espresso text-cream font-bold rounded-xl py-3.5 mt-4
+                 transition hover:bg-espresso-light active:scale-[0.99] shadow-md
                  disabled:opacity-60 disabled:cursor-not-allowed
-                 flex items-center justify-center gap-2"
+                 flex items-center justify-center gap-2 text-base"
         >
           @if (loading) {
             <span class="w-4 h-4 border-2 border-cream/40 border-t-cream rounded-full animate-spin"></span>
@@ -133,8 +144,8 @@
         </button>
       </form>
 
-      <p class="text-center text-xs text-espresso-light/50 mt-8">
-        Role is assigned by the shop owner — you'll land on the right dashboard automatically.
+      <p class="text-center text-xs text-espresso-light/60 mt-8 leading-relaxed">
+        Role is assigned by the owner — you'll land on the right dashboard automatically.
       </p>
     </div>
   </div>

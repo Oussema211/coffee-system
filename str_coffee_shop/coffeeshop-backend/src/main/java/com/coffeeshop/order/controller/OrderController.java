@@ -27,6 +27,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getActiveOrders());
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<OrderDTO>> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
+    }
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<OrderDTO> updateOrderStatus(
             @PathVariable Long id,
