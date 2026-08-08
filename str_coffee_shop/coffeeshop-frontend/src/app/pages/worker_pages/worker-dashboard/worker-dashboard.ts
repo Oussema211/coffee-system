@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { TableService } from '../../../core/table.service';
+import { OrderService } from '../../../core/order.service';
 
 interface TouchCard {
   id: string;
@@ -71,7 +72,11 @@ export class WorkerDashboardComponent implements OnInit {
     }
   ];
 
-  constructor(private auth: AuthService, private tableService: TableService) {
+  constructor(
+    private auth: AuthService,
+    private tableService: TableService,
+    private orderService: OrderService
+  ) {
     this.username = this.auth.getUsername();
   }
 
@@ -80,7 +85,7 @@ export class WorkerDashboardComponent implements OnInit {
       next: (tables) => {
         const total = tables.length;
         const free = tables.filter(t => t.status === 'Available').length;
-        
+
         const tableStat = this.stats.find(s => s.label === 'Tables active');
         if (tableStat) {
           tableStat.sub = `of ${total} table${total === 1 ? '' : 's'}`;
@@ -89,6 +94,20 @@ export class WorkerDashboardComponent implements OnInit {
         const tableCard = this.touchCards.find(c => c.id === 'card-tables');
         if (tableCard) {
           tableCard.badge = `${free} FREE TABLE${free === 1 ? '' : 'S'}`;
+        }
+      },
+      error: () => {}
+    });
+
+    this.orderService.getActiveOrders().subscribe({
+      next: (orders) => {
+        const inProgress = orders.filter(
+          o => o.status === 'Preparing' || o.status === 'Ready'
+        ).length;
+
+        const activeCard = this.touchCards.find(c => c.id === 'card-active-orders');
+        if (activeCard) {
+          activeCard.badge = `${inProgress} IN PROGRESS`;
         }
       },
       error: () => {}
