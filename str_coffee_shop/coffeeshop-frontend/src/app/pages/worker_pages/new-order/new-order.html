@@ -3,11 +3,30 @@
   <!-- Menu side -->
   <div class="flex-1 min-w-0">
     <!-- Page title -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
       <div>
         <h1 class="font-display text-3xl font-bold text-espresso mb-1">New Order <span class="text-caramel">POS</span></h1>
-        <p class="text-espresso-light/70 text-base">Tap any menu item to add it to the cart.</p>
+        <p class="text-espresso-light/70 text-base">Search or tap any menu item to add it to the cart.</p>
       </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="relative mb-5">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Search menu items (e.g. 'la' for Latte)…"
+        class="w-full bg-white border-2 border-cream-dark rounded-2xl px-5 py-3.5 pl-12 text-base font-bold text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20 shadow-xs transition"
+      />
+      <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-espresso-light/40 pointer-events-none" viewBox="0 0 20 20" fill="none">
+        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
+        <path d="M13.5 13.5L17.5 17.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      @if (searchQuery) {
+        <button (click)="searchQuery = ''" class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold uppercase tracking-wider text-espresso-light/60 hover:text-espresso bg-cream-dark hover:bg-espresso/10 px-3 py-1.5 rounded-xl transition cursor-pointer">
+          Clear
+        </button>
+      }
     </div>
 
     <!-- Category tabs (Large touch targets) -->
@@ -68,8 +87,15 @@
       </div>
 
       @if (filteredItems.length === 0) {
-        <div class="bg-white rounded-3xl border-2 border-cream-dark p-12 text-center text-espresso-light/60 text-base font-medium mt-4">
-          No items in this category right now.
+        <div class="bg-white rounded-3xl border-2 border-cream-dark p-12 text-center text-espresso-light/60 text-base font-medium mt-4 flex flex-col items-center gap-3">
+          @if (searchQuery) {
+            <p>No items match "<span class="text-espresso font-bold">{{ searchQuery }}</span>".</p>
+            <button (click)="searchQuery = ''" class="text-xs font-bold uppercase tracking-wider text-caramel-dark bg-caramel/15 hover:bg-caramel/25 px-4 py-2 rounded-xl transition cursor-pointer">
+              Clear Search
+            </button>
+          } @else {
+            <p>No items in this category right now.</p>
+          }
         </div>
       }
     }
@@ -136,7 +162,7 @@
           <div class="flex items-center justify-between gap-3 bg-cream/50 p-3.5 rounded-2xl border border-cream-dark">
             <div class="min-w-0 flex-1">
               <p class="text-base text-espresso font-bold truncate">{{ line.item.name }}</p>
-              <p class="text-xs text-caramel font-semibold">{{ line.item.price | number:'1.2-2' }} $ each</p>
+              <p class="text-xs text-caramel font-semibold">{{ line.item.price | number:'1.2-2' }} TND each</p>
             </div>
             <div class="flex items-center gap-3 shrink-0">
               <button (click)="decrement(line)" class="w-10 h-10 rounded-xl bg-white border-2 border-cream-dark text-espresso hover:bg-cream-dark text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer">−</button>
@@ -157,7 +183,7 @@
       <!-- Total & Submit -->
       <div class="border-t-2 border-cream-dark pt-5 flex items-center justify-between">
         <span class="text-base text-espresso-light/70 font-semibold">Total ({{ cartCount }} item{{ cartCount === 1 ? '' : 's' }})</span>
-        <span class="font-display text-3xl font-bold text-espresso">{{ cartTotal | number:'1.2-2' }} $</span>
+        <span class="font-display text-3xl font-bold text-espresso">{{ cartTotal | number:'1.2-2' }} TND</span>
       </div>
 
       @if (placedMessage) {

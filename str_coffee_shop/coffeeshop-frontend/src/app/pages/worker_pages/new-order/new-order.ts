@@ -21,6 +21,7 @@ interface CartLine {
 export class NewOrderComponent implements OnInit {
   categories: string[] = ['All'];
   activeCategory = 'All';
+  searchQuery = '';
 
   menuItems: MenuItem[] = [];
   menuLoading = true;
@@ -76,9 +77,13 @@ export class NewOrderComponent implements OnInit {
   }
 
   get filteredItems(): MenuItem[] {
-    return this.menuItems.filter(
-      i => i.available && (this.activeCategory === 'All' || i.category === this.activeCategory)
-    );
+    const q = this.searchQuery.trim().toLowerCase();
+    return this.menuItems.filter(i => {
+      if (!i.available) return false;
+      const matchesCategory = this.activeCategory === 'All' || i.category === this.activeCategory;
+      const matchesSearch = !q || i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q);
+      return matchesCategory && matchesSearch;
+    });
   }
 
   get cartTotal(): number {
