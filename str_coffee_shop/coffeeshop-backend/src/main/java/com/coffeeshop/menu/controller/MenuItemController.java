@@ -13,39 +13,40 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/menu")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
 public class MenuItemController {
 
     private final MenuItemService menuItemService;
 
-    @GetMapping
-    public ResponseEntity<List<MenuItemDTO>> getAllMenuItems() {
+    // ── Admin endpoints ──────────────────────────────────────────────────────────
+
+    @GetMapping("/api/admin/menu")
+    public ResponseEntity<List<MenuItemDTO>> getAllMenuItemsAdmin() {
         return ResponseEntity.ok(menuItemService.getAllMenuItems());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/admin/menu/{id}")
     public ResponseEntity<MenuItemDTO> getMenuItemById(@PathVariable Long id) {
         return ResponseEntity.ok(menuItemService.getMenuItemById(id));
     }
 
-    @PostMapping
+    @PostMapping("/api/admin/menu")
     public ResponseEntity<MenuItemDTO> createMenuItem(@Valid @RequestBody CreateMenuItemRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(menuItemService.createMenuItem(request));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/admin/menu/{id}")
     public ResponseEntity<MenuItemDTO> updateMenuItem(@PathVariable Long id, @Valid @RequestBody UpdateMenuItemRequest request) {
         return ResponseEntity.ok(menuItemService.updateMenuItem(id, request));
     }
 
-    @PatchMapping("/{id}/toggle")
+    @PatchMapping("/api/admin/menu/{id}/toggle")
     public ResponseEntity<MenuItemDTO> toggleAvailability(@PathVariable Long id) {
         return ResponseEntity.ok(menuItemService.toggleAvailability(id));
     }
 
-    @PostMapping("/upload-image")
+    @PostMapping("/api/admin/menu/upload-image")
     public ResponseEntity<?> uploadImage(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body(java.util.Map.of("error", "File is empty"));
@@ -78,9 +79,16 @@ public class MenuItemController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/admin/menu/{id}")
     public ResponseEntity<Void> deleteMenuItem(@PathVariable Long id) {
         menuItemService.deleteMenuItem(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // ── Worker endpoint (read-only) ───────────────────────────────────────────────
+
+    @GetMapping("/api/worker/menu")
+    public ResponseEntity<List<MenuItemDTO>> getAllMenuItemsWorker() {
+        return ResponseEntity.ok(menuItemService.getAllMenuItems());
     }
 }

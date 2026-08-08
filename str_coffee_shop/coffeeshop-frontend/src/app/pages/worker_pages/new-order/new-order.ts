@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
-import { MenuItem } from '../../../core/menu.service';
+import { MenuItem, MenuService } from '../../../core/menu.service';
 import { TableService, TableItem } from '../../../core/table.service';
 
 interface CartLine {
@@ -19,17 +19,12 @@ interface CartLine {
   styleUrl: './new-order.css'
 })
 export class NewOrderComponent implements OnInit {
-  categories = ['All', 'Coffee', 'Pastry', 'Cold Drinks', 'Tea'];
+  categories: string[] = ['All'];
   activeCategory = 'All';
 
-  menuItems: MenuItem[] = [
-    { id: 1, name: 'Espresso', category: 'Coffee', price: 2.5, available: true },
-    { id: 2, name: 'Cappuccino', category: 'Coffee', price: 3.5, available: true },
-    { id: 3, name: 'Latte', category: 'Coffee', price: 3.8, available: true },
-    { id: 4, name: 'Iced Americano', category: 'Cold Drinks', price: 3.0, available: true },
-    { id: 5, name: 'Croissant', category: 'Pastry', price: 2.2, available: true },
-    { id: 6, name: 'Blueberry Muffin', category: 'Pastry', price: 2.8, available: true },
-  ];
+  menuItems: MenuItem[] = [];
+  menuLoading = true;
+  menuError = '';
 
   cart: CartLine[] = [];
   orderType: 'Dine-in' | 'Takeaway' = 'Dine-in';
@@ -41,7 +36,11 @@ export class NewOrderComponent implements OnInit {
   placing = false;
   placedMessage = '';
 
-  constructor(private route: ActivatedRoute, private tableService: TableService) {
+  constructor(
+    private route: ActivatedRoute,
+    private tableService: TableService,
+    private menuService: MenuService
+  ) {
     // If we arrived here from a table card ("Start order"), preselect that table.
     const tableParam = this.route.snapshot.queryParamMap.get('table');
     if (tableParam) {
@@ -59,6 +58,19 @@ export class NewOrderComponent implements OnInit {
       error: () => {
         this.tablesError = 'Failed to load tables';
         this.tablesLoading = false;
+      }
+    });
+
+    this.menuService.getWorkerMenuItems().subscribe({
+      next: (data) => {
+        this.menuItems = data;
+        const dynamicCats = Array.from(new Set(data.map(i => i.category))).filter(Boolean);
+        this.categories = ['All', ...dynamicCats];
+        this.menuLoading = false;
+      },
+      error: () => {
+        this.menuError = 'Failed to load menu from backend.';
+        this.menuLoading = false;
       }
     });
   }

@@ -30,11 +30,16 @@ export interface UpdateMenuItemPayload {
 @Injectable({ providedIn: 'root' })
 export class MenuService {
   private readonly baseUrl = 'http://localhost:8080/api/admin/menu';
+  private readonly workerUrl = 'http://localhost:8080/api/worker/menu';
 
   constructor(private http: HttpClient) {}
 
   getMenuItems(): Observable<MenuItem[]> {
     return this.http.get<MenuItem[]>(this.baseUrl);
+  }
+
+  getWorkerMenuItems(): Observable<MenuItem[]> {
+    return this.http.get<MenuItem[]>(this.workerUrl);
   }
 
   getMenuItemById(id: number): Observable<MenuItem> {
