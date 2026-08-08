@@ -25,6 +25,7 @@ public class TableServiceImpl implements TableService {
     private final OrderRepository orderRepository;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
+    private static final List<String> INACTIVE_STATUSES = List.of("Completed", "Cancelled");
 
     @Override
     @Transactional(readOnly = true)
@@ -66,7 +67,7 @@ public class TableServiceImpl implements TableService {
     }
 
     private TableDTO mapToDTO(RestaurantTable t) {
-        List<Order> activeOrders = orderRepository.findByTableNumberAndStatusNot(t.getNumber(), "Completed");
+        List<Order> activeOrders = orderRepository.findByTableNumberAndStatusNotIn(t.getNumber(), INACTIVE_STATUSES);
 
         Long activeOrderId = null;
         String since = null;
@@ -81,6 +82,8 @@ public class TableServiceImpl implements TableService {
             }
             if ("Available".equalsIgnoreCase(computedStatus)) {
                 computedStatus = "Occupied";
+                t.setStatus("Occupied");
+                tableRepository.save(t);
             }
             for (Order order : activeOrders) {
                 if (order.getItems() != null) {
@@ -97,6 +100,12 @@ public class TableServiceImpl implements TableService {
                     }
                 }
             }
+        } else {
+            if ("Occupied".equalsIgnoreCase(computedStatus)) {
+                computedStatus = "Available";
+                t.setStatus("Available");
+                tableRepository.save(t);
+            }
         }
 
         return TableDTO.builder()
@@ -110,4 +119,3 @@ public class TableServiceImpl implements TableService {
                 .build();
     }
 }
-
