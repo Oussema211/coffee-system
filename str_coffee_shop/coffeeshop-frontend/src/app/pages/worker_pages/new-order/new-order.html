@@ -91,13 +91,22 @@
           <label class="block text-xs font-bold uppercase tracking-wider text-espresso-light/70 mb-2">Table Selection</label>
           <select
             [(ngModel)]="selectedTable"
+            [disabled]="tablesLoading"
             class="w-full bg-cream border-2 border-cream-dark rounded-2xl px-5 py-3.5 text-base font-bold text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20 min-h-[52px]"
           >
-            <option [ngValue]="null">Select Table…</option>
-            @for (t of tables; track t) {
-              <option [ngValue]="t">Table {{ t }}</option>
+            <option [ngValue]="null">
+              {{ tablesLoading ? 'Loading tables…' : 'Select Table…' }}
+            </option>
+            @for (t of tables; track t.id) {
+              <option [ngValue]="t.number">Table {{ t.number }} ({{ t.seats }} seats)</option>
             }
           </select>
+          @if (tablesError) {
+            <p class="text-xs font-medium text-red-500 mt-1.5">{{ tablesError }}</p>
+          }
+          @if (!tablesLoading && tables.length === 0) {
+            <p class="text-xs font-medium text-espresso-light/60 mt-1.5">No tables available. Please ask admin to add tables.</p>
+          }
         </div>
       }
 

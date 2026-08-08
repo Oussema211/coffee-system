@@ -18,6 +18,7 @@ export class AdminLayoutComponent {
     { label: 'Orders',    icon: 'receipt',  path: '/admin/orders' },
     { label: 'Menu',      icon: 'menu',     path: '/admin/menu' },
     { label: 'Workers',   icon: 'people',   path: '/admin/workers' },
+    { label: 'Tables',    icon: 'tables',   path: '/admin/tables' },
     { label: 'Reports',   icon: 'chart',    path: '/admin/reports' },
   ];
 

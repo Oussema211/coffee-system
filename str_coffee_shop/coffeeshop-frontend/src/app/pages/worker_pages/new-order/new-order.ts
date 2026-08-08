@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { MenuItem } from '../../../core/menu.service';
+import { TableService, TableItem } from '../../../core/table.service';
 
 interface CartLine {
   item: MenuItem;
@@ -17,7 +18,7 @@ interface CartLine {
   templateUrl: './new-order.html',
   styleUrl: './new-order.css'
 })
-export class NewOrderComponent {
+export class NewOrderComponent implements OnInit {
   categories = ['All', 'Coffee', 'Pastry', 'Cold Drinks', 'Tea'];
   activeCategory = 'All';
 
@@ -33,18 +34,33 @@ export class NewOrderComponent {
   cart: CartLine[] = [];
   orderType: 'Dine-in' | 'Takeaway' = 'Dine-in';
   selectedTable: number | null = null;
-  tables = [1, 2, 3, 4, 5, 6, 7, 8];
+  tables: TableItem[] = [];
+  tablesLoading = true;
+  tablesError = '';
 
   placing = false;
   placedMessage = '';
 
-  constructor(route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute, private tableService: TableService) {
     // If we arrived here from a table card ("Start order"), preselect that table.
-    const tableParam = route.snapshot.queryParamMap.get('table');
+    const tableParam = this.route.snapshot.queryParamMap.get('table');
     if (tableParam) {
       this.selectedTable = Number(tableParam);
       this.orderType = 'Dine-in';
     }
+  }
+
+  ngOnInit(): void {
+    this.tableService.getWorkerTables().subscribe({
+      next: (data) => {
+        this.tables = data;
+        this.tablesLoading = false;
+      },
+      error: () => {
+        this.tablesError = 'Failed to load tables';
+        this.tablesLoading = false;
+      }
+    });
   }
 
   get filteredItems(): MenuItem[] {

@@ -1,0 +1,136 @@
+<div class="at-page">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div class="at-header">
+    <div class="at-title-group">
+      <svg class="at-title-icon" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8"/>
+        <rect x="13" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8"/>
+        <rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8"/>
+        <rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8"/>
+      </svg>
+      <div>
+        <h1 class="at-title">Tables</h1>
+        <p class="at-subtitle">Manage restaurant seating — add or remove tables</p>
+      </div>
+    </div>
+    <div class="at-badge">{{ tables.length }} table{{ tables.length !== 1 ? 's' : '' }}</div>
+  </div>
+
+  <!-- ── Flash messages ─────────────────────────────────────────────────── -->
+  <div class="at-success" *ngIf="successMsg">
+    <svg viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6.5 10l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    {{ successMsg }}
+  </div>
+  <div class="at-error-banner" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <!-- ── Add table form ─────────────────────────────────────────────────── -->
+  <div class="at-add-card">
+    <h2 class="at-add-title">Add New Table</h2>
+    <div class="at-add-form">
+      <div class="at-field">
+        <label class="at-label" for="input-table-number">Table Number</label>
+        <input
+          id="input-table-number"
+          class="at-input"
+          type="number"
+          min="1"
+          placeholder="e.g. 9"
+          [(ngModel)]="newNumber"
+          (keydown.enter)="addTable()"
+        />
+      </div>
+      <div class="at-field">
+        <label class="at-label" for="input-seats">Seats</label>
+        <input
+          id="input-seats"
+          class="at-input"
+          type="number"
+          min="1"
+          placeholder="e.g. 4"
+          [(ngModel)]="newSeats"
+          (keydown.enter)="addTable()"
+        />
+      </div>
+      <button
+        id="btn-add-table"
+        class="at-add-btn"
+        (click)="addTable()"
+        [disabled]="addLoading"
+      >
+        <svg viewBox="0 0 20 20" fill="none" *ngIf="!addLoading">
+          <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="at-spinner" *ngIf="addLoading"></span>
+        {{ addLoading ? 'Adding…' : 'Add Table' }}
+      </button>
+    </div>
+    <p class="at-add-error" *ngIf="addError">{{ addError }}</p>
+  </div>
+
+  <!-- ── Loading ────────────────────────────────────────────────────────── -->
+  <div class="at-loading" *ngIf="loading">
+    <span class="at-spinner-lg"></span>
+    <span>Loading tables…</span>
+  </div>
+
+  <!-- ── Empty state ────────────────────────────────────────────────────── -->
+  <div class="at-empty" *ngIf="!loading && tables.length === 0 && !errorMsg">
+    <svg viewBox="0 0 48 48" fill="none">
+      <rect x="6" y="6" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
+      <rect x="27" y="6" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
+      <rect x="6" y="27" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
+      <rect x="27" y="27" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
+    </svg>
+    <p>No tables yet. Add your first table above.</p>
+  </div>
+
+  <!-- ── Table grid ─────────────────────────────────────────────────────── -->
+  <div class="at-grid" *ngIf="!loading && tables.length > 0">
+    <div
+      class="at-card"
+      *ngFor="let t of tables"
+      [class.at-card--confirming]="confirmDeleteId === t.id"
+    >
+      <!-- Normal view -->
+      <ng-container *ngIf="confirmDeleteId !== t.id">
+        <div class="at-card-num">{{ t.number }}</div>
+        <div class="at-card-info">
+          <span class="at-card-seats">
+            <svg viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            {{ seatLabel(t.seats) }}
+          </span>
+          <span class="at-card-status" [ngClass]="'at-status--' + t.status.toLowerCase()">
+            {{ t.status }}
+          </span>
+        </div>
+        <button
+          class="at-delete-btn"
+          [id]="'btn-delete-' + t.id"
+          (click)="requestDelete(t.id)"
+          title="Remove table"
+        >
+          <svg viewBox="0 0 20 20" fill="none">
+            <path d="M4 6h12M8 6V4h4v2M9 10v4M11 10v4M5 6l1 10h8l1-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </ng-container>
+
+      <!-- Delete confirmation inline -->
+      <ng-container *ngIf="confirmDeleteId === t.id">
+        <p class="at-confirm-text">Remove <strong>Table {{ t.number }}</strong>?</p>
+        <div class="at-confirm-actions">
+          <button class="at-confirm-yes" [id]="'btn-confirm-delete-' + t.id" (click)="confirmDelete()">Remove</button>
+          <button class="at-confirm-no"  [id]="'btn-cancel-delete-' + t.id"  (click)="cancelDelete()">Cancel</button>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+</div>

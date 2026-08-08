@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TableService } from '../../../core/table.service';
 
 export interface OrderItem {
   id: number;
@@ -29,34 +30,10 @@ interface TableInfo {
   templateUrl: './tables.html',
   styleUrl: './tables.css'
 })
-export class TablesComponent {
-  tables: TableInfo[] = [
-    {
-      id: 1, number: 1, seats: 2, status: 'Occupied', since: '9:10 AM',
-      orderItems: [
-        { id: 1, name: 'Espresso', price: 2.5, qty: 1, seatLabel: 'Seat 1', paid: false, selected: false },
-        { id: 2, name: 'Croissant', price: 2.2, qty: 2, seatLabel: 'Seat 2', paid: false, selected: false },
-      ]
-    },
-    { id: 2, number: 2, seats: 4, status: 'Available', orderItems: [] },
-    { id: 3, number: 3, seats: 2, status: 'Available', orderItems: [] },
-    {
-      id: 4, number: 4, seats: 6, status: 'Reserved', since: '11:30 AM',
-      orderItems: []
-    },
-    { id: 5, number: 5, seats: 2, status: 'Cleaning', orderItems: [] },
-    {
-      id: 6, number: 6, seats: 4, status: 'Occupied', since: '9:45 AM',
-      orderItems: [
-        { id: 10, name: 'Latte', price: 3.8, qty: 1, seatLabel: 'Seat 1', paid: false, selected: false },
-        { id: 11, name: 'Cappuccino', price: 3.5, qty: 1, seatLabel: 'Seat 2', paid: false, selected: false },
-        { id: 12, name: 'Blueberry Muffin', price: 2.8, qty: 2, seatLabel: 'Seat 3', paid: false, selected: false },
-        { id: 13, name: 'Iced Americano', price: 3.0, qty: 1, seatLabel: 'Seat 4', paid: false, selected: false },
-      ]
-    },
-    { id: 7, number: 7, seats: 2, status: 'Available', orderItems: [] },
-    { id: 8, number: 8, seats: 4, status: 'Available', orderItems: [] },
-  ];
+export class TablesComponent implements OnInit {
+  tables: TableInfo[] = [];
+  tablesLoading = true;
+  tablesError = '';
 
   // ── Payment modal state ──────────────────────────────────────────────────────
   paymentModalOpen = false;
@@ -68,7 +45,26 @@ export class TablesComponent {
   paymentSuccess = false;
   paymentSuccessMessage = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private tableService: TableService) {}
+
+  ngOnInit(): void {
+    this.tableService.getWorkerTables().subscribe({
+      next: (data) => {
+        this.tables = data.map(t => ({
+          id: t.id,
+          number: t.number,
+          seats: t.seats,
+          status: (t.status as TableInfo['status']) || 'Available',
+          orderItems: []
+        }));
+        this.tablesLoading = false;
+      },
+      error: () => {
+        this.tablesError = 'Could not load tables from server.';
+        this.tablesLoading = false;
+      }
+    });
+  }
 
   // ── Derived getters ──────────────────────────────────────────────────────────
 

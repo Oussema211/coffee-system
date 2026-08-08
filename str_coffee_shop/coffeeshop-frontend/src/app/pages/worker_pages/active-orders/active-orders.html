@@ -8,6 +8,14 @@
     </div>
   </div>
 
+  <!-- Payment success toast -->
+  @if (paymentSuccess) {
+    <div class="payment-toast">
+      <span class="text-xl">✓</span>
+      <span class="font-semibold text-sm">{{ paymentSuccessMessage }}</span>
+    </div>
+  }
+
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
     <!-- Preparing column -->
@@ -36,7 +44,7 @@
             <p class="text-espresso text-base font-medium mb-6 bg-cream/50 p-4 rounded-2xl border border-cream-dark">{{ order.items.join(', ') }}</p>
 
             <div class="flex items-center justify-between pt-2">
-              <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} $</span>
+              <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} TND</span>
               <button (click)="advance(order)" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
                 ✓ Mark Ready
               </button>
@@ -52,20 +60,27 @@
       </div>
     </div>
 
-    <!-- Ready column -->
+    <!-- Ready / Served Column -->
     <div>
       <div class="flex items-center gap-2 mb-4">
         <span class="w-3 h-3 rounded-full bg-caramel"></span>
-        <h2 class="font-display text-xl font-bold text-espresso">Ready for Pickup / Serving</h2>
-        <span class="text-sm font-semibold text-espresso-light/60">({{ ready.length }})</span>
+        <h2 class="font-display text-xl font-bold text-espresso">Ready & Served</h2>
+        <span class="text-sm font-semibold text-espresso-light/60">({{ readyAndServed.length }})</span>
       </div>
 
       <div class="flex flex-col gap-4">
-        @for (order of ready; track order.id) {
-          <div class="bg-white rounded-3xl border-2 border-caramel/40 p-6 shadow-xs flex flex-col justify-between">
+        @for (order of readyAndServed; track order.id) {
+          <div [class]="order.status === 'Served' ? 'bg-white rounded-3xl border-2 border-sage/40 p-6 shadow-xs flex flex-col justify-between' : 'bg-white rounded-3xl border-2 border-caramel/40 p-6 shadow-xs flex flex-col justify-between'">
             <div class="flex items-start justify-between mb-4">
               <div>
-                <p class="text-espresso font-bold text-lg">Order #{{ order.id }}</p>
+                <div class="flex items-center gap-2">
+                  <p class="text-espresso font-bold text-lg">Order #{{ order.id }}</p>
+                  @if (order.status === 'Served') {
+                    <span class="bg-sage/15 text-sage text-xs font-extrabold uppercase px-2.5 py-1 rounded-md">Served</span>
+                  } @else {
+                    <span class="bg-caramel/15 text-caramel-dark text-xs font-extrabold uppercase px-2.5 py-1 rounded-md">Ready</span>
+                  }
+                </div>
                 <p class="text-sm text-espresso-light/70 font-medium mt-0.5">
                   {{ order.table ? 'Table ' + order.table : 'Takeaway' }} · {{ order.time }}
                 </p>
@@ -78,20 +93,210 @@
             <p class="text-espresso text-base font-medium mb-6 bg-caramel/8 p-4 rounded-2xl border border-caramel/20">{{ order.items.join(', ') }}</p>
 
             <div class="flex items-center justify-between pt-2">
-              <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} $</span>
-              <button (click)="advance(order)" class="text-base font-bold text-caramel-dark bg-caramel/15 border-2 border-caramel/30 px-6 py-3.5 rounded-2xl hover:bg-caramel/25 active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
-                ✓ Mark Served
-              </button>
+              <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} TND</span>
+
+              @if (order.status === 'Ready') {
+                <button (click)="advance(order)" class="text-base font-bold text-caramel-dark bg-caramel/15 border-2 border-caramel/30 px-6 py-3.5 rounded-2xl hover:bg-caramel/25 active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
+                  ✓ Mark Served
+                </button>
+              } @else if (order.status === 'Served') {
+                <button (click)="openPayment(order)" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
+                  💳 Pay Order
+                </button>
+              }
             </div>
           </div>
         }
 
-        @if (ready.length === 0) {
+        @if (readyAndServed.length === 0) {
           <div class="bg-white rounded-3xl border-2 border-cream-dark p-10 text-center text-espresso-light/60 text-base font-medium">
-            Nothing waiting for pickup.
+            Nothing waiting for pickup or payment.
           </div>
         }
       </div>
     </div>
   </div>
 </div>
+
+<!-- ─── Payment Modal Backdrop ─── -->
+@if (paymentModalOpen) {
+  <div class="modal-backdrop" (click)="closePayment()"></div>
+}
+
+<!-- ─── Payment Sheet (Modal) ─── -->
+@if (paymentModalOpen && activePaymentOrder) {
+  <div class="payment-sheet">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 pt-6 pb-2 border-b-2 border-cream-dark">
+      <div>
+        <h2 class="font-display text-2xl font-bold text-espresso">
+          💳 Order #{{ activePaymentOrder.id }} — Payment
+        </h2>
+        <p class="text-sm text-espresso-light/60 font-medium mt-0.5">
+          {{ activePaymentOrder.table ? 'Table ' + activePaymentOrder.table : 'Takeaway' }} · {{ activePaymentOrder.time }}
+        </p>
+      </div>
+      <button (click)="closePayment()" class="w-10 h-10 rounded-xl bg-cream-dark hover:bg-espresso/10 text-espresso text-xl font-bold flex items-center justify-center transition cursor-pointer">
+        ✕
+      </button>
+    </div>
+
+    <!-- Mode tabs -->
+    <div class="flex gap-3 px-6 pt-5 pb-3">
+      <button
+        (click)="switchMode('full')"
+        [class]="paymentMode === 'full' ? 'bg-espresso text-cream shadow-sm' : 'bg-cream border-2 border-cream-dark text-espresso-light/70 hover:bg-cream-dark'"
+        class="flex-1 text-sm font-bold py-3 rounded-2xl transition active:scale-95 cursor-pointer min-h-[46px]"
+      >
+        🧾 Full Bill
+      </button>
+      <button
+        (click)="switchMode('split')"
+        [class]="paymentMode === 'split' ? 'bg-espresso text-cream shadow-sm' : 'bg-cream border-2 border-cream-dark text-espresso-light/70 hover:bg-cream-dark'"
+        class="flex-1 text-sm font-bold py-3 rounded-2xl transition active:scale-95 cursor-pointer min-h-[46px]"
+      >
+        ✂️ Split Bill
+      </button>
+    </div>
+
+    <!-- Scrollable content -->
+    <div class="overflow-y-auto flex-1 px-6 pb-2">
+
+      <!-- Items list -->
+      <div class="mb-5">
+        <p class="text-xs font-bold uppercase tracking-wider text-espresso-light/50 mb-3">
+          @if (paymentMode === 'split') { Select items this customer is paying for } @else { Items on this order }
+        </p>
+
+        <div class="flex flex-col gap-2">
+          @for (item of unpaidItems; track item.id) {
+            <div
+              (click)="paymentMode === 'split' ? (item.selected = !item.selected) : null"
+              [class]="paymentMode === 'split' ? (item.selected ? 'border-caramel bg-caramel/8' : 'border-cream-dark bg-white hover:bg-cream/60') : 'border-cream-dark bg-cream/40'"
+              class="flex items-center gap-4 rounded-2xl border-2 px-4 py-3.5 transition"
+              [class.cursor-pointer]="paymentMode === 'split'"
+            >
+              @if (paymentMode === 'split') {
+                <div [class]="item.selected ? 'bg-caramel border-caramel' : 'bg-white border-cream-dark'" class="w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition">
+                  @if (item.selected) {
+                    <span class="text-white text-xs font-black">✓</span>
+                  }
+                </div>
+              }
+
+              <div class="flex-1 min-w-0">
+                <p class="text-base font-bold text-espresso truncate">{{ item.name }}</p>
+                <p class="text-xs text-espresso-light/50 font-medium">Qty: {{ item.qty }}</p>
+              </div>
+              <span class="font-bold text-base text-espresso shrink-0">{{ (item.price * item.qty) | number:'1.2-2' }} TND</span>
+            </div>
+          }
+
+          @if (unpaidItems.length === 0) {
+            <div class="py-8 text-center text-espresso-light/60 text-base font-medium">
+              ✓ All items have been paid for.
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Total summary -->
+      <div class="rounded-2xl border-2 border-cream-dark bg-cream/40 px-5 py-4 mb-5">
+        @if (paymentMode === 'split') {
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-sm text-espresso-light/60 font-semibold">Full Order Total</span>
+            <span class="font-bold text-espresso">{{ fullTotal | number:'1.2-2' }} TND</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-espresso-light/60 font-semibold">Selected Items Total</span>
+            <span class="font-display text-2xl font-extrabold text-espresso">{{ splitTotal | number:'1.2-2' }} TND</span>
+          </div>
+        } @else {
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-espresso-light/60 font-semibold">Grand Total</span>
+            <span class="font-display text-2xl font-extrabold text-espresso">{{ fullTotal | number:'1.2-2' }} TND</span>
+          </div>
+        }
+      </div>
+
+      <!-- Amount given input -->
+      @if (unpaidItems.length > 0 && (paymentMode === 'full' || hasSplitSelection)) {
+        <div class="mb-4">
+          <label class="block text-xs font-bold uppercase tracking-wider text-espresso-light/50 mb-2">
+            Amount Given by Customer (TND)
+          </label>
+          <div class="relative">
+            <input
+              type="number"
+              [(ngModel)]="amountGiven"
+              min="0"
+              step="0.5"
+              placeholder="0.00"
+              class="amount-input"
+            />
+            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-espresso-light/40 font-bold text-base pointer-events-none">TND</span>
+          </div>
+
+          <!-- Quick amounts -->
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <p class="text-xs text-espresso-light/50 font-semibold w-full mb-1">Quick amounts:</p>
+            @for (qa of quickAmounts; track qa) {
+              <button
+                (click)="setQuickAmount(qa)"
+                [class]="amountGiven === qa ? 'bg-espresso text-cream' : 'bg-white border-2 border-cream-dark text-espresso hover:bg-cream-dark'"
+                class="text-sm font-bold px-4 py-2.5 rounded-xl transition active:scale-95 cursor-pointer min-h-[42px]"
+              >
+                {{ qa | number:'1.2-2' }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Change / shortfall badge -->
+        @if (amountGiven !== null) {
+          @if (amountGiven >= currentTotal) {
+            <div class="change-badge change-ok mb-5">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider opacity-70 mb-0.5">Return to Customer</p>
+                <p class="font-display text-3xl font-extrabold">{{ change | number:'1.2-2' }} TND</p>
+              </div>
+              <span class="text-4xl">💚</span>
+            </div>
+          } @else {
+            <div class="change-badge change-short mb-5">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-wider opacity-70 mb-0.5">Still Needs</p>
+                <p class="font-display text-3xl font-extrabold">{{ shortfall | number:'1.2-2' }} TND</p>
+              </div>
+              <span class="text-4xl">⚠️</span>
+            </div>
+          }
+        }
+      }
+
+    </div>
+
+    <!-- Confirm button -->
+    <div class="px-6 pb-6 pt-3 border-t-2 border-cream-dark">
+      @if (paymentMode === 'full') {
+        <button
+          (click)="confirmFullPayment()"
+          [disabled]="!canConfirm"
+          class="confirm-btn"
+        >
+          ✓ Confirm Full Payment
+        </button>
+      } @else {
+        <button
+          (click)="confirmSplitPayment()"
+          [disabled]="!canConfirm"
+          class="confirm-btn"
+        >
+          ✓ Confirm Partial Payment ({{ unpaidItems.filter(i => i.selected).length }} item{{ unpaidItems.filter(i => i.selected).length === 1 ? '' : 's' }})
+        </button>
+      }
+    </div>
+
+  </div>
+}

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
+import { TableService } from '../../../core/table.service';
 
 interface TouchCard {
   id: string;
@@ -20,14 +21,14 @@ interface TouchCard {
   templateUrl: './worker-dashboard.html',
   styleUrl: './worker-dashboard.css'
 })
-export class WorkerDashboardComponent {
+export class WorkerDashboardComponent implements OnInit {
   username: string | null;
   clockedIn = true;
   shiftStart: string | null = '08:30 AM';
 
   stats = [
     { label: 'Orders served', value: '18', sub: 'this shift' },
-    { label: 'Tables active', value: '3', sub: 'of 8 tables' },
+    { label: 'Tables active', value: '3', sub: 'of 0 tables' },
     { label: 'QR orders pending', value: '2', sub: 'need attention' },
   ];
 
@@ -64,14 +65,34 @@ export class WorkerDashboardComponent {
       title: 'Tables Management',
       subtitle: 'Check floor tables, occupied seats and availability',
       route: '/worker/tables',
-      badge: '5 FREE TABLES',
+      badge: '0 FREE TABLES',
       badgeColor: 'bg-sage text-cream',
       theme: 'card-tables'
     }
   ];
 
-  constructor(private auth: AuthService) {
+  constructor(private auth: AuthService, private tableService: TableService) {
     this.username = this.auth.getUsername();
+  }
+
+  ngOnInit(): void {
+    this.tableService.getWorkerTables().subscribe({
+      next: (tables) => {
+        const total = tables.length;
+        const free = tables.filter(t => t.status === 'Available').length;
+        
+        const tableStat = this.stats.find(s => s.label === 'Tables active');
+        if (tableStat) {
+          tableStat.sub = `of ${total} table${total === 1 ? '' : 's'}`;
+        }
+
+        const tableCard = this.touchCards.find(c => c.id === 'card-tables');
+        if (tableCard) {
+          tableCard.badge = `${free} FREE TABLE${free === 1 ? '' : 'S'}`;
+        }
+      },
+      error: () => {}
+    });
   }
 
   toggleClock(): void {

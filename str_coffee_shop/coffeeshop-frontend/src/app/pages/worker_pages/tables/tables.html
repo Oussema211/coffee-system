@@ -16,6 +16,36 @@
     </div>
   }
 
+  <!-- Loading state -->
+  @if (tablesLoading) {
+    <div class="flex items-center justify-center gap-3 py-20 text-espresso-light/50 text-sm">
+      <svg class="animate-spin w-5 h-5 text-caramel" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
+      </svg>
+      Loading tables…
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (tablesError) {
+    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-2xl p-4 mb-4">
+      {{ tablesError }}
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!tablesLoading && !tablesError && tables.length === 0) {
+    <div class="flex flex-col items-center justify-center py-20 text-espresso-light/40 gap-3">
+      <svg class="w-12 h-12 opacity-30" viewBox="0 0 48 48" fill="none">
+        <rect x="6" y="6" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
+        <rect x="27" y="6" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
+        <rect x="6" y="27" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
+        <rect x="27" y="27" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <p class="text-sm">No tables configured yet. Ask the admin to add some.</p>
+    </div>
+  }
+
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
     @for (table of tables; track table.id) {
       <div class="bg-white rounded-3xl border-2 border-cream-dark p-6 flex flex-col justify-between gap-4 shadow-xs">
