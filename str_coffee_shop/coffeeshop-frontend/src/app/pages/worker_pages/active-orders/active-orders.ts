@@ -1,26 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { OrderService, OrderDTO, OrderItemDTO } from '../../../core/order.service';
 
-export interface OrderItem {
-  id: number;
-  name: string;
-  price: number;
-  qty: number;
-  paid: boolean;
-  selected: boolean;
-}
-
-export interface ActiveOrder {
-  id: number;
-  table: number | null;
-  type: 'Dine-in' | 'Takeaway' | 'QR';
-  items: string[];
-  orderItems: OrderItem[];
-  total: number;
-  time: string;
-  status: 'Preparing' | 'Ready' | 'Served';
-}
+export type OrderItem = OrderItemDTO;
+export type ActiveOrder = OrderDTO;
 
 @Component({
   selector: 'app-active-orders',
@@ -29,35 +13,10 @@ export interface ActiveOrder {
   templateUrl: './active-orders.html',
   styleUrl: './active-orders.css'
 })
-export class ActiveOrdersComponent {
-  orders: ActiveOrder[] = [
-    {
-      id: 1047, table: 6, type: 'Dine-in', items: ['Latte', 'Croissant'], total: 6.00, time: '10:12 AM', status: 'Preparing',
-      orderItems: [
-        { id: 101, name: 'Latte', price: 3.80, qty: 1, paid: false, selected: false },
-        { id: 102, name: 'Croissant', price: 2.20, qty: 1, paid: false, selected: false }
-      ]
-    },
-    {
-      id: 1048, table: null, type: 'Takeaway', items: ['Espresso x2'], total: 5.00, time: '10:15 AM', status: 'Ready',
-      orderItems: [
-        { id: 103, name: 'Espresso', price: 2.50, qty: 2, paid: false, selected: false }
-      ]
-    },
-    {
-      id: 1049, table: 1, type: 'Dine-in', items: ['Cappuccino'], total: 3.50, time: '10:18 AM', status: 'Preparing',
-      orderItems: [
-        { id: 104, name: 'Cappuccino', price: 3.50, qty: 1, paid: false, selected: false }
-      ]
-    },
-    {
-      id: 1050, table: 4, type: 'QR', items: ['Iced Americano', 'Blueberry Muffin'], total: 5.80, time: '10:20 AM', status: 'Ready',
-      orderItems: [
-        { id: 105, name: 'Iced Americano', price: 3.00, qty: 1, paid: false, selected: false },
-        { id: 106, name: 'Blueberry Muffin', price: 2.80, qty: 1, paid: false, selected: false }
-      ]
-    },
-  ];
+export class ActiveOrdersComponent implements OnInit {
+  orders: ActiveOrder[] = [];
+  loading = true;
+  error = '';
 
   // ── Payment modal state ──────────────────────────────────────────────────────
   paymentModalOpen = false;
@@ -69,6 +28,26 @@ export class ActiveOrdersComponent {
   paymentSuccess = false;
   paymentSuccessMessage = '';
 
+  constructor(private orderService: OrderService) {}
+
+  ngOnInit(): void {
+    this.loadActiveOrders();
+  }
+
+  loadActiveOrders(): void {
+    this.loading = true;
+    this.orderService.getActiveOrders().subscribe({
+      next: (data) => {
+        this.orders = data;
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Failed to load active orders from backend.';
+        this.loading = false;
+      }
+    });
+  }
+
   get preparing(): ActiveOrder[] {
     return this.orders.filter(o => o.status === 'Preparing');
   }
@@ -78,11 +57,23 @@ export class ActiveOrdersComponent {
   }
 
   advance(order: ActiveOrder): void {
+    let nextStatus: string | null = null;
     if (order.status === 'Preparing') {
-      order.status = 'Ready';
+      nextStatus = 'Ready';
     } else if (order.status === 'Ready') {
-      order.status = 'Served';
+      nextStatus = 'Served';
     }
+
+    if (!nextStatus) return;
+
+    this.orderService.updateOrderStatus(order.id, nextStatus).subscribe({
+      next: (updatedOrder) => {
+        order.status = updatedOrder.status;
+      },
+      error: (err) => {
+        alert('Failed to update status: ' + (err.error?.message || 'Server error'));
+      }
+    });
   }
 
   // ── Payment getters ──────────────────────────────────────────────────────────
@@ -167,32 +158,47 @@ export class ActiveOrdersComponent {
   confirmFullPayment(): void {
     if (!this.canConfirm || !this.activePaymentOrder) return;
     const order = this.activePaymentOrder;
-    order.orderItems.forEach(i => (i.paid = true));
-    const changeAmt = this.change;
-    this.flashSuccess(`Order #${order.id} fully paid. Change: ${changeAmt.toFixed(2)} TND`);
-    this.closePayment();
-    this.orders = this.orders.filter(o => o.id !== order.id);
+
+    this.orderService.payOrder(order.id, { paymentType: 'full' }).subscribe({
+      next: () => {
+        const changeAmt = this.change;
+        this.flashSuccess(`Order #${order.id} fully paid. Change: ${changeAmt.toFixed(2)} TND`);
+        this.closePayment();
+        this.orders = this.orders.filter(o => o.id !== order.id);
+      },
+      error: (err) => {
+        alert('Failed to process payment: ' + (err.error?.message || 'Server error'));
+      }
+    });
   }
 
   confirmSplitPayment(): void {
     if (!this.canConfirm || !this.activePaymentOrder) return;
     const order = this.activePaymentOrder;
-    const selectedItems = order.orderItems.filter(i => i.selected && !i.paid);
-    selectedItems.forEach(i => {
-      i.paid = true;
-      i.selected = false;
-    });
+    const selectedItemIds = order.orderItems
+      .filter(i => i.selected && !i.paid && i.id)
+      .map(i => i.id!);
 
-    const changeAmt = this.change;
-    const allPaid = order.orderItems.every(i => i.paid);
-    if (allPaid) {
-      this.flashSuccess(`Order #${order.id} fully paid. Change: ${changeAmt.toFixed(2)} TND. Order completed!`);
-      this.closePayment();
-      this.orders = this.orders.filter(o => o.id !== order.id);
-    } else {
-      this.flashSuccess(`Partial payment confirmed for Order #${order.id}. Change: ${changeAmt.toFixed(2)} TND`);
-      this.amountGiven = null;
-    }
+    this.orderService.payOrder(order.id, { paymentType: 'split', itemIds: selectedItemIds }).subscribe({
+      next: (updatedOrder) => {
+        const changeAmt = this.change;
+        if (updatedOrder.status === 'Completed') {
+          this.flashSuccess(`Order #${order.id} fully paid. Change: ${changeAmt.toFixed(2)} TND. Order completed!`);
+          this.closePayment();
+          this.orders = this.orders.filter(o => o.id !== order.id);
+        } else {
+          this.flashSuccess(`Partial payment confirmed for Order #${order.id}. Change: ${changeAmt.toFixed(2)} TND`);
+          const idx = this.orders.findIndex(o => o.id === order.id);
+          if (idx !== -1) {
+            this.orders[idx] = updatedOrder;
+          }
+          this.amountGiven = null;
+        }
+      },
+      error: (err) => {
+        alert('Failed to process split payment: ' + (err.error?.message || 'Server error'));
+      }
+    });
   }
 
   typeClasses(type: ActiveOrder['type']): string {
@@ -200,6 +206,7 @@ export class ActiveOrdersComponent {
       case 'Dine-in': return 'bg-caramel/10 text-caramel-dark';
       case 'Takeaway': return 'bg-cream-dark text-espresso-light/70';
       case 'QR': return 'bg-sage/15 text-sage';
+      default: return 'bg-cream-dark text-espresso-light/70';
     }
   }
 

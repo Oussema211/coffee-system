@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { MenuItem, MenuService } from '../../../core/menu.service';
 import { TableService, TableItem } from '../../../core/table.service';
+import { OrderService, CreateOrderRequest } from '../../../core/order.service';
 
 interface CartLine {
   item: MenuItem;
@@ -40,7 +41,8 @@ export class NewOrderComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private tableService: TableService,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private orderService: OrderService
   ) {
     // If we arrived here from a table card ("Start order"), preselect that table.
     const tableParam = this.route.snapshot.queryParamMap.get('table');
@@ -128,15 +130,31 @@ export class NewOrderComponent implements OnInit {
     if (!this.canPlaceOrder) return;
 
     this.placing = true;
-    setTimeout(() => {
-      this.placing = false;
-      this.placedMessage =
-        this.orderType === 'Dine-in'
-          ? `Order sent to the counter — Table ${this.selectedTable}.`
-          : 'Takeaway order sent to the counter.';
-      this.clearCart();
-      this.selectedTable = null;
-      setTimeout(() => (this.placedMessage = ''), 3000);
-    }, 500);
+    const payload: CreateOrderRequest = {
+      orderType: this.orderType,
+      tableNumber: this.orderType === 'Dine-in' ? this.selectedTable : null,
+      items: this.cart.map(line => ({
+        menuItemId: line.item.id,
+        quantity: line.qty
+      }))
+    };
+
+    this.orderService.createOrder(payload).subscribe({
+      next: (createdOrder) => {
+        this.placing = false;
+        this.placedMessage =
+          this.orderType === 'Dine-in'
+            ? `Order #${createdOrder.id} sent to the counter — Table ${this.selectedTable}.`
+            : `Takeaway order #${createdOrder.id} sent to the counter.`;
+        this.clearCart();
+        this.selectedTable = null;
+        setTimeout(() => (this.placedMessage = ''), 3500);
+      },
+      error: (err) => {
+        this.placing = false;
+        this.placedMessage = 'Failed to place order: ' + (err.error?.message || 'Server error');
+        setTimeout(() => (this.placedMessage = ''), 3500);
+      }
+    });
   }
 }

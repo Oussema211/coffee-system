@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/uploads/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/worker/**").hasRole("WORKER")
+                        .requestMatchers("/api/worker/**").hasAnyRole("WORKER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

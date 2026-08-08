@@ -16,6 +16,22 @@
     </div>
   }
 
+  @if (loading) {
+    <div class="bg-white rounded-3xl border-2 border-cream-dark p-12 text-center text-espresso-light/60 text-base font-medium flex items-center justify-center gap-3 mb-6">
+      <svg class="animate-spin w-5 h-5 text-caramel" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
+      </svg>
+      Loading active orders...
+    </div>
+  } @else if (error) {
+    <div class="bg-red-50 border border-red-200 text-red-700 text-base rounded-3xl p-6 text-center font-medium mb-6 flex justify-between items-center">
+      <span>{{ error }}</span>
+      <button (click)="loadActiveOrders()" class="text-xs font-bold uppercase tracking-wider text-red-700 bg-red-100 hover:bg-red-200 px-4 py-2 rounded-xl transition cursor-pointer">
+        Retry
+      </button>
+    </div>
+  }
+
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
     <!-- Preparing column -->
