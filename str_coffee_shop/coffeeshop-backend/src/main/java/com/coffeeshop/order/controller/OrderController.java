@@ -39,6 +39,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updateOrderStatus(id, request.getStatus()));
     }
 
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<OrderDTO> cancelOrder(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.cancelOrder(id));
+    }
+
     @PostMapping("/{id}/pay")
     public ResponseEntity<OrderDTO> payOrder(
             @PathVariable Long id,

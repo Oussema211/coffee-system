@@ -24,7 +24,11 @@ export class ActiveOrdersComponent implements OnInit {
   paymentMode: 'full' | 'split' = 'full';
   amountGiven: number | null = null;
 
-  // Payment success flash
+  // ── Cancel Order modal state ────────────────────────────────────────────────
+  cancelModalOpen = false;
+  orderToCancel: ActiveOrder | null = null;
+
+  // Payment/Action success flash
   paymentSuccess = false;
   paymentSuccessMessage = '';
 
@@ -72,6 +76,33 @@ export class ActiveOrdersComponent implements OnInit {
       },
       error: (err) => {
         alert('Failed to update status: ' + (err.error?.message || 'Server error'));
+      }
+    });
+  }
+
+  // ── Cancel Order Actions ────────────────────────────────────────────────────
+
+  openCancelModal(order: ActiveOrder): void {
+    this.orderToCancel = order;
+    this.cancelModalOpen = true;
+  }
+
+  closeCancelModal(): void {
+    this.cancelModalOpen = false;
+    this.orderToCancel = null;
+  }
+
+  confirmCancelOrder(): void {
+    if (!this.orderToCancel) return;
+    const order = this.orderToCancel;
+    this.orderService.cancelOrder(order.id).subscribe({
+      next: () => {
+        this.orders = this.orders.filter(o => o.id !== order.id);
+        this.flashSuccess(`Order #${order.id} was successfully cancelled.`);
+        this.closeCancelModal();
+      },
+      error: (err) => {
+        alert('Failed to cancel order: ' + (err.error?.message || 'Server error'));
       }
     });
   }

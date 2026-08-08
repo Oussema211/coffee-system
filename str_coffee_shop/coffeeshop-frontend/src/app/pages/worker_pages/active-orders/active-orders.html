@@ -59,11 +59,16 @@
 
             <p class="text-espresso text-base font-medium mb-6 bg-cream/50 p-4 rounded-2xl border border-cream-dark">{{ order.items.join(', ') }}</p>
 
-            <div class="flex items-center justify-between pt-2">
+            <div class="flex items-center justify-between pt-2 gap-2">
               <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} TND</span>
-              <button (click)="advance(order)" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
-                ✓ Mark Ready
-              </button>
+              <div class="flex items-center gap-2">
+                <button (click)="openCancelModal(order)" class="text-sm font-bold text-red-600 bg-red-50 border-2 border-red-200/80 hover:bg-red-100 hover:border-red-300 px-4 py-3.5 rounded-2xl active:scale-95 transition min-h-[52px] cursor-pointer flex items-center gap-1.5" title="Cancel order">
+                  🚫 Cancel
+                </button>
+                <button (click)="advance(order)" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
+                  ✓ Mark Ready
+                </button>
+              </div>
             </div>
           </div>
         }
@@ -108,18 +113,23 @@
 
             <p class="text-espresso text-base font-medium mb-6 bg-caramel/8 p-4 rounded-2xl border border-caramel/20">{{ order.items.join(', ') }}</p>
 
-            <div class="flex items-center justify-between pt-2">
+            <div class="flex items-center justify-between pt-2 gap-2">
               <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} TND</span>
 
-              @if (order.status === 'Ready') {
-                <button (click)="advance(order)" class="text-base font-bold text-caramel-dark bg-caramel/15 border-2 border-caramel/30 px-6 py-3.5 rounded-2xl hover:bg-caramel/25 active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
-                  ✓ Mark Served
+              <div class="flex items-center gap-2">
+                <button (click)="openCancelModal(order)" class="text-sm font-bold text-red-600 bg-red-50 border-2 border-red-200/80 hover:bg-red-100 hover:border-red-300 px-4 py-3.5 rounded-2xl active:scale-95 transition min-h-[52px] cursor-pointer flex items-center gap-1.5" title="Cancel order">
+                  🚫 Cancel
                 </button>
-              } @else if (order.status === 'Served') {
-                <button (click)="openPayment(order)" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
-                  💳 Pay Order
-                </button>
-              }
+                @if (order.status === 'Ready') {
+                  <button (click)="advance(order)" class="text-base font-bold text-caramel-dark bg-caramel/15 border-2 border-caramel/30 px-6 py-3.5 rounded-2xl hover:bg-caramel/25 active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
+                    ✓ Mark Served
+                  </button>
+                } @else if (order.status === 'Served') {
+                  <button (click)="openPayment(order)" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
+                    💳 Pay Order
+                  </button>
+                }
+              </div>
             </div>
           </div>
         }
@@ -314,5 +324,30 @@
       }
     </div>
 
+  </div>
+}
+
+<!-- ─── Cancel Order Modal ─── -->
+@if (cancelModalOpen && orderToCancel) {
+  <div class="modal-backdrop" (click)="closeCancelModal()"></div>
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border-2 border-cream-dark shadow-2xl p-6 sm:p-8 max-w-md w-full text-center relative">
+      <div class="w-16 h-16 rounded-2xl bg-red-100 text-red-600 text-3xl font-bold flex items-center justify-center mx-auto mb-4">
+        ⚠️
+      </div>
+      <h3 class="font-display text-2xl font-bold text-espresso mb-2">Cancel Order #{{ orderToCancel.id }}?</h3>
+      <p class="text-espresso-light/70 text-sm mb-6 font-medium leading-relaxed">
+        Are you sure you want to cancel this order for {{ orderToCancel.table ? 'Table ' + orderToCancel.table : 'Takeaway' }}? This will release the table and remove the order from active orders.
+      </p>
+
+      <div class="flex gap-3">
+        <button (click)="closeCancelModal()" class="flex-1 py-3.5 px-4 rounded-2xl border-2 border-cream-dark text-espresso font-bold text-sm hover:bg-cream/60 transition cursor-pointer min-h-[48px]">
+          Keep Order
+        </button>
+        <button (click)="confirmCancelOrder()" class="flex-1 py-3.5 px-4 rounded-2xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 active:scale-95 transition cursor-pointer shadow-md min-h-[48px]">
+          Yes, Cancel Order
+        </button>
+      </div>
+    </div>
   </div>
 }

@@ -20,7 +20,7 @@ export interface OrderDTO {
   orderItems: OrderItemDTO[];
   total: number;
   time: string;
-  status: 'Preparing' | 'Ready' | 'Served' | 'Completed';
+  status: 'Preparing' | 'Ready' | 'Served' | 'Completed' | 'Cancelled';
 }
 
 export interface CreateOrderItemRequest {
@@ -59,6 +59,10 @@ export class OrderService {
 
   updateOrderStatus(orderId: number, status: string): Observable<OrderDTO> {
     return this.http.patch<OrderDTO>(`${this.baseUrl}/${orderId}/status`, { status });
+  }
+
+  cancelOrder(orderId: number): Observable<OrderDTO> {
+    return this.http.patch<OrderDTO>(`${this.baseUrl}/${orderId}/cancel`, {});
   }
 
   payOrder(orderId: number, payload: PaymentRequest): Observable<OrderDTO> {

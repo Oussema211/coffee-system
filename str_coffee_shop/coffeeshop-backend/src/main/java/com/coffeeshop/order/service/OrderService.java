@@ -25,6 +25,7 @@ public class OrderService {
     private final MenuItemRepository menuItemRepository;
     private final RestaurantTableRepository tableRepository;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
+    private static final List<String> INACTIVE_STATUSES = List.of("Completed", "Cancelled");
 
     @Transactional
     public OrderDTO createOrder(CreateOrderRequest request) {
@@ -34,7 +35,7 @@ public class OrderService {
         boolean isExisting = false;
 
         if (tableNum != null) {
-            List<Order> existingActive = orderRepository.findByTableNumberAndStatusNot(tableNum, "Completed");
+            List<Order> existingActive = orderRepository.findByTableNumberAndStatusNotIn(tableNum, INACTIVE_STATUSES);
             if (!existingActive.isEmpty()) {
                 order = existingActive.get(0);
                 isExisting = true;
@@ -99,7 +100,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<OrderDTO> getActiveOrders() {
-        return orderRepository.findByStatusNotOrderByCreatedAtDesc("Completed")
+        return orderRepository.findByStatusNotInOrderByCreatedAtDesc(INACTIVE_STATUSES)
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
@@ -117,9 +118,35 @@ public class OrderService {
     public OrderDTO updateOrderStatus(Long orderId, String newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + orderId));
+
+        if ("Cancelled".equalsIgnoreCase(newStatus)) {
+            return cancelOrder(orderId);
+        }
+
         order.setStatus(newStatus);
         Order updated = orderRepository.save(order);
         return mapToDTO(updated);
+    }
+
+    @Transactional
+    public OrderDTO cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + orderId));
+
+        order.setStatus("Cancelled");
+        Order cancelledOrder = orderRepository.save(order);
+
+        if (cancelledOrder.getTableNumber() != null) {
+            List<Order> remainingActive = orderRepository.findByTableNumberAndStatusNotIn(cancelledOrder.getTableNumber(), INACTIVE_STATUSES);
+            if (remainingActive.isEmpty()) {
+                tableRepository.findByNumber(cancelledOrder.getTableNumber()).ifPresent(t -> {
+                    t.setStatus("Available");
+                    tableRepository.save(t);
+                });
+            }
+        }
+
+        return mapToDTO(cancelledOrder);
     }
 
     @Transactional
@@ -129,7 +156,7 @@ public class OrderService {
 
         List<Order> ordersToPay = new ArrayList<>();
         if (targetOrder.getTableNumber() != null) {
-            ordersToPay = orderRepository.findByTableNumberAndStatusNot(targetOrder.getTableNumber(), "Completed");
+            ordersToPay = orderRepository.findByTableNumberAndStatusNotIn(targetOrder.getTableNumber(), INACTIVE_STATUSES);
         }
         if (ordersToPay.isEmpty()) {
             ordersToPay.add(targetOrder);
@@ -159,7 +186,7 @@ public class OrderService {
         }
 
         if (targetOrder.getTableNumber() != null) {
-            List<Order> remainingActive = orderRepository.findByTableNumberAndStatusNot(targetOrder.getTableNumber(), "Completed");
+            List<Order> remainingActive = orderRepository.findByTableNumberAndStatusNotIn(targetOrder.getTableNumber(), INACTIVE_STATUSES);
             if (remainingActive.isEmpty()) {
                 tableRepository.findByNumber(targetOrder.getTableNumber()).ifPresent(t -> {
                     t.setStatus("Cleaning");
@@ -202,4 +229,3 @@ public class OrderService {
                 .build();
     }
 }
-
