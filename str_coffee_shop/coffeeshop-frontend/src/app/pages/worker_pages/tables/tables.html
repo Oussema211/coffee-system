@@ -183,15 +183,15 @@
         <div class="flex flex-col gap-2">
           @for (item of unpaidItems; track item.id) {
             <div
-              (click)="paymentMode === 'split' ? (item.selected = !item.selected) : null"
-              [class]="paymentMode === 'split' ? (item.selected ? 'border-caramel bg-caramel/8' : 'border-cream-dark bg-white hover:bg-cream/60') : 'border-cream-dark bg-cream/40'"
+              (click)="paymentMode === 'split' ? toggleItemSelection(item) : null"
+              [class]="paymentMode === 'split' ? ((item.selectedQty ?? 0) > 0 ? 'border-caramel bg-caramel/8' : 'border-cream-dark bg-white hover:bg-cream/60') : 'border-cream-dark bg-cream/40'"
               class="flex items-center gap-4 rounded-2xl border-2 px-4 py-3.5 transition"
               [class.cursor-pointer]="paymentMode === 'split'"
             >
               <!-- Split mode checkbox -->
               @if (paymentMode === 'split') {
-                <div [class]="item.selected ? 'bg-caramel border-caramel' : 'bg-white border-cream-dark'" class="w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition">
-                  @if (item.selected) {
+                <div [class]="(item.selectedQty ?? 0) > 0 ? 'bg-caramel border-caramel' : 'bg-white border-cream-dark'" class="w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition">
+                  @if ((item.selectedQty ?? 0) > 0) {
                     <span class="text-white text-xs font-black">✓</span>
                   }
                 </div>
@@ -205,6 +205,13 @@
                   <p class="text-xs text-espresso-light/50 font-medium">Qty: {{ item.qty }}</p>
                 }
               </div>
+              @if (paymentMode === 'split') {
+                <div class="flex items-center gap-1 shrink-0" (click)="$event.stopPropagation()">
+                  <button (click)="changeSelectedQuantity(item, -1)" [disabled]="(item.selectedQty ?? 0) === 0" class="w-7 h-7 rounded-lg border border-cream-dark font-bold disabled:opacity-35 cursor-pointer">−</button>
+                  <span class="w-8 text-center text-sm font-bold">{{ item.selectedQty ?? 0 }}/{{ item.qty }}</span>
+                  <button (click)="changeSelectedQuantity(item, 1)" [disabled]="(item.selectedQty ?? 0) === item.qty" class="w-7 h-7 rounded-lg border border-cream-dark font-bold disabled:opacity-35 cursor-pointer">+</button>
+                </div>
+              }
               <span class="font-bold text-base text-espresso shrink-0">{{ (item.price * item.qty) | number:'1.2-2' }} TND</span>
             </div>
           }
@@ -310,7 +317,7 @@
           [disabled]="!canConfirm"
           class="confirm-btn"
         >
-          ✓ Confirm Partial Payment ({{ unpaidItems.filter(i => i.selected).length }} item{{ unpaidItems.filter(i => i.selected).length === 1 ? '' : 's' }})
+          ✓ Confirm Partial Payment ({{ selectedQuantity }} item{{ selectedQuantity === 1 ? '' : 's' }})
         </button>
       }
     </div>

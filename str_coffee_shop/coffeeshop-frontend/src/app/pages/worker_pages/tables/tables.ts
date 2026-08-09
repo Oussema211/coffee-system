@@ -14,6 +14,7 @@ export interface OrderItem {
   seatLabel?: string; // e.g. "Seat 1", "Guest A"
   paid: boolean;
   selected: boolean; // used in split-bill mode
+  selectedQty?: number;
 }
 
 interface TableInfo {
@@ -75,7 +76,8 @@ export class TablesComponent implements OnInit {
             price: item.price,
             qty: item.qty,
             paid: item.paid,
-            selected: false
+            selected: false,
+            selectedQty: 0
           }))
         }));
         this.tablesLoading = false;
@@ -102,8 +104,7 @@ export class TablesComponent implements OnInit {
   /** Split bill — total of checked items only */
   get splitTotal(): number {
     return this.unpaidItems
-      .filter(i => i.selected)
-      .reduce((s, i) => s + i.price * i.qty, 0);
+      .reduce((s, i) => s + i.price * (i.selectedQty ?? 0), 0);
   }
 
   /** The amount this payment mode is requesting */
@@ -124,13 +125,13 @@ export class TablesComponent implements OnInit {
   }
 
   get canConfirm(): boolean {
-    if (this.paymentMode === 'split' && this.unpaidItems.filter(i => i.selected).length === 0) return false;
+    if (this.paymentMode === 'split' && !this.hasSplitSelection) return false;
     if (this.amountGiven == null || this.amountGiven < this.currentTotal) return false;
     return true;
   }
 
   get hasSplitSelection(): boolean {
-    return this.unpaidItems.some(i => i.selected);
+    return this.unpaidItems.some(i => (i.selectedQty ?? 0) > 0);
   }
 
   // ── Quick-amount helpers ─────────────────────────────────────────────────────
@@ -154,7 +155,7 @@ export class TablesComponent implements OnInit {
     this.paymentMode = 'full';
     this.amountGiven = null;
     // Reset split selections
-    table.orderItems.forEach(i => (i.selected = false));
+    table.orderItems.forEach(i => { i.selected = false; i.selectedQty = 0; });
     this.paymentModalOpen = true;
   }
 
@@ -168,7 +169,7 @@ export class TablesComponent implements OnInit {
     this.paymentMode = mode;
     this.amountGiven = null;
     // Reset selections when switching
-    this.activePaymentTable?.orderItems.forEach(i => (i.selected = false));
+    this.activePaymentTable?.orderItems.forEach(i => { i.selected = false; i.selectedQty = 0; });
   }
 
   // ── Payment actions ──────────────────────────────────────────────────────────
@@ -202,12 +203,17 @@ export class TablesComponent implements OnInit {
     if (!this.canConfirm || !this.activePaymentTable) return;
     const table = this.activePaymentTable;
     const changeAmt = this.change;
-    const selectedItemIds = table.orderItems.filter(i => i.selected && !i.paid).map(i => i.id);
+    const selectedItems = table.orderItems
+      .filter(i => !i.paid && (i.selectedQty ?? 0) > 0)
+      .map(i => ({ itemId: i.id, quantity: i.selectedQty! }));
 
     if (!table.activeOrderId) {
-      table.orderItems.filter(i => i.selected && !i.paid).forEach(i => {
-        i.paid = true;
+      table.orderItems.filter(i => !i.paid && (i.selectedQty ?? 0) > 0).forEach(i => {
+        const quantityToPay = i.selectedQty!;
+        if (quantityToPay === i.qty) i.paid = true;
+        else i.qty -= quantityToPay;
         i.selected = false;
+        i.selectedQty = 0;
       });
       const allPaid = table.orderItems.every(i => i.paid);
       if (allPaid) {
@@ -222,7 +228,7 @@ export class TablesComponent implements OnInit {
       return;
     }
 
-    this.orderService.payOrder(table.activeOrderId, { paymentType: 'split', itemIds: selectedItemIds }).subscribe({
+    this.orderService.payOrder(table.activeOrderId, { paymentType: 'split', items: selectedItems }).subscribe({
       next: (updatedOrder) => {
         const allPaid = updatedOrder.status === 'Completed';
         if (allPaid) {
@@ -242,6 +248,21 @@ export class TablesComponent implements OnInit {
 
   setQuickAmount(amount: number): void {
     this.amountGiven = amount;
+  }
+
+  toggleItemSelection(item: OrderItem): void {
+    item.selectedQty = item.selectedQty ? 0 : 1;
+    item.selected = !!item.selectedQty;
+  }
+
+  changeSelectedQuantity(item: OrderItem, change: number): void {
+    const next = Math.max(0, Math.min(item.qty, (item.selectedQty ?? 0) + change));
+    item.selectedQty = next;
+    item.selected = next > 0;
+  }
+
+  get selectedQuantity(): number {
+    return this.unpaidItems.reduce((total, item) => total + (item.selectedQty ?? 0), 0);
   }
 
   // ── Table status actions ──────────────────────────────────────────────────────

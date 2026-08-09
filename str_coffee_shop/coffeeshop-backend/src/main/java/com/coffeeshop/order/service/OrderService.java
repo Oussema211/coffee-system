@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -245,11 +246,38 @@ public class OrderService {
                 o.setStatus("Completed");
                 orderRepository.save(o);
             }
-        } else if ("split".equalsIgnoreCase(paymentRequest.getPaymentType()) && paymentRequest.getItemIds() != null) {
+        } else if ("split".equalsIgnoreCase(paymentRequest.getPaymentType()) && paymentRequest.getItems() != null) {
+            Map<Long, Integer> quantitiesToPay = paymentRequest.getItems().stream()
+                    .filter(item -> item.getItemId() != null && item.getQuantity() != null)
+                    .collect(Collectors.toMap(
+                            PaymentItemRequest::getItemId,
+                            PaymentItemRequest::getQuantity,
+                            Integer::sum
+                    ));
+            if (quantitiesToPay.isEmpty()) {
+                throw new IllegalArgumentException("Select at least one item to pay");
+            }
             for (Order o : ordersToPay) {
-                for (OrderItem item : o.getItems()) {
-                    if (paymentRequest.getItemIds().contains(item.getId())) {
-                        item.setPaid(true);
+                for (OrderItem item : new ArrayList<>(o.getItems())) {
+                    Integer quantityToPay = quantitiesToPay.get(item.getId());
+                    if (quantityToPay != null) {
+                        if (item.isPaid() || quantityToPay < 1 || quantityToPay > item.getQuantity()) {
+                            throw new IllegalArgumentException("Invalid quantity selected for " + item.getName());
+                        }
+                        if (quantityToPay.equals(item.getQuantity())) {
+                            item.setPaid(true);
+                        } else {
+                            OrderItem paidPortion = OrderItem.builder()
+                                    .order(o)
+                                    .menuItemId(item.getMenuItemId())
+                                    .name(item.getName())
+                                    .unitPrice(item.getUnitPrice())
+                                    .quantity(quantityToPay)
+                                    .paid(true)
+                                    .build();
+                            item.setQuantity(item.getQuantity() - quantityToPay);
+                            o.getItems().add(paidPortion);
+                        }
                     }
                 }
                 boolean allPaid = o.getItems().stream().allMatch(OrderItem::isPaid);

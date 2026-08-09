@@ -10,6 +10,7 @@ export interface OrderItemDTO {
   qty: number;
   paid: boolean;
   selected?: boolean;
+  selectedQty?: number;
 }
 
 export interface OrderDTO {
@@ -37,7 +38,12 @@ export interface CreateOrderRequest {
 
 export interface PaymentRequest {
   paymentType: 'full' | 'split';
-  itemIds?: number[];
+  items?: PaymentItemRequest[];
+}
+
+export interface PaymentItemRequest {
+  itemId: number;
+  quantity: number;
 }
 
 export interface ReceiptDTO {

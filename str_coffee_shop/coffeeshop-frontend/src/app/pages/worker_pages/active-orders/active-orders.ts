@@ -131,8 +131,7 @@ export class ActiveOrdersComponent implements OnInit {
 
   get splitTotal(): number {
     return this.unpaidItems
-      .filter(i => i.selected)
-      .reduce((s, i) => s + i.price * i.qty, 0);
+      .reduce((s, i) => s + i.price * (i.selectedQty ?? 0), 0);
   }
 
   get currentTotal(): number {
@@ -150,13 +149,13 @@ export class ActiveOrdersComponent implements OnInit {
   }
 
   get canConfirm(): boolean {
-    if (this.paymentMode === 'split' && this.unpaidItems.filter(i => i.selected).length === 0) return false;
+    if (this.paymentMode === 'split' && !this.hasSplitSelection) return false;
     if (this.amountGiven == null || this.amountGiven < this.currentTotal) return false;
     return true;
   }
 
   get hasSplitSelection(): boolean {
-    return this.unpaidItems.some(i => i.selected);
+    return this.unpaidItems.some(i => (i.selectedQty ?? 0) > 0);
   }
 
   get quickAmounts(): number[] {
@@ -178,7 +177,7 @@ export class ActiveOrdersComponent implements OnInit {
     this.activePaymentOrder = order;
     this.paymentMode = 'full';
     this.amountGiven = null;
-    order.orderItems.forEach(i => (i.selected = false));
+    order.orderItems.forEach(i => { i.selected = false; i.selectedQty = 0; });
     this.paymentModalOpen = true;
   }
 
@@ -191,11 +190,26 @@ export class ActiveOrdersComponent implements OnInit {
   switchMode(mode: 'full' | 'split'): void {
     this.paymentMode = mode;
     this.amountGiven = null;
-    this.activePaymentOrder?.orderItems.forEach(i => (i.selected = false));
+    this.activePaymentOrder?.orderItems.forEach(i => { i.selected = false; i.selectedQty = 0; });
   }
 
   setQuickAmount(amount: number): void {
     this.amountGiven = amount;
+  }
+
+  toggleItemSelection(item: OrderItem): void {
+    item.selectedQty = item.selectedQty ? 0 : 1;
+    item.selected = !!item.selectedQty;
+  }
+
+  changeSelectedQuantity(item: OrderItem, change: number): void {
+    const next = Math.max(0, Math.min(item.qty, (item.selectedQty ?? 0) + change));
+    item.selectedQty = next;
+    item.selected = next > 0;
+  }
+
+  get selectedQuantity(): number {
+    return this.unpaidItems.reduce((total, item) => total + (item.selectedQty ?? 0), 0);
   }
 
   confirmFullPayment(): void {
@@ -218,11 +232,11 @@ export class ActiveOrdersComponent implements OnInit {
   confirmSplitPayment(): void {
     if (!this.canConfirm || !this.activePaymentOrder) return;
     const order = this.activePaymentOrder;
-    const selectedItemIds = order.orderItems
-      .filter(i => i.selected && !i.paid && i.id)
-      .map(i => i.id!);
+    const selectedItems = order.orderItems
+      .filter(i => !i.paid && i.id && (i.selectedQty ?? 0) > 0)
+      .map(i => ({ itemId: i.id!, quantity: i.selectedQty! }));
 
-    this.orderService.payOrder(order.id, { paymentType: 'split', itemIds: selectedItemIds }).subscribe({
+    this.orderService.payOrder(order.id, { paymentType: 'split', items: selectedItems }).subscribe({
       next: (updatedOrder) => {
         const changeAmt = this.change;
         if (updatedOrder.status === 'Completed') {
