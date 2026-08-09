@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { CustomerService } from '../../../core/customer.service';
 import { MenuItem } from '../../../core/menu.service';
@@ -10,7 +11,7 @@ interface CartItem extends MenuItem { quantity: number; }
 @Component({
   selector: 'app-customer-menu',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './customer-menu.html',
   styleUrl: './customer-menu.css'
 })
@@ -20,6 +21,9 @@ export class CustomerMenuComponent implements OnInit {
   loading = true;
   error = '';
   menu: MenuItem[] = [];
+  categories: string[] = ['All'];
+  activeCategory = 'All';
+  searchQuery = '';
   cart = new Map<number, CartItem>();
   orderSent = false;
   submitting = false;
@@ -35,12 +39,25 @@ export class CustomerMenuComponent implements OnInit {
       return;
     }
     forkJoin({ table: this.customerService.getTable(this.tableNumber), menu: this.customerService.getMenu() }).subscribe({
-      next: ({ menu }) => { this.tableValid = true; this.menu = menu; this.loading = false; },
+      next: ({ menu }) => {
+        this.tableValid = true;
+        this.menu = menu;
+        this.categories = ['All', ...Array.from(new Set(menu.map(item => item.category))).filter(Boolean)];
+        this.loading = false;
+      },
       error: () => { this.error = 'This table is not available. Please ask a member of staff for help.'; this.loading = false; }
     });
   }
 
   quantity(item: MenuItem): number { return this.cart.get(item.id)?.quantity ?? 0; }
+  get filteredMenu(): MenuItem[] {
+    const search = this.searchQuery.trim().toLowerCase();
+    return this.menu.filter(item => {
+      const matchesCategory = this.activeCategory === 'All' || item.category === this.activeCategory;
+      const matchesSearch = !search || item.name.toLowerCase().includes(search) || item.category.toLowerCase().includes(search);
+      return matchesCategory && matchesSearch;
+    });
+  }
   add(item: MenuItem): void {
     const current = this.cart.get(item.id);
     this.cart.set(item.id, { ...item, quantity: (current?.quantity ?? 0) + 1 });

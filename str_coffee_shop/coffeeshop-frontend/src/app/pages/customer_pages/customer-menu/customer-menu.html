@@ -2,7 +2,7 @@
   <header class="menu-header">
     <span class="eyebrow">Coffee Shop</span>
     <h1>Table {{ tableNumber }}</h1>
-    <p>Choose your favourites, then send your order directly to the team.</p>
+    <p>Search or tap any item to add it to your order.</p>
   </header>
 
   <section class="state" *ngIf="loading">Loading the menu…</section>
@@ -16,29 +16,44 @@
   </section>
 
   <ng-container *ngIf="tableValid && !orderSent">
+    <div class="search-wrap">
+      <span>⌕</span>
+      <input [(ngModel)]="searchQuery" type="search" placeholder="Search menu items…" aria-label="Search menu items" />
+      <button *ngIf="searchQuery" (click)="searchQuery = ''" aria-label="Clear search">Clear</button>
+    </div>
+
+    <nav class="category-tabs" aria-label="Menu categories">
+      <button *ngFor="let category of categories" (click)="activeCategory = category" [class.active]="activeCategory === category">
+        {{ category }}
+      </button>
+    </nav>
+
     <section class="menu-grid">
-      <article class="menu-item" *ngFor="let item of menu">
+      <button class="menu-item" *ngFor="let item of filteredMenu" (click)="add(item)">
         <img *ngIf="item.imageUrl" [src]="item.imageUrl" [alt]="item.name" />
         <div class="item-content">
           <p class="category">{{ item.category }}</p>
           <h2>{{ item.name }}</h2>
           <p class="price">{{ item.price | number:'1.2-2' }} TND</p>
-          <div class="quantity-controls" *ngIf="quantity(item); else addButton">
+          <div class="quantity-controls" *ngIf="quantity(item)" (click)="$event.stopPropagation()">
             <button (click)="remove(item)" [attr.aria-label]="'Remove ' + item.name">−</button>
             <span>{{ quantity(item) }}</span>
             <button (click)="add(item)" [attr.aria-label]="'Add ' + item.name">+</button>
           </div>
-          <ng-template #addButton><button class="add-button" (click)="add(item)">Add to order</button></ng-template>
+          <span class="tap-to-add" *ngIf="!quantity(item)">Tap to add</span>
         </div>
-      </article>
+      </button>
     </section>
-    <p class="state" *ngIf="!menu.length">There are no available items right now.</p>
+
+    <p class="state" *ngIf="!filteredMenu.length">
+      {{ searchQuery ? 'No items match your search.' : 'There are no items in this category right now.' }}
+    </p>
   </ng-container>
 </main>
 
 <aside class="cart-bar" *ngIf="tableValid && !orderSent && itemCount">
   <div><strong>{{ itemCount }} item{{ itemCount !== 1 ? 's' : '' }}</strong><span>{{ total | number:'1.2-2' }} TND</span></div>
-  <button (click)="confirmOrder()" [disabled]="submitting">{{ submitting ? 'Sending…' : 'Confirm order' }}</button>
+  <button (click)="confirmOrder()" [disabled]="submitting">{{ submitting ? 'Sending…' : 'Review & confirm' }}</button>
 </aside>
 
 <p class="request-error" *ngIf="tableValid && error">{{ error }}</p>
