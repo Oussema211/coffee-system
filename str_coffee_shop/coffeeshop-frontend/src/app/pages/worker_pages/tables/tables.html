@@ -94,7 +94,7 @@
           @if (table.status === 'Occupied') {
             @if (table.orderItems.length > 0) {
               <button (click)="printBill(table)" class="w-full text-sm font-bold text-espresso bg-cream border-2 border-espresso/20 hover:bg-cream-dark py-2.5 rounded-2xl active:scale-95 transition min-h-[46px] cursor-pointer flex items-center justify-center gap-2">
-                🖨️ Print Bill
+                {{ billWasPrinted(table) ? '🖨️ Reprint Bill' : '🖨️ Print Bill' }}
               </button>
               <button (click)="openPayment(table)" class="w-full text-sm font-bold text-cream bg-caramel-dark hover:bg-caramel py-3 rounded-2xl active:scale-95 transition shadow-sm min-h-[48px] cursor-pointer flex items-center justify-center gap-2">
                 💳 Pay Bill

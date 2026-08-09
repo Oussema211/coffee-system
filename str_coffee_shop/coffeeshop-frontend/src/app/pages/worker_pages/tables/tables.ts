@@ -265,6 +265,10 @@ export class TablesComponent implements OnInit {
     this.receiptPrintService.printBill(table.activeOrderId);
   }
 
+  billWasPrinted(table: TableInfo): boolean {
+    return !!table.activeOrderId && this.receiptPrintService.wasPrinted(table.activeOrderId);
+  }
+
   statusClasses(status: TableInfo['status']): string {
     switch (status) {
       case 'Available': return 'bg-sage/15 text-sage';

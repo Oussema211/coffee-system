@@ -60,6 +60,10 @@ export class ActiveOrdersComponent implements OnInit {
     this.receiptPrintService.printBill(order.id);
   }
 
+  billWasPrinted(order: ActiveOrder): boolean {
+    return this.receiptPrintService.wasPrinted(order.id);
+  }
+
   get preparing(): ActiveOrder[] {
     return this.orders.filter(o => o.status === 'Preparing');
   }

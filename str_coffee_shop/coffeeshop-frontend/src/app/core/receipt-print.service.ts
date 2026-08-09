@@ -3,14 +3,16 @@ import { OrderService, ReceiptDTO } from './order.service';
 
 @Injectable({ providedIn: 'root' })
 export class ReceiptPrintService {
+  private readonly printedBillIds = new Set<number>();
+
   constructor(private orderService: OrderService) {}
 
-  printBill(orderId: number): void {
+  printBill(orderId: number): boolean {
     // Open synchronously so browsers do not treat the receipt as an unwanted popup.
     const receiptWindow = window.open('', '_blank', 'width=420,height=700');
     if (!receiptWindow) {
       window.alert('The receipt window was blocked. Please allow popups for this POS site and try again.');
-      return;
+      return false;
     }
 
     receiptWindow.document.write('<p style="font-family: sans-serif; padding: 16px">Preparing receipt…</p>');
@@ -20,6 +22,12 @@ export class ReceiptPrintService {
         receiptWindow.document.body.innerHTML = '<p style="font-family: sans-serif; padding: 16px">Unable to load this receipt. Please try again.</p>';
       }
     });
+    this.printedBillIds.add(orderId);
+    return true;
+  }
+
+  wasPrinted(orderId: number): boolean {
+    return this.printedBillIds.has(orderId);
   }
 
   private render(receiptWindow: Window, receipt: ReceiptDTO): void {
@@ -40,13 +48,13 @@ export class ReceiptPrintService {
         @page { size: 80mm auto; margin: 4mm; }
         * { box-sizing: border-box; }
         body { width: 72mm; margin: 0 auto; color: #111; font: 12px/1.35 Arial, sans-serif; }
-        .center { text-align: center; } h1 { font-size: 17px; margin: 0 0 5px; }
+        .center { text-align: center; } .logo { display: block; max-width: 36mm; max-height: 20mm; margin: 0 auto 5px; object-fit: contain; } h1 { font-size: 17px; margin: 0 0 5px; }
         .muted { color: #444; font-size: 11px; } .line { border-top: 1px dashed #222; margin: 10px 0; }
         table { width: 100%; border-collapse: collapse; } td { padding: 3px 0; vertical-align: top; }
         .amount { text-align: right; white-space: nowrap; } .total { font-size: 16px; font-weight: 700; }
         @media screen { body { padding: 12px; } }
       </style></head><body>
-        <div class="center"><h1>${esc(receipt.shopName)}</h1><div class="muted">${esc(receipt.receiptNumber)}</div></div>
+        <div class="center"><img class="logo" src="${window.location.origin}/logo_one.jpg" alt="${esc(receipt.shopName)} logo"><h1>${esc(receipt.shopName)}</h1><div class="muted">${esc(receipt.receiptNumber)}</div></div>
         <div class="line"></div>
         <div>${esc(location)} · ${esc(receipt.orderTime)}</div>
         ${receipt.workerName ? `<div>Server: ${esc(receipt.workerName)}</div>` : ''}
