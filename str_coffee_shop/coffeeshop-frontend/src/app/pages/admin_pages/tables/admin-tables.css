@@ -327,6 +327,30 @@
   height: 1rem;
 }
 
+.at-qr-btn {
+  position: absolute;
+  top: 0.625rem;
+  right: 2.7rem;
+  border: 1px solid #E0D2BA;
+  background: #fff;
+  color: #7a4a00;
+  border-radius: .4rem;
+  padding: .22rem .35rem;
+  font-size: .62rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.qr-backdrop { position: fixed; z-index: 1000; inset: 0; background: rgba(43,27,20,.45); display: grid; place-items: center; padding: 1rem; }
+.qr-dialog { width: min(100%, 360px); position: relative; background: #fff; border-radius: 1.25rem; padding: 2rem; text-align: center; box-shadow: 0 18px 50px rgba(43,27,20,.25); }
+.qr-dialog h2 { margin: .25rem 0 1.2rem; font-family: var(--font-display, serif); color: #2B1B14; }
+.qr-kicker { margin: 0; color: #A8691E; font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.qr-dialog img { width: min(100%, 250px); display: block; margin: auto; }
+.qr-help { color: rgba(74,52,40,.7); font-size: .85rem; line-height: 1.45; }
+.qr-link { overflow-wrap: anywhere; font-size: .7rem; color: rgba(74,52,40,.55); }
+.qr-close { position: absolute; right: .75rem; top: .5rem; border: 0; background: transparent; font-size: 1.6rem; color: #4A3428; cursor: pointer; }
+.qr-print { border: 0; border-radius: .65rem; background: #2B1B14; color: #fff; padding: .7rem 1rem; font-weight: 600; cursor: pointer; }
+
 /* ── Delete confirm ──────────────────────────────────────────────────── */
 .at-confirm-text {
   font-size: 0.875rem;
@@ -376,4 +400,12 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@media print {
+  body * { visibility: hidden; }
+  .qr-backdrop, .qr-backdrop * { visibility: visible; }
+  .qr-backdrop { position: absolute; background: #fff; padding: 0; }
+  .qr-dialog { box-shadow: none; }
+  .no-print { display: none !important; }
 }

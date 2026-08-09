@@ -20,7 +20,7 @@ export interface OrderDTO {
   orderItems: OrderItemDTO[];
   total: number;
   time: string;
-  status: 'Preparing' | 'Ready' | 'Served' | 'Completed' | 'Cancelled';
+  status: 'Pending' | 'Preparing' | 'Ready' | 'Served' | 'Completed' | 'Cancelled';
 }
 
 export interface CreateOrderItemRequest {
@@ -55,6 +55,10 @@ export class OrderService {
 
   getAllOrders(): Observable<OrderDTO[]> {
     return this.http.get<OrderDTO[]>(`${this.baseUrl}/all`);
+  }
+
+  getPendingQrOrders(): Observable<OrderDTO[]> {
+    return this.http.get<OrderDTO[]>(`${this.baseUrl}/qr-pending`);
   }
 
   updateOrderStatus(orderId: number, status: string): Observable<OrderDTO> {

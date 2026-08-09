@@ -25,6 +25,7 @@ export class AdminTablesComponent implements OnInit {
 
   // Delete confirm
   confirmDeleteId: number | null = null;
+  qrTable: TableItem | null = null;
 
   constructor(private tableService: TableService) {}
 
@@ -102,4 +103,16 @@ export class AdminTablesComponent implements OnInit {
   seatLabel(n: number): string {
     return n === 1 ? '1 seat' : `${n} seats`;
   }
+
+  qrUrl(table: TableItem): string {
+    return window.location.origin + '/menu/table/' + table.number;
+  }
+
+  qrImageUrl(table: TableItem): string {
+    return 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=' + encodeURIComponent(this.qrUrl(table));
+  }
+
+  openQr(table: TableItem): void { this.qrTable = table; }
+  closeQr(): void { this.qrTable = null; }
+  printQr(): void { window.print(); }
 }

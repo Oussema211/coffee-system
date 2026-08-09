@@ -1,0 +1,3 @@
+.state-card { background: #fff; border: 2px solid #eadcc7; border-radius: 1.5rem; padding: 3rem 1.5rem; text-align: center; color: rgba(74,52,40,.65); font-weight: 600; }
+.state-card button { margin-left: .75rem; border: 0; border-radius: .6rem; background: #2b1b14; color: #fff; padding: .5rem .75rem; cursor: pointer; }
+.error-state { color: #ae3030; border-color: #f1bbbb; }

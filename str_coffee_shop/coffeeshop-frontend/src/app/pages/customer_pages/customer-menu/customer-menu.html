@@ -1,0 +1,44 @@
+<main class="menu-page">
+  <header class="menu-header">
+    <span class="eyebrow">Coffee Shop</span>
+    <h1>Table {{ tableNumber }}</h1>
+    <p>Choose your favourites, then send your order directly to the team.</p>
+  </header>
+
+  <section class="state" *ngIf="loading">Loading the menu…</section>
+  <section class="state state-error" *ngIf="!loading && error && !tableValid">{{ error }}</section>
+
+  <section class="thank-you" *ngIf="orderSent">
+    <span class="check">✓</span>
+    <h2>Order sent!</h2>
+    <p>Your order #{{ orderId }} has been sent to the coffee shop team for Table {{ tableNumber }}.</p>
+    <button (click)="orderSent = false">Add another item</button>
+  </section>
+
+  <ng-container *ngIf="tableValid && !orderSent">
+    <section class="menu-grid">
+      <article class="menu-item" *ngFor="let item of menu">
+        <img *ngIf="item.imageUrl" [src]="item.imageUrl" [alt]="item.name" />
+        <div class="item-content">
+          <p class="category">{{ item.category }}</p>
+          <h2>{{ item.name }}</h2>
+          <p class="price">{{ item.price | number:'1.2-2' }} TND</p>
+          <div class="quantity-controls" *ngIf="quantity(item); else addButton">
+            <button (click)="remove(item)" [attr.aria-label]="'Remove ' + item.name">−</button>
+            <span>{{ quantity(item) }}</span>
+            <button (click)="add(item)" [attr.aria-label]="'Add ' + item.name">+</button>
+          </div>
+          <ng-template #addButton><button class="add-button" (click)="add(item)">Add to order</button></ng-template>
+        </div>
+      </article>
+    </section>
+    <p class="state" *ngIf="!menu.length">There are no available items right now.</p>
+  </ng-container>
+</main>
+
+<aside class="cart-bar" *ngIf="tableValid && !orderSent && itemCount">
+  <div><strong>{{ itemCount }} item{{ itemCount !== 1 ? 's' : '' }}</strong><span>{{ total | number:'1.2-2' }} TND</span></div>
+  <button (click)="confirmOrder()" [disabled]="submitting">{{ submitting ? 'Sending…' : 'Confirm order' }}</button>
+</aside>
+
+<p class="request-error" *ngIf="tableValid && error">{{ error }}</p>

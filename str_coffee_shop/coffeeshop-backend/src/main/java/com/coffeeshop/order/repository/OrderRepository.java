@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByStatusNotOrderByCreatedAtDesc(String status);
     List<Order> findByStatusNotInOrderByCreatedAtDesc(Collection<String> statuses);
+    List<Order> findByOrderTypeAndStatusOrderByCreatedAtDesc(String orderType, String status);
     List<Order> findAllByOrderByCreatedAtDesc();
     List<Order> findByTableNumberAndStatusNot(Integer tableNumber, String status);
     List<Order> findByTableNumberAndStatusNotIn(Integer tableNumber, Collection<String> statuses);

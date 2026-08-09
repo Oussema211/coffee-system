@@ -1,63 +1,54 @@
 <div class="p-6 md:p-8 max-w-7xl mx-auto">
-  
-  <!-- Page Header -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
     <div>
       <h1 class="font-display text-3xl font-bold text-espresso mb-1">Customer QR Orders</h1>
-      <p class="text-espresso-light/70 text-base">Orders customers placed by scanning table QR codes — confirm to send to kitchen.</p>
+      <p class="text-espresso-light/70 text-base">Review orders sent from table QR codes before they go to preparation.</p>
     </div>
-    @if (pending.length > 0) {
-      <span class="bg-caramel/15 text-caramel-dark text-sm font-extrabold px-4 py-2 rounded-2xl border border-caramel/30 shadow-xs">
-        🔥 {{ pending.length }} Waiting Approval
-      </span>
-    }
+    <div class="flex items-center gap-3">
+      <button (click)="loadOrders()" class="text-sm font-bold text-espresso bg-white border-2 border-cream-dark px-4 py-2 rounded-xl hover:bg-cream transition">Refresh</button>
+      @if (pending.length) {
+        <span class="bg-caramel/15 text-caramel-dark text-sm font-extrabold px-4 py-2 rounded-2xl border border-caramel/30">
+          {{ pending.length }} waiting approval
+        </span>
+      }
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    @for (order of pending; track order.id) {
-      <div class="bg-white rounded-3xl border-2 border-caramel/35 p-6 flex flex-col justify-between gap-5 shadow-xs">
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="font-display text-2xl font-bold text-espresso">Table {{ order.table }}</p>
-            <p class="text-sm font-medium text-espresso-light/60 mt-0.5">Order #{{ order.id }} · {{ order.time }}</p>
+  @if (loading) {
+    <div class="state-card">Loading QR orders…</div>
+  } @else if (error) {
+    <div class="state-card error-state">{{ error }} <button (click)="loadOrders()">Retry</button></div>
+  } @else if (!pending.length) {
+    <div class="state-card">No QR orders waiting for approval.</div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      @for (order of pending; track order.id) {
+        <article class="bg-white rounded-3xl border-2 border-caramel/35 p-6 flex flex-col justify-between gap-5 shadow-xs">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="font-display text-2xl font-bold text-espresso">Table {{ order.table }}</p>
+              <p class="text-sm font-medium text-espresso-light/60 mt-0.5">Order #{{ order.id }} · {{ order.time }}</p>
+            </div>
+            <span class="bg-caramel/12 text-caramel-dark text-xs font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-xl border border-caramel/25">Mobile QR</span>
           </div>
-          <span class="bg-caramel/12 text-caramel-dark text-xs font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-xl border border-caramel/25">
-            📱 Mobile QR
-          </span>
-        </div>
 
-        <p class="text-espresso text-base font-medium bg-cream/50 p-4 rounded-2xl border border-cream-dark">{{ order.items.join(', ') }}</p>
-
-        @if (order.note) {
-          <p class="text-sm font-medium text-espresso-light/80 bg-caramel/8 border border-caramel/20 rounded-xl px-4 py-3">📝 Note: {{ order.note }}</p>
-        }
-
-        <div class="flex items-center justify-between pt-3 border-t-2 border-cream-dark">
-          <span class="text-caramel-dark font-extrabold text-2xl">{{ order.total | number:'1.2-2' }} $</span>
-          <div class="flex gap-3">
-            <button
-              (click)="reject(order)"
-              class="text-base font-bold text-espresso-light/70 bg-cream-dark hover:bg-espresso/10 hover:text-espresso border border-espresso/20 px-5 py-3 rounded-2xl active:scale-95 transition cursor-pointer min-h-[50px]"
-            >
-              Decline
-            </button>
-            <button
-              (click)="accept(order)"
-              [disabled]="acceptingId === order.id"
-              class="text-base font-bold text-cream bg-espresso hover:bg-espresso-light px-6 py-3 rounded-2xl active:scale-95 transition disabled:opacity-50 min-h-[50px] shadow-sm cursor-pointer"
-            >
-              {{ acceptingId === order.id ? 'Accepting…' : '✓ Accept Order' }}
-            </button>
+          <div class="text-espresso text-base font-medium bg-cream/50 p-4 rounded-2xl border border-cream-dark">
+            @for (item of order.orderItems; track item.id) {
+              <div class="flex justify-between gap-3 py-1"><span>{{ item.qty }}× {{ item.name }}</span><span>{{ item.price * item.qty | number:'1.2-2' }} TND</span></div>
+            }
           </div>
-        </div>
-      </div>
-    }
-  </div>
 
-  @if (pending.length === 0) {
-    <div class="bg-white rounded-3xl border-2 border-cream-dark p-12 text-center text-espresso-light/60 text-base font-medium">
-      No pending QR orders right now — all caught up! ☕
+          <div class="flex items-center justify-between pt-3 border-t-2 border-cream-dark">
+            <span class="text-caramel-dark font-extrabold text-2xl">{{ order.total | number:'1.2-2' }} TND</span>
+            <div class="flex gap-3">
+              <button (click)="decline(order)" [disabled]="updatingId === order.id" class="text-base font-bold text-espresso-light/70 bg-cream-dark px-5 py-3 rounded-2xl disabled:opacity-50">Decline</button>
+              <button (click)="accept(order)" [disabled]="updatingId === order.id" class="text-base font-bold text-cream bg-espresso px-6 py-3 rounded-2xl disabled:opacity-50">
+                {{ updatingId === order.id ? 'Updating…' : 'Accept order' }}
+              </button>
+            </div>
+          </div>
+        </article>
+      }
     </div>
   }
-
 </div>

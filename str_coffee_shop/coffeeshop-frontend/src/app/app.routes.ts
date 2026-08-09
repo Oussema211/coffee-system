@@ -16,6 +16,7 @@ import { ActiveOrdersComponent } from './pages/worker_pages/active-orders/active
 import { NewOrderComponent } from './pages/worker_pages/new-order/new-order';
 import { QrOrdersComponent } from './pages/worker_pages/qr-orders/qr-orders';
 import { TablesComponent } from './pages/worker_pages/tables/tables';
+import { CustomerMenuComponent } from './pages/customer_pages/customer-menu/customer-menu';
 
 import { authGuard } from './core/auth.guard';
 import { roleGuard } from './core/role.guard';
@@ -23,6 +24,7 @@ import { roleGuard } from './core/role.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'menu/table/:tableNumber', component: CustomerMenuComponent },
   {
     path: 'admin',
     component: AdminLayoutComponent,

@@ -108,7 +108,7 @@ export class WorkerDashboardComponent implements OnInit {
         ).length;
 
         const qrPending = allOrders.filter(
-          o => o.type === 'QR' && (o.status === 'Preparing' || o.status === 'Ready')
+          o => o.type === 'QR' && o.status === 'Pending'
         ).length;
 
         const served = allOrders.filter(

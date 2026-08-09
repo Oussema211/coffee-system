@@ -120,6 +120,12 @@
             <path d="M4 6h12M8 6V4h4v2M9 10v4M11 10v4M5 6l1 10h8l1-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
+        <button
+          class="at-qr-btn"
+          [id]="'btn-qr-' + t.id"
+          (click)="openQr(t)"
+          title="View and print table QR code"
+        >QR</button>
       </ng-container>
 
       <!-- Delete confirmation inline -->
@@ -131,6 +137,18 @@
         </div>
       </ng-container>
     </div>
+  </div>
+
+  <div class="qr-backdrop" *ngIf="qrTable" (click)="closeQr()">
+    <section class="qr-dialog" (click)="$event.stopPropagation()">
+      <button class="qr-close no-print" (click)="closeQr()" aria-label="Close">×</button>
+      <p class="qr-kicker">Coffee Shop · Table {{ qrTable.number }}</p>
+      <h2>Scan to order</h2>
+      <img [src]="qrImageUrl(qrTable)" [alt]="'QR code for Table ' + qrTable.number" />
+      <p class="qr-help">Scan this code to view the menu and order from Table {{ qrTable.number }}.</p>
+      <p class="qr-link">{{ qrUrl(qrTable) }}</p>
+      <button class="qr-print no-print" (click)="printQr()">Print QR code</button>
+    </section>
   </div>
 
 </div>

@@ -26,15 +26,21 @@ public class OrderService {
     private final RestaurantTableRepository tableRepository;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
     private static final List<String> INACTIVE_STATUSES = List.of("Completed", "Cancelled");
+    private static final List<String> NOT_ACTIVE_STATUSES = List.of("Completed", "Cancelled", "Pending");
 
     @Transactional
     public OrderDTO createOrder(CreateOrderRequest request) {
-        Integer tableNum = "Dine-in".equalsIgnoreCase(request.getOrderType()) ? request.getTableNumber() : null;
+        Integer tableNum = ("Dine-in".equalsIgnoreCase(request.getOrderType())
+                || "QR".equalsIgnoreCase(request.getOrderType())) ? request.getTableNumber() : null;
 
         Order order;
         boolean isExisting = false;
 
-        if (tableNum != null) {
+        if (tableNum != null && tableRepository.findByNumber(tableNum).isEmpty()) {
+            throw new IllegalArgumentException("Table not found with number: " + tableNum);
+        }
+
+        if (tableNum != null && !"QR".equalsIgnoreCase(request.getOrderType())) {
             List<Order> existingActive = orderRepository.findByTableNumberAndStatusNotIn(tableNum, INACTIVE_STATUSES);
             if (!existingActive.isEmpty()) {
                 order = existingActive.get(0);
@@ -43,7 +49,7 @@ public class OrderService {
                 order = Order.builder()
                         .orderType(request.getOrderType())
                         .tableNumber(tableNum)
-                        .status("Preparing")
+                        .status("QR".equalsIgnoreCase(request.getOrderType()) ? "Pending" : "Preparing")
                         .totalAmount(BigDecimal.ZERO)
                         .items(new ArrayList<>())
                         .build();
@@ -51,8 +57,8 @@ public class OrderService {
         } else {
             order = Order.builder()
                     .orderType(request.getOrderType())
-                    .tableNumber(null)
-                    .status("Preparing")
+                    .tableNumber(tableNum)
+                    .status("QR".equalsIgnoreCase(request.getOrderType()) ? "Pending" : "Preparing")
                     .totalAmount(BigDecimal.ZERO)
                     .items(new ArrayList<>())
                     .build();
@@ -100,7 +106,15 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<OrderDTO> getActiveOrders() {
-        return orderRepository.findByStatusNotInOrderByCreatedAtDesc(INACTIVE_STATUSES)
+        return orderRepository.findByStatusNotInOrderByCreatedAtDesc(NOT_ACTIVE_STATUSES)
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getPendingQrOrders() {
+        return orderRepository.findByOrderTypeAndStatusOrderByCreatedAtDesc("QR", "Pending")
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
