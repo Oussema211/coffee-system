@@ -9,6 +9,7 @@ import com.coffeeshop.order.entity.OrderItem;
 import com.coffeeshop.order.repository.OrderRepository;
 import com.coffeeshop.table.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,10 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
     private final RestaurantTableRepository tableRepository;
+    @Value("${coffee.shop.name:Coffee Shop}")
+    private String shopName;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
+    private static final DateTimeFormatter RECEIPT_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final List<String> INACTIVE_STATUSES = List.of("Completed", "Cancelled");
     private static final List<String> NOT_ACTIVE_STATUSES = List.of("Completed", "Cancelled", "Pending");
 
@@ -135,6 +139,51 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Builds the bill currently due for an order. For a table, all of its active
+     * orders are combined so the customer receives one bill rather than one per
+     * item-added order.
+     */
+    @Transactional(readOnly = true)
+    public ReceiptDTO getReceipt(Long orderId) {
+        Order targetOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + orderId));
+
+        List<Order> receiptOrders = targetOrder.getTableNumber() == null
+                ? List.of(targetOrder)
+                : orderRepository.findByTableNumberAndStatusNotIn(targetOrder.getTableNumber(), INACTIVE_STATUSES);
+        if (receiptOrders.isEmpty()) {
+            receiptOrders = List.of(targetOrder);
+        }
+
+        List<OrderItemDTO> unpaidItems = receiptOrders.stream()
+                .flatMap(order -> order.getItems().stream())
+                .filter(item -> !item.isPaid())
+                .map(this::mapOrderItemToDTO)
+                .toList();
+        // A completed order can be reprinted even though all its items are paid.
+        List<OrderItemDTO> items = unpaidItems.isEmpty()
+                ? targetOrder.getItems().stream().map(this::mapOrderItemToDTO).toList()
+                : unpaidItems;
+        BigDecimal total = items.stream()
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQty())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return ReceiptDTO.builder()
+                .shopName(shopName)
+                .receiptNumber("BILL-" + targetOrder.getId())
+                .orderId(targetOrder.getId())
+                .tableNumber(targetOrder.getTableNumber())
+                .orderType(targetOrder.getOrderType())
+                .orderTime(targetOrder.getCreatedAt().format(RECEIPT_TIME_FORMATTER))
+                .printedAt(LocalDateTime.now().format(RECEIPT_TIME_FORMATTER))
+                .workerName(targetOrder.getWorkerName())
+                .status(targetOrder.getStatus())
+                .items(items)
+                .total(total)
+                .build();
+    }
+
     @Transactional
     public long deleteOrdersOlderThanSevenDays() {
         return orderRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusDays(7));
@@ -226,15 +275,7 @@ public class OrderService {
 
     private OrderDTO mapToDTO(Order order) {
         List<OrderItemDTO> itemDTOs = order.getItems().stream()
-                .map(item -> OrderItemDTO.builder()
-                        .id(item.getId())
-                        .menuItemId(item.getMenuItemId())
-                        .name(item.getName())
-                        .price(item.getUnitPrice())
-                        .qty(item.getQuantity())
-                        .paid(item.isPaid())
-                        .selected(false)
-                        .build())
+                .map(this::mapOrderItemToDTO)
                 .collect(Collectors.toList());
 
         List<String> itemSummaries = order.getItems().stream()
@@ -253,6 +294,18 @@ public class OrderService {
                 .time(formattedTime)
                 .workerName(order.getWorkerName())
                 .status(order.getStatus())
+                .build();
+    }
+
+    private OrderItemDTO mapOrderItemToDTO(OrderItem item) {
+        return OrderItemDTO.builder()
+                .id(item.getId())
+                .menuItemId(item.getMenuItemId())
+                .name(item.getName())
+                .price(item.getUnitPrice())
+                .qty(item.getQuantity())
+                .paid(item.isPaid())
+                .selected(false)
                 .build();
     }
 

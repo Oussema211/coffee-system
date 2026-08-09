@@ -32,6 +32,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
+    @GetMapping("/{id}/receipt")
+    public ResponseEntity<ReceiptDTO> getReceipt(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getReceipt(id));
+    }
+
     @GetMapping("/qr-pending")
     public ResponseEntity<List<OrderDTO>> getPendingQrOrders() {
         return ResponseEntity.ok(orderService.getPendingQrOrders());

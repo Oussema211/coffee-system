@@ -1,0 +1,61 @@
+import { Injectable } from '@angular/core';
+import { OrderService, ReceiptDTO } from './order.service';
+
+@Injectable({ providedIn: 'root' })
+export class ReceiptPrintService {
+  constructor(private orderService: OrderService) {}
+
+  printBill(orderId: number): void {
+    // Open synchronously so browsers do not treat the receipt as an unwanted popup.
+    const receiptWindow = window.open('', '_blank', 'width=420,height=700');
+    if (!receiptWindow) {
+      window.alert('The receipt window was blocked. Please allow popups for this POS site and try again.');
+      return;
+    }
+
+    receiptWindow.document.write('<p style="font-family: sans-serif; padding: 16px">Preparing receipt…</p>');
+    this.orderService.getReceipt(orderId).subscribe({
+      next: receipt => this.render(receiptWindow, receipt),
+      error: () => {
+        receiptWindow.document.body.innerHTML = '<p style="font-family: sans-serif; padding: 16px">Unable to load this receipt. Please try again.</p>';
+      }
+    });
+  }
+
+  private render(receiptWindow: Window, receipt: ReceiptDTO): void {
+    const esc = (value: string | number | null | undefined): string => String(value ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    const money = (value: number): string => Number(value).toFixed(2);
+    const rows = receipt.items.map(item => `
+      <tr>
+        <td>${esc(item.qty)} × ${esc(item.name)}</td>
+        <td class="amount">${money(item.price * item.qty)}</td>
+      </tr>`).join('');
+    const location = receipt.tableNumber ? `Table ${receipt.tableNumber}` : esc(receipt.orderType);
+
+    receiptWindow.document.open();
+    receiptWindow.document.write(`<!doctype html>
+      <html><head><title>${esc(receipt.receiptNumber)}</title>
+      <style>
+        @page { size: 80mm auto; margin: 4mm; }
+        * { box-sizing: border-box; }
+        body { width: 72mm; margin: 0 auto; color: #111; font: 12px/1.35 Arial, sans-serif; }
+        .center { text-align: center; } h1 { font-size: 17px; margin: 0 0 5px; }
+        .muted { color: #444; font-size: 11px; } .line { border-top: 1px dashed #222; margin: 10px 0; }
+        table { width: 100%; border-collapse: collapse; } td { padding: 3px 0; vertical-align: top; }
+        .amount { text-align: right; white-space: nowrap; } .total { font-size: 16px; font-weight: 700; }
+        @media screen { body { padding: 12px; } }
+      </style></head><body>
+        <div class="center"><h1>${esc(receipt.shopName)}</h1><div class="muted">${esc(receipt.receiptNumber)}</div></div>
+        <div class="line"></div>
+        <div>${esc(location)} · ${esc(receipt.orderTime)}</div>
+        ${receipt.workerName ? `<div>Server: ${esc(receipt.workerName)}</div>` : ''}
+        <div class="line"></div><table>${rows}</table><div class="line"></div>
+        <table><tr class="total"><td>TOTAL</td><td class="amount">${money(receipt.total)} TND</td></tr></table>
+        <div class="line"></div><div class="center">${receipt.status === 'Completed' ? 'PAID' : 'BILL TO PAY'}<br><br>Thank you — Merci</div>
+      </body></html>`);
+    receiptWindow.document.close();
+    receiptWindow.focus();
+    receiptWindow.print();
+  }
+}

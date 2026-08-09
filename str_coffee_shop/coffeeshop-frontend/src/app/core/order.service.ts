@@ -40,6 +40,20 @@ export interface PaymentRequest {
   itemIds?: number[];
 }
 
+export interface ReceiptDTO {
+  shopName: string;
+  receiptNumber: string;
+  orderId: number;
+  tableNumber: number | null;
+  orderType: string;
+  orderTime: string;
+  printedAt: string;
+  workerName: string | null;
+  status: string;
+  items: OrderItemDTO[];
+  total: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private readonly baseUrl = 'http://localhost:8080/api/worker/orders';
@@ -57,6 +71,10 @@ export class OrderService {
 
   getAllOrders(): Observable<OrderDTO[]> {
     return this.http.get<OrderDTO[]>(`${this.baseUrl}/all`);
+  }
+
+  getReceipt(orderId: number): Observable<ReceiptDTO> {
+    return this.http.get<ReceiptDTO>(`${this.baseUrl}/${orderId}/receipt`);
   }
 
   deleteOrdersOlderThanSevenDays(): Observable<{ deletedCount: number }> {

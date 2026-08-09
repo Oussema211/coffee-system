@@ -62,6 +62,9 @@
             <div class="flex items-center justify-between pt-2 gap-2">
               <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} TND</span>
               <div class="flex items-center gap-2">
+                <button (click)="printBill(order)" class="text-sm font-bold text-espresso bg-cream border-2 border-espresso/20 hover:bg-cream-dark px-4 py-3.5 rounded-2xl active:scale-95 transition min-h-[52px] cursor-pointer flex items-center gap-1.5">
+                  🖨️ Print Bill
+                </button>
                 <button (click)="openCancelModal(order)" class="text-sm font-bold text-red-600 bg-red-50 border-2 border-red-200/80 hover:bg-red-100 hover:border-red-300 px-4 py-3.5 rounded-2xl active:scale-95 transition min-h-[52px] cursor-pointer flex items-center gap-1.5" title="Cancel order">
                   🚫 Cancel
                 </button>

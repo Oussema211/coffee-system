@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TableService } from '../../../core/table.service';
 import { OrderService } from '../../../core/order.service';
+import { ReceiptPrintService } from '../../../core/receipt-print.service';
 
 export interface OrderItem {
   id: number;
@@ -50,7 +51,8 @@ export class TablesComponent implements OnInit {
   constructor(
     private router: Router,
     private tableService: TableService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private receiptPrintService: ReceiptPrintService
   ) {}
 
   ngOnInit(): void {
@@ -256,6 +258,11 @@ export class TablesComponent implements OnInit {
 
   startOrder(table: TableInfo): void {
     this.router.navigate(['/worker/new-order'], { queryParams: { table: table.number } });
+  }
+
+  printBill(table: TableInfo): void {
+    if (!table.activeOrderId) return;
+    this.receiptPrintService.printBill(table.activeOrderId);
   }
 
   statusClasses(status: TableInfo['status']): string {

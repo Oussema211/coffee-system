@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrderService, OrderDTO, OrderItemDTO } from '../../../core/order.service';
+import { ReceiptPrintService } from '../../../core/receipt-print.service';
 
 export type OrderItem = OrderItemDTO;
 export type ActiveOrder = OrderDTO;
@@ -32,7 +33,10 @@ export class ActiveOrdersComponent implements OnInit {
   paymentSuccess = false;
   paymentSuccessMessage = '';
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private receiptPrintService: ReceiptPrintService
+  ) {}
 
   ngOnInit(): void {
     this.loadActiveOrders();
@@ -50,6 +54,10 @@ export class ActiveOrdersComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  printBill(order: ActiveOrder): void {
+    this.receiptPrintService.printBill(order.id);
   }
 
   get preparing(): ActiveOrder[] {
