@@ -16,7 +16,7 @@
         <tr class="border-b border-cream-dark text-left">
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Order</th>
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Items</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Worker</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Type</th>
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Time</th>
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Total</th>
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Status</th>
@@ -27,12 +27,14 @@
           <tr class="border-b border-cream-dark last:border-0 hover:bg-cream/50 transition">
             <td class="px-6 py-4 text-espresso font-medium">#{{ order.id }}</td>
             <td class="px-6 py-4 text-espresso-light/70">{{ order.items.join(', ') }}</td>
-            <td class="px-6 py-4 text-espresso-light/70">{{ order.worker }}</td>
+            <td class="px-6 py-4 text-espresso-light/70">
+              {{ order.type }}@if (order.table !== null) { · Table {{ order.table }} }
+            </td>
             <td class="px-6 py-4 text-espresso-light/50">{{ order.time }}</td>
             <td class="px-6 py-4 text-espresso font-medium">{{ order.total | number:'1.2-2' }} $</td>
             <td class="px-6 py-4">
               <span
-                [class]="order.status === 'Completed' ? 'bg-sage/15 text-sage' : 'bg-red-50 text-red-500'"
+                [class]="statusClass(order.status)"
                 class="text-xs font-medium px-2.5 py-1 rounded-md"
               >
                 {{ order.status }}
@@ -40,7 +42,23 @@
             </td>
           </tr>
         }
+        @if (!loading && !errorMessage && orders.length === 0) {
+          <tr>
+            <td colspan="6" class="px-6 py-10 text-center text-espresso-light/60">No orders found.</td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
+
+  @if (loading) {
+    <p class="mt-4 text-center text-sm text-espresso-light/60">Loading orders…</p>
+  }
+
+  @if (errorMessage) {
+    <div class="mt-4 flex items-center justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      <span>{{ errorMessage }}</span>
+      <button type="button" (click)="loadOrders()" class="font-medium underline">Try again</button>
+    </div>
+  }
 </div>
