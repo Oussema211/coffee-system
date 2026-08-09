@@ -1,5 +1,6 @@
 package com.coffeeshop.order.service;
 
+import com.coffeeshop.auth.entity.User;
 import com.coffeeshop.menu.entity.MenuItem;
 import com.coffeeshop.menu.repository.MenuItemRepository;
 import com.coffeeshop.order.dto.*;
@@ -10,8 +11,11 @@ import com.coffeeshop.table.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +90,9 @@ public class OrderService {
         }
 
         order.setTotalAmount(order.getTotalAmount().add(additionalTotal));
+        if (order.getWorkerName() == null) {
+            order.setWorkerName(currentWorkerName());
+        }
         if (isExisting && "Served".equalsIgnoreCase(order.getStatus())) {
             order.setStatus("Preparing");
         }
@@ -126,6 +133,11 @@ public class OrderService {
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public long deleteOrdersOlderThanSevenDays() {
+        return orderRepository.deleteByCreatedAtBefore(LocalDateTime.now().minusDays(7));
     }
 
     @Transactional
@@ -239,7 +251,21 @@ public class OrderService {
                 .orderItems(itemDTOs)
                 .total(order.getTotalAmount())
                 .time(formattedTime)
+                .workerName(order.getWorkerName())
                 .status(order.getStatus())
                 .build();
+    }
+
+    private String currentWorkerName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() instanceof String) {
+            return null;
+        }
+
+        if (authentication.getPrincipal() instanceof User user) {
+            return user.getName() != null && !user.getName().isBlank() ? user.getName() : user.getUsername();
+        }
+
+        return authentication.getName();
     }
 }

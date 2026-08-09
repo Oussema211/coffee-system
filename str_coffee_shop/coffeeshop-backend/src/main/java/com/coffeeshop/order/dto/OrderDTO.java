@@ -20,5 +20,6 @@ public class OrderDTO {
     private List<OrderItemDTO> orderItems;
     private BigDecimal total;
     private String time;
+    private String workerName;
     private String status;
 }

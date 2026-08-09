@@ -4,9 +4,19 @@
       <h1 class="font-display text-3xl text-espresso mb-1">Orders</h1>
       <p class="text-espresso-light/60 text-sm">Today's transactions, {{ orders.length }} orders so far.</p>
     </div>
-    <div class="bg-white border border-cream-dark rounded-xl px-5 py-3 text-right">
-      <p class="text-xs uppercase tracking-wide text-espresso-light/50">Today's total</p>
-      <p class="font-display text-xl text-espresso">{{ todaysTotal | number:'1.2-2' }} $</p>
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        (click)="clearOrdersOlderThanSevenDays()"
+        [disabled]="clearing"
+        class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {{ clearing ? 'Clearing…' : 'Clear orders older than 7 days' }}
+      </button>
+      <div class="bg-white border border-cream-dark rounded-xl px-5 py-3 text-right">
+        <p class="text-xs uppercase tracking-wide text-espresso-light/50">Today's total</p>
+        <p class="font-display text-xl text-espresso">{{ todaysTotal | number:'1.2-2' }} $</p>
+      </div>
     </div>
   </div>
 
@@ -16,6 +26,7 @@
         <tr class="border-b border-cream-dark text-left">
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Order</th>
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Items</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Worker</th>
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Type</th>
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Time</th>
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Total</th>
@@ -27,6 +38,9 @@
           <tr class="border-b border-cream-dark last:border-0 hover:bg-cream/50 transition">
             <td class="px-6 py-4 text-espresso font-medium">#{{ order.id }}</td>
             <td class="px-6 py-4 text-espresso-light/70">{{ order.items.join(', ') }}</td>
+            <td class="px-6 py-4 text-espresso-light/70">
+              {{ order.workerName || 'Customer / unavailable' }}
+            </td>
             <td class="px-6 py-4 text-espresso-light/70">
               {{ order.type }}@if (order.table !== null) { · Table {{ order.table }} }
             </td>
@@ -44,7 +58,7 @@
         }
         @if (!loading && !errorMessage && orders.length === 0) {
           <tr>
-            <td colspan="6" class="px-6 py-10 text-center text-espresso-light/60">No orders found.</td>
+            <td colspan="7" class="px-6 py-10 text-center text-espresso-light/60">No orders found.</td>
           </tr>
         }
       </tbody>
@@ -60,5 +74,9 @@
       <span>{{ errorMessage }}</span>
       <button type="button" (click)="loadOrders()" class="font-medium underline">Try again</button>
     </div>
+  }
+
+  @if (successMessage) {
+    <p class="mt-4 text-sm text-sage">{{ successMessage }}</p>
   }
 </div>

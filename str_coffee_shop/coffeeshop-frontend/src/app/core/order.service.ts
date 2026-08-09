@@ -20,6 +20,7 @@ export interface OrderDTO {
   orderItems: OrderItemDTO[];
   total: number;
   time: string;
+  workerName: string | null;
   status: 'Pending' | 'Preparing' | 'Ready' | 'Served' | 'Completed' | 'Cancelled';
 }
 
@@ -42,6 +43,7 @@ export interface PaymentRequest {
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private readonly baseUrl = 'http://localhost:8080/api/worker/orders';
+  private readonly adminBaseUrl = 'http://localhost:8080/api/admin/orders';
 
   constructor(private http: HttpClient) {}
 
@@ -55,6 +57,10 @@ export class OrderService {
 
   getAllOrders(): Observable<OrderDTO[]> {
     return this.http.get<OrderDTO[]>(`${this.baseUrl}/all`);
+  }
+
+  deleteOrdersOlderThanSevenDays(): Observable<{ deletedCount: number }> {
+    return this.http.delete<{ deletedCount: number }>(`${this.adminBaseUrl}/older-than-seven-days`);
   }
 
   getPendingQrOrders(): Observable<OrderDTO[]> {
