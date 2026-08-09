@@ -8,6 +8,7 @@ import com.coffeeshop.order.service.OrderService;
 import com.coffeeshop.table.dto.TableDTO;
 import com.coffeeshop.table.repository.RestaurantTableRepository;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +26,17 @@ public class CustomerController {
     private final RestaurantTableRepository tableRepository;
 
     @GetMapping("/menu")
-    public ResponseEntity<List<MenuItemDTO>> getAvailableMenu() {
+    public ResponseEntity<List<MenuItemDTO>> getAvailableMenu(HttpServletRequest request) {
+        String publicBaseUrl = request.getScheme() + "://" + request.getServerName()
+                + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort());
         return ResponseEntity.ok(menuItemService.getAllMenuItems().stream()
                 .filter(MenuItemDTO::isAvailable)
+                .map(item -> {
+                    if (item.getImageUrl() != null && item.getImageUrl().startsWith("http://localhost:8080/")) {
+                        item.setImageUrl(publicBaseUrl + item.getImageUrl().substring("http://localhost:8080".length()));
+                    }
+                    return item;
+                })
                 .toList());
     }
 
