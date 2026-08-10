@@ -261,6 +261,45 @@
   background: rgba(201, 133, 43, 0.3);
 }
 
+/* ── Check-in lock ────────────────────────────────────────────────── */
+.check-in-banner {
+  margin: 0.75rem 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.875rem;
+  background: rgba(201, 133, 43, 0.14);
+  border: 1px solid rgba(201, 133, 43, 0.35);
+  color: #6B4226;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.worker-shell.worker-locked .worker-main ::ng-deep :is(button, a, input, select, textarea) {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.worker-shell.worker-locked .worker-main ::ng-deep :is(button, a) {
+  opacity: 0.55;
+}
+
+.worker-shell.worker-locked .worker-main ::ng-deep :is(input, select, textarea) {
+  opacity: 0.7;
+}
+
+.worker-shell.worker-locked .worker-topbar .shift-btn,
+.worker-shell.worker-locked .worker-topbar .logout-btn {
+  pointer-events: auto;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.worker-bottom-nav .nav-tab.nav-disabled {
+  pointer-events: none;
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* ── Responsive tweaks ────────────────────────────────────────────── */
 @media (min-width: 768px) {
   .worker-topbar {

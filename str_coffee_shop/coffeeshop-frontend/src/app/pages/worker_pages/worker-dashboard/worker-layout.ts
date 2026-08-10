@@ -129,10 +129,16 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     });
   }
 
+  onNavClick(event: MouseEvent, route: string): void {
+    if (!this.shift.checkedIn && route !== '/worker') {
+      event.preventDefault();
+    }
+  }
+
   private refreshShift(): void {
-    this.shiftService.getCurrent().subscribe({
-      next: (shift) => this.shift = shift,
-      error: () => {}
-    });
+    this.shiftService.refresh();
+    this.subs.add(
+      this.shiftService.shift$.subscribe((shift) => this.shift = shift)
+    );
   }
 }

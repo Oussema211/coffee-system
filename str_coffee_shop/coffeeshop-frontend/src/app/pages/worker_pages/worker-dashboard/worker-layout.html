@@ -1,4 +1,4 @@
-<div class="worker-shell">
+<div class="worker-shell" [class.worker-locked]="!shift.checkedIn">
 
   <!-- Compact top bar -->
   <header class="worker-topbar">
@@ -33,6 +33,11 @@
 
   <!-- Page content -->
   <main class="worker-main">
+    @if (!shift.checkedIn) {
+      <div class="check-in-banner" role="status">
+        Check in using the button above to unlock worker actions.
+      </div>
+    }
     <router-outlet />
   </main>
 
@@ -42,8 +47,12 @@
       <a
         [routerLink]="item.route"
         [class.nav-active]="isExactRoute(item.route)"
+        [class.nav-home]="item.route === '/worker'"
+        [class.nav-disabled]="!shift.checkedIn && item.route !== '/worker'"
         class="nav-tab"
         [attr.aria-current]="isExactRoute(item.route) ? 'page' : null"
+        [attr.aria-disabled]="!shift.checkedIn && item.route !== '/worker' ? true : null"
+        (click)="onNavClick($event, item.route)"
       >
         <span class="nav-icon-wrap">
           @switch (item.icon) {

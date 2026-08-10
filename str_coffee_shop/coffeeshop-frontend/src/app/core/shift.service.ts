@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 export interface ShiftStatus {
   checkedIn: boolean;
@@ -11,18 +11,40 @@ export interface ShiftStatus {
 @Injectable({ providedIn: 'root' })
 export class ShiftService {
   private readonly baseUrl = 'http://localhost:8080/api/worker/shift';
+  private readonly shiftSubject = new BehaviorSubject<ShiftStatus>({
+    checkedIn: false,
+    checkInAt: null,
+    checkOutAt: null
+  });
+
+  readonly shift$ = this.shiftSubject.asObservable();
 
   constructor(private http: HttpClient) {}
+
+  get checkedIn(): boolean {
+    return this.shiftSubject.value.checkedIn;
+  }
 
   getCurrent(): Observable<ShiftStatus> {
     return this.http.get<ShiftStatus>(this.baseUrl);
   }
 
+  refresh(): void {
+    this.getCurrent().subscribe({
+      next: (shift) => this.shiftSubject.next(shift),
+      error: () => {}
+    });
+  }
+
   checkIn(): Observable<ShiftStatus> {
-    return this.http.post<ShiftStatus>(`${this.baseUrl}/check-in`, {});
+    return this.http.post<ShiftStatus>(`${this.baseUrl}/check-in`, {}).pipe(
+      tap((shift) => this.shiftSubject.next(shift))
+    );
   }
 
   checkOut(): Observable<ShiftStatus> {
-    return this.http.post<ShiftStatus>(`${this.baseUrl}/check-out`, {});
+    return this.http.post<ShiftStatus>(`${this.baseUrl}/check-out`, {}).pipe(
+      tap((shift) => this.shiftSubject.next(shift))
+    );
   }
 }
