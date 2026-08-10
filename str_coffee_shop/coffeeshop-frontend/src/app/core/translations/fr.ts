@@ -28,7 +28,7 @@ export const FR_TRANSLATIONS: Record<string, any> = {
     cash: "Espèces",
     card: "Carte bancaire",
     tpe: "TPE Carte",
-    currency: "DH"
+    currency: "TND"
   },
   auth: {
     loginTitle: "Bienvenue",
@@ -78,7 +78,7 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       editItem: "Modifier l'Article",
       name: "Nom de l'article",
       category: "Catégorie",
-      price: "Prix (DH)",
+      price: "Prix (TND)",
       available: "Disponible",
       unavailable: "Indisponible",
       image: "URL de l'image",

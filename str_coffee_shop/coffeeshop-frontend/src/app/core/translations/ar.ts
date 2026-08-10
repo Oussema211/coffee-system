@@ -28,7 +28,7 @@ export const AR_TRANSLATIONS: Record<string, any> = {
     cash: "نقداً",
     card: "بطاقة بنكية",
     tpe: "جهاز البطاقة TPE",
-    currency: "درهم"
+    currency: "دينار تونسي"
   },
   auth: {
     loginTitle: "مرحباً بك",
@@ -78,7 +78,7 @@ export const AR_TRANSLATIONS: Record<string, any> = {
       editItem: "تعديل الصنف",
       name: "اسم الصنف",
       category: "الفئة",
-      price: "السعر (درهم)",
+      price: "السعر (دينار تونسي)",
       available: "متوفر",
       unavailable: "غير متوفر",
       image: "رابط الصورة",
