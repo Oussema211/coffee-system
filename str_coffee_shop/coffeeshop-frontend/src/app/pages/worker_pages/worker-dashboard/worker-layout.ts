@@ -1,32 +1,111 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { filter, Subscription, interval } from 'rxjs';
 import { AuthService } from '../../../core/auth.service';
+import { OrderService } from '../../../core/order.service';
+import { TableService } from '../../../core/table.service';
+
+interface NavItem {
+  route: string;
+  label: string;
+  icon: string;
+  badgeKey?: 'activeOrders' | 'qrPending';
+}
 
 @Component({
   selector: 'app-worker-layout',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink, CommonModule],
   templateUrl: './worker-layout.html',
   styleUrl: './worker-layout.css'
 })
-export class WorkerLayoutComponent {
+export class WorkerLayoutComponent implements OnInit, OnDestroy {
   username: string | null;
+  pageTitle = 'Dashboard';
+  currentTime = '';
+  badges = { activeOrders: 0, qrPending: 0 };
 
-  constructor(private auth: AuthService, public router: Router) {
+  navItems: NavItem[] = [
+    { route: '/worker', label: 'Home', icon: 'home' },
+    { route: '/worker/new-order', label: 'POS', icon: 'pos' },
+    { route: '/worker/active-orders', label: 'Orders', icon: 'orders', badgeKey: 'activeOrders' },
+    { route: '/worker/qr-orders', label: 'QR', icon: 'qr', badgeKey: 'qrPending' },
+    { route: '/worker/tables', label: 'Tables', icon: 'tables' },
+  ];
+
+  private readonly pageTitles: Record<string, string> = {
+    '/worker': 'Dashboard',
+    '/worker/new-order': 'New Order',
+    '/worker/active-orders': 'Active Orders',
+    '/worker/qr-orders': 'QR Orders',
+    '/worker/tables': 'Tables',
+  };
+
+  private subs = new Subscription();
+  private clockInterval?: ReturnType<typeof setInterval>;
+
+  constructor(
+    private auth: AuthService,
+    public router: Router,
+    private orderService: OrderService,
+    private tableService: TableService
+  ) {
     this.username = this.auth.getUsername();
   }
 
-  isSubPage(): boolean {
-    const url = this.router.url.split('?')[0];
-    return url !== '/worker' && url !== '/worker/';
+  ngOnInit(): void {
+    this.updatePageTitle(this.router.url);
+    this.subs.add(
+      this.router.events
+        .pipe(filter(e => e instanceof NavigationEnd))
+        .subscribe((e: NavigationEnd) => this.updatePageTitle(e.urlAfterRedirects))
+    );
+
+    this.tickClock();
+    this.clockInterval = setInterval(() => this.tickClock(), 30_000);
+    this.refreshBadges();
+    this.subs.add(interval(20_000).subscribe(() => this.refreshBadges()));
   }
 
-  goBack(): void {
-    this.router.navigate(['/worker']);
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+    if (this.clockInterval) clearInterval(this.clockInterval);
+  }
+
+  isExactRoute(route: string): boolean {
+    const url = this.router.url.split('?')[0];
+    return route === '/worker' ? (url === '/worker' || url === '/worker/') : url.startsWith(route);
   }
 
   logout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);
+  }
+
+  private updatePageTitle(url: string): void {
+    const path = url.split('?')[0];
+    this.pageTitle = this.pageTitles[path] ?? 'Worker POS';
+  }
+
+  private tickClock(): void {
+    this.currentTime = new Date().toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  private refreshBadges(): void {
+    this.orderService.getAllOrders().subscribe({
+      next: (orders) => {
+        this.badges.activeOrders = orders.filter(
+          o => o.status === 'Preparing' || o.status === 'Ready'
+        ).length;
+        this.badges.qrPending = orders.filter(
+          o => o.type === 'QR' && o.status === 'Pending'
+        ).length;
+      },
+      error: () => {}
+    });
   }
 }

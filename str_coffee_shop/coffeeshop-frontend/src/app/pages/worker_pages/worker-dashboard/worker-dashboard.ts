@@ -1,18 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { TableService } from '../../../core/table.service';
 import { OrderService } from '../../../core/order.service';
+import { interval, Subscription } from 'rxjs';
 
-interface TouchCard {
-  id: string;
-  title: string;
-  subtitle: string;
+interface StatTile {
+  label: string;
+  value: string;
+  sub: string;
+  accent: string;
+  route?: string;
+  alert?: boolean;
+}
+
+interface AlertItem {
+  message: string;
   route: string;
-  badge?: string;
-  badgeColor?: string;
-  theme: string;
+  action: string;
+  type: 'warning' | 'info';
 }
 
 @Component({
@@ -22,55 +29,24 @@ interface TouchCard {
   templateUrl: './worker-dashboard.html',
   styleUrl: './worker-dashboard.css'
 })
-export class WorkerDashboardComponent implements OnInit {
+export class WorkerDashboardComponent implements OnInit, OnDestroy {
   username: string | null;
   clockedIn = true;
   shiftStart: string | null = '08:30 AM';
+  liveTime = '';
+  liveDate = '';
 
-  stats = [
-    { label: 'Orders served', value: '0', sub: 'this shift' },
-    { label: 'Tables active', value: '0', sub: 'of 0 tables' },
-    { label: 'QR orders pending', value: '0', sub: 'need attention' },
+  stats: StatTile[] = [
+    { label: 'In Progress', value: '0', sub: 'preparing or ready', accent: 'accent-caramel', route: '/worker/active-orders' },
+    { label: 'QR Pending', value: '0', sub: 'awaiting approval', accent: 'accent-espresso', route: '/worker/qr-orders', alert: false },
+    { label: 'Tables Free', value: '0', sub: 'of 0 total', accent: 'accent-sage', route: '/worker/tables' },
+    { label: 'Served Today', value: '0', sub: 'completed orders', accent: 'accent-cream', route: '/worker/active-orders' },
   ];
 
-  touchCards: TouchCard[] = [
-    {
-      id: 'card-new-order',
-      title: 'New Order (POS)',
-      subtitle: 'Tap to start a new dine-in or takeaway order',
-      route: '/worker/new-order',
-      badge: 'START HERE',
-      badgeColor: 'bg-espresso text-cream',
-      theme: 'card-new-order'
-    },
-    {
-      id: 'card-active-orders',
-      title: 'Active Orders',
-      subtitle: 'View and manage orders currently in progress',
-      route: '/worker/active-orders',
-      badge: '0 IN PROGRESS',
-      badgeColor: 'bg-caramel text-white',
-      theme: 'card-active-orders'
-    },
-    {
-      id: 'card-qr-orders',
-      title: 'QR Customer Orders',
-      subtitle: 'Review incoming customer mobile QR orders',
-      route: '/worker/qr-orders',
-      badge: '0 PENDING',
-      badgeColor: 'bg-caramel-dark text-cream',
-      theme: 'card-qr-orders'
-    },
-    {
-      id: 'card-tables',
-      title: 'Tables Management',
-      subtitle: 'Check floor tables, occupied seats and availability',
-      route: '/worker/tables',
-      badge: '0 FREE TABLES',
-      badgeColor: 'bg-sage text-cream',
-      theme: 'card-tables'
-    }
-  ];
+  alerts: AlertItem[] = [];
+
+  private subs = new Subscription();
+  private clockTimer?: ReturnType<typeof setInterval>;
 
   constructor(
     private auth: AuthService,
@@ -81,62 +57,15 @@ export class WorkerDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.tableService.getWorkerTables().subscribe({
-      next: (tables) => {
-        const total = tables.length;
-        const active = tables.filter(t => t.status === 'Occupied').length;
-        const free = tables.filter(t => t.status === 'Available').length;
+    this.tickClock();
+    this.clockTimer = setInterval(() => this.tickClock(), 1000);
+    this.refreshData();
+    this.subs.add(interval(15_000).subscribe(() => this.refreshData()));
+  }
 
-        const tableStat = this.stats.find(s => s.label === 'Tables active');
-        if (tableStat) {
-          tableStat.value = String(active);
-          tableStat.sub = `of ${total} table${total === 1 ? '' : 's'}`;
-        }
-
-        const tableCard = this.touchCards.find(c => c.id === 'card-tables');
-        if (tableCard) {
-          tableCard.badge = `${free} FREE TABLE${free === 1 ? '' : 'S'}`;
-        }
-      },
-      error: () => {}
-    });
-
-    this.orderService.getAllOrders().subscribe({
-      next: (allOrders) => {
-        const inProgress = allOrders.filter(
-          o => o.status === 'Preparing' || o.status === 'Ready'
-        ).length;
-
-        const qrPending = allOrders.filter(
-          o => o.type === 'QR' && o.status === 'Pending'
-        ).length;
-
-        const served = allOrders.filter(
-          o => o.status === 'Served' || o.status === 'Completed'
-        ).length;
-
-        const servedStat = this.stats.find(s => s.label === 'Orders served');
-        if (servedStat) {
-          servedStat.value = String(served);
-        }
-
-        const qrStat = this.stats.find(s => s.label === 'QR orders pending');
-        if (qrStat) {
-          qrStat.value = String(qrPending);
-        }
-
-        const activeCard = this.touchCards.find(c => c.id === 'card-active-orders');
-        if (activeCard) {
-          activeCard.badge = `${inProgress} IN PROGRESS`;
-        }
-
-        const qrCard = this.touchCards.find(c => c.id === 'card-qr-orders');
-        if (qrCard) {
-          qrCard.badge = `${qrPending} PENDING`;
-        }
-      },
-      error: () => {}
-    });
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+    if (this.clockTimer) clearInterval(this.clockTimer);
   }
 
   toggleClock(): void {
@@ -144,5 +73,85 @@ export class WorkerDashboardComponent implements OnInit {
     this.shiftStart = this.clockedIn
       ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       : null;
+  }
+
+  private tickClock(): void {
+    const now = new Date();
+    this.liveTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    this.liveDate = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+  }
+
+  private refreshData(): void {
+    this.tableService.getWorkerTables().subscribe({
+      next: (tables) => {
+        const total = tables.length;
+        const free = tables.filter(t => t.status === 'Available').length;
+        const occupied = tables.filter(t => t.status === 'Occupied').length;
+
+        const tableStat = this.stats.find(s => s.label === 'Tables Free');
+        if (tableStat) {
+          tableStat.value = String(free);
+          tableStat.sub = `${occupied} occupied · ${total} total`;
+        }
+      },
+      error: () => {}
+    });
+
+    this.orderService.getAllOrders().subscribe({
+      next: (orders) => {
+        const inProgress = orders.filter(o => o.status === 'Preparing' || o.status === 'Ready').length;
+        const qrPending = orders.filter(o => o.type === 'QR' && o.status === 'Pending').length;
+        const ready = orders.filter(o => o.status === 'Ready').length;
+        const served = orders.filter(o => o.status === 'Served' || o.status === 'Completed').length;
+
+        const progressStat = this.stats.find(s => s.label === 'In Progress');
+        if (progressStat) {
+          progressStat.value = String(inProgress);
+          progressStat.sub = ready > 0 ? `${ready} ready to serve` : 'preparing or ready';
+          progressStat.alert = ready > 0;
+        }
+
+        const qrStat = this.stats.find(s => s.label === 'QR Pending');
+        if (qrStat) {
+          qrStat.value = String(qrPending);
+          qrStat.sub = qrPending > 0 ? 'needs your approval' : 'all clear';
+          qrStat.alert = qrPending > 0;
+        }
+
+        const servedStat = this.stats.find(s => s.label === 'Served Today');
+        if (servedStat) servedStat.value = String(served);
+
+        this.buildAlerts(qrPending, ready, inProgress);
+      },
+      error: () => {}
+    });
+  }
+
+  private buildAlerts(qrPending: number, ready: number, inProgress: number): void {
+    this.alerts = [];
+    if (qrPending > 0) {
+      this.alerts.push({
+        message: `${qrPending} QR order${qrPending > 1 ? 's' : ''} waiting for approval`,
+        route: '/worker/qr-orders',
+        action: 'Review',
+        type: 'warning'
+      });
+    }
+    if (ready > 0) {
+      this.alerts.push({
+        message: `${ready} order${ready > 1 ? 's' : ''} ready to serve`,
+        route: '/worker/active-orders',
+        action: 'View',
+        type: 'info'
+      });
+    }
+    if (inProgress === 0 && qrPending === 0) {
+      this.alerts.push({
+        message: 'No active orders — ready for the next customer',
+        route: '/worker/new-order',
+        action: 'New Order',
+        type: 'info'
+      });
+    }
   }
 }
