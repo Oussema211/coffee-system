@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
+import { DashboardService, RecentOrder } from '../../../core/dashboard.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -10,24 +11,40 @@ import { AuthService } from '../../../core/auth.service';
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })
-export class AdminDashboardComponent {
+export class AdminDashboardComponent implements OnInit {
   username: string | null;
+  loading = true;
+  errorMessage = '';
 
   stats = [
-    { label: "Today's revenue",  value: '$148.20', sub: '+12% vs yesterday',  trend: 'up' },
-    { label: 'Orders today',     value: '24',       sub: '2 pending',           trend: 'up' },
-    { label: 'Active workers',   value: '2',        sub: 'of 3 staff',          trend: 'neutral' },
-    { label: 'Menu items',       value: '6',        sub: '1 hidden',            trend: 'neutral' },
+    { label: "Today's revenue", value: '—', sub: 'Loading…', trend: 'neutral' },
+    { label: 'Orders today', value: '—', sub: 'Loading…', trend: 'neutral' },
+    { label: 'Active workers', value: '—', sub: 'Loading…', trend: 'neutral' },
+    { label: 'Menu items', value: '—', sub: 'Loading…', trend: 'neutral' },
   ];
 
-  recentOrders = [
-    { id: 1046, items: 'Cappuccino',                worker: 'Sarah M.',  total: 3.50, status: 'Completed' },
-    { id: 1045, items: 'Iced Americano',             worker: 'James C.',  total: 3.00, status: 'Refunded'  },
-    { id: 1044, items: 'Latte, Blueberry Muffin',   worker: 'Sarah M.',  total: 6.60, status: 'Completed' },
-    { id: 1043, items: 'Espresso',                   worker: 'James C.',  total: 2.50, status: 'Completed' },
-  ];
+  recentOrders: RecentOrder[] = [];
 
-  constructor(private auth: AuthService) {
+  constructor(private auth: AuthService, private dashboardService: DashboardService) {
     this.username = this.auth.getUsername();
+  }
+
+  ngOnInit(): void {
+    this.dashboardService.getDashboard().subscribe({
+      next: (data) => {
+        this.stats = [
+          { label: "Today's revenue", value: `${Number(data.todaysRevenue).toFixed(2)} TND`, sub: 'excluding cancelled orders', trend: 'up' },
+          { label: 'Orders today', value: String(data.ordersToday), sub: `${data.pendingOrders} pending`, trend: data.pendingOrders ? 'up' : 'neutral' },
+          { label: 'Active workers', value: String(data.activeWorkers), sub: `of ${data.totalWorkers} staff`, trend: 'neutral' },
+          { label: 'Menu items', value: String(data.menuItems), sub: `${data.unavailableMenuItems} hidden`, trend: 'neutral' },
+        ];
+        this.recentOrders = data.recentOrders;
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load dashboard data. Please try again.';
+        this.loading = false;
+      }
+    });
   }
 }

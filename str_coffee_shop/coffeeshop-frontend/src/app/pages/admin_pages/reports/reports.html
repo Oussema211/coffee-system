@@ -1,21 +1,25 @@
 <div class="p-8">
   <h1 class="font-display text-3xl text-espresso mb-1">Reports</h1>
-  <p class="text-espresso-light/60 text-sm mb-8">How the shop's been doing this week.</p>
+  <p class="text-espresso-light/60 text-sm mb-8">Live sales and order performance for this calendar week.</p>
 
   <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
     <div class="bg-white rounded-2xl border border-cream-dark p-5">
       <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">This week</p>
-      <p class="font-display text-2xl text-espresso">{{ weekTotal | number:'1.2-2' }} $</p>
+      <p class="font-display text-2xl text-espresso">{{ weekTotal | number:'1.2-2' }} TND</p>
     </div>
     <div class="bg-white rounded-2xl border border-cream-dark p-5">
       <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">Avg. order value</p>
-      <p class="font-display text-2xl text-espresso">4.85 $</p>
+      <p class="font-display text-2xl text-espresso">{{ averageOrderValue | number:'1.2-2' }} TND</p>
     </div>
     <div class="bg-white rounded-2xl border border-cream-dark p-5">
       <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">Best seller</p>
-      <p class="font-display text-2xl text-espresso">{{ topItems[0].name }}</p>
+      <p class="font-display text-2xl text-espresso">{{ bestSeller }}</p>
     </div>
   </div>
+
+  @if (errorMessage) {
+    <p class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{{ errorMessage }}</p>
+  }
 
   <div class="grid lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2 bg-white rounded-2xl border border-cream-dark p-6">
@@ -28,6 +32,9 @@
           </div>
         }
       </div>
+      @if (!loading && weekTotal === 0) {
+        <p class="mt-4 text-center text-sm text-espresso-light/60">No sales recorded this week.</p>
+      }
     </div>
 
     <div class="bg-white rounded-2xl border border-cream-dark p-6">
@@ -40,6 +47,9 @@
           </div>
         }
       </div>
+      @if (!loading && topItems.length === 0) {
+        <p class="text-sm text-espresso-light/60">No items sold this week.</p>
+      }
     </div>
   </div>
 </div>

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DashboardService, DailySales, TopItem } from '../../../core/dashboard.service';
 
 @Component({
   selector: 'app-reports',
@@ -7,33 +8,39 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   templateUrl: './reports.html'
 })
-export class Reports {
-  weekSales = [
-    { day: 'Mon', amount: 142 },
-    { day: 'Tue', amount: 168 },
-    { day: 'Wed', amount: 155 },
-    { day: 'Thu', amount: 190 },
-    { day: 'Fri', amount: 210 },
-    { day: 'Sat', amount: 260 },
-    { day: 'Sun', amount: 175 }
-  ];
+export class Reports implements OnInit {
+  weekSales: DailySales[] = [];
+  topItems: TopItem[] = [];
+  weekTotal = 0;
+  averageOrderValue = 0;
+  bestSeller = '—';
+  loading = true;
+  errorMessage = '';
 
-  topItems = [
-    { name: 'Cappuccino', sold: 84 },
-    { name: 'Espresso', sold: 71 },
-    { name: 'Latte', sold: 63 },
-    { name: 'Croissant', sold: 48 }
-  ];
+  constructor(private dashboardService: DashboardService) {}
 
-  get maxSales(): number {
-    return Math.max(...this.weekSales.map(d => d.amount));
+  ngOnInit(): void {
+    this.dashboardService.getReports().subscribe({
+      next: (data) => {
+        this.weekSales = data.weekSales;
+        this.topItems = data.topItems;
+        this.weekTotal = Number(data.weekTotal);
+        this.averageOrderValue = Number(data.averageOrderValue);
+        this.bestSeller = data.bestSeller;
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load report data. Please try again.';
+        this.loading = false;
+      }
+    });
   }
 
-  get weekTotal(): number {
-    return this.weekSales.reduce((sum, d) => sum + d.amount, 0);
+  get maxSales(): number {
+    return Math.max(1, ...this.weekSales.map(d => Number(d.amount)));
   }
 
   barHeight(amount: number): number {
-    return Math.round((amount / this.maxSales) * 100);
+    return Math.round((Number(amount) / this.maxSales) * 100);
   }
 }
