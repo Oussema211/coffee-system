@@ -76,10 +76,10 @@
 
   <!-- Category Table -->
   @if (!isLoading) {
-    <div class="bg-white rounded-2xl border border-cream-dark overflow-hidden shadow-sm">
+    <div class="bg-white rounded-2xl border border-cream-dark overflow-x-auto shadow-sm">
 
       <!-- Table Header -->
-      <div class="grid grid-cols-[1fr_2fr_auto_auto] gap-4 items-center px-5 py-3 bg-cream/30 border-b border-cream-dark">
+      <div class="grid min-w-[34rem] grid-cols-[1fr_2fr_auto_auto] gap-4 items-center px-5 py-3 bg-cream/30 border-b border-cream-dark">
         <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60">Category</span>
         <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60">Description</span>
         <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60 text-center">Items</span>
@@ -88,7 +88,7 @@
 
       <!-- Rows -->
       @for (cat of categories; track cat.id) {
-        <div class="grid grid-cols-[1fr_2fr_auto_auto] gap-4 items-center px-5 py-4 border-b border-cream-dark/50 last:border-0 hover:bg-cream/20 transition duration-100 group">
+        <div class="grid min-w-[34rem] grid-cols-[1fr_2fr_auto_auto] gap-4 items-center px-5 py-4 border-b border-cream-dark/50 last:border-0 hover:bg-cream/20 transition duration-100 group">
 
           <!-- Name -->
           <div class="flex items-center gap-3">

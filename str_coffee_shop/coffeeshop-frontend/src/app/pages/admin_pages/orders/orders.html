@@ -1,10 +1,10 @@
-<div class="p-8">
-  <div class="flex items-start justify-between mb-8">
+<div class="p-4 sm:p-6 lg:p-8">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6 sm:mb-8">
     <div>
       <h1 class="font-display text-3xl text-espresso mb-1">Orders</h1>
       <p class="text-espresso-light/60 text-sm">Today's transactions, {{ orders.length }} orders so far.</p>
     </div>
-    <div class="flex items-center gap-3">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
       <button
         type="button"
         (click)="clearOrdersOlderThanSevenDays()"
@@ -20,8 +20,8 @@
     </div>
   </div>
 
-  <div class="bg-white rounded-2xl border border-cream-dark overflow-hidden">
-    <table class="w-full text-sm">
+  <div class="bg-white rounded-2xl border border-cream-dark overflow-x-auto">
+    <table class="w-full min-w-[760px] text-sm">
       <thead>
         <tr class="border-b border-cream-dark text-left">
           <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Order</th>
