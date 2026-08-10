@@ -5,6 +5,6 @@
 /* The cart is fixed on wide POS screens. Reserve the bottom-navigation area
    so its order total and submit button can always be reached. */
 .pos-cart {
-  bottom: calc(4rem + env(safe-area-inset-bottom, 0px) + 1rem);
-  max-height: calc(100dvh - 6rem - 4rem - env(safe-area-inset-bottom, 0px) - 1rem);
+  bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem);
+  max-height: calc(100dvh - 5rem - 3.5rem - env(safe-area-inset-bottom, 0px) - 0.75rem);
 }

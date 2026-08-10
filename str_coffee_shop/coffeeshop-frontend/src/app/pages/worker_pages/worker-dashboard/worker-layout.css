@@ -135,7 +135,7 @@
   min-width: 0;
   overflow-y: auto;
   /* Keep the final content (and its actions) clear of the fixed navigation. */
-  padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
 }
 
 .shift-btn {
@@ -167,7 +167,7 @@
   z-index: 60;
   display: flex;
   align-items: stretch;
-  height: calc(4rem + env(safe-area-inset-bottom, 0px));
+  height: calc(3.5rem + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   background: #2B1B14;
   border-top: 2px solid rgba(201, 133, 43, 0.3);
@@ -186,7 +186,7 @@
   transition: color 0.15s, background 0.15s;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  min-height: 4rem;
+  min-height: 3.5rem;
   position: relative;
   padding: 0.25rem 0.15rem;
   text-align: center;
@@ -217,14 +217,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.125rem;
-  height: 2.125rem;
+  width: 1.875rem;
+  height: 1.875rem;
   flex-shrink: 0;
 }
 
 .nav-icon-wrap svg {
-  width: 1.375rem;
-  height: 1.375rem;
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 .nav-label {
@@ -266,8 +266,8 @@
 .nav-tab:nth-child(2) .nav-icon-wrap {
   background: rgba(201, 133, 43, 0.15);
   border-radius: 0.875rem;
-  width: 2.375rem;
-  height: 2.375rem;
+  width: 2.125rem;
+  height: 2.125rem;
 }
 
 .nav-tab:nth-child(2).nav-active .nav-icon-wrap {
@@ -333,8 +333,8 @@
   }
 
   .nav-icon-wrap svg {
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }
 
