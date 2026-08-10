@@ -3,10 +3,13 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Router } from '@angular/router';
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
+
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, LanguageSwitcherComponent],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css'
 })

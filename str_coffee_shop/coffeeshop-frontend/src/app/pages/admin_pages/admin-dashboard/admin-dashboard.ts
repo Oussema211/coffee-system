@@ -4,10 +4,12 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { DashboardService, RecentOrder } from '../../../core/dashboard.service';
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })

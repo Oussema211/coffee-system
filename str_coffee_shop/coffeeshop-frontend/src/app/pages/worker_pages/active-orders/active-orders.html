@@ -3,8 +3,8 @@
   <!-- Page Header -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
     <div>
-      <h1 class="font-display text-3xl font-bold text-espresso mb-1">Active Orders</h1>
-      <p class="text-espresso-light/70 text-base">{{ orders.length }} orders currently in progress.</p>
+      <h1 class="font-display text-3xl font-bold text-espresso mb-1">{{ 'worker.activeOrders.title' | translate }}</h1>
+      <p class="text-espresso-light/70 text-base">{{ orders.length }} {{ 'worker.activeOrders.title' | translate }}</p>
     </div>
   </div>
 
@@ -21,7 +21,7 @@
       <svg class="animate-spin w-5 h-5 text-caramel" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
       </svg>
-      Loading active orders...
+      {{ 'common.loading' | translate }}
     </div>
   } @else if (error) {
     <div class="bg-red-50 border border-red-200 text-red-700 text-base rounded-3xl p-6 text-center font-medium mb-6 flex justify-between items-center">
@@ -38,7 +38,7 @@
     <div>
       <div class="flex items-center gap-2 mb-4">
         <span class="w-3 h-3 rounded-full bg-caramel animate-ping"></span>
-        <h2 class="font-display text-xl font-bold text-espresso">Preparing</h2>
+        <h2 class="font-display text-xl font-bold text-espresso">{{ 'admin.orders.preparing' | translate }}</h2>
         <span class="text-sm font-semibold text-espresso-light/60">({{ preparing.length }})</span>
       </div>
 
@@ -47,9 +47,9 @@
           <div class="bg-white rounded-3xl border-2 border-cream-dark p-6 shadow-xs flex flex-col justify-between">
             <div class="flex items-start justify-between mb-4">
               <div>
-                <p class="text-espresso font-bold text-lg">Order #{{ order.id }}</p>
+                <p class="text-espresso font-bold text-lg">{{ 'admin.dashboard.orderId' | translate }}{{ order.id }}</p>
                 <p class="text-sm text-espresso-light/70 font-medium mt-0.5">
-                  {{ order.table ? 'Table ' + order.table : 'Takeaway' }} · {{ order.time }}
+                  {{ order.table ? ('worker.qrOrders.table' | translate) + ' ' + order.table : ('worker.pos.takeaway' | translate) }} · {{ order.time }}
                 </p>
               </div>
               <span [class]="typeClasses(order.type)" class="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-xs">
@@ -60,16 +60,16 @@
             <p class="text-espresso text-base font-medium mb-6 bg-cream/50 p-4 rounded-2xl border border-cream-dark">{{ order.items.join(', ') }}</p>
 
             <div class="flex items-center justify-between pt-2 gap-2">
-              <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} TND</span>
+              <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
               <div class="flex items-center gap-2">
                 <button (click)="printBill(order)" class="text-sm font-bold text-espresso bg-cream border-2 border-espresso/20 hover:bg-cream-dark px-4 py-3.5 rounded-2xl active:scale-95 transition min-h-[52px] cursor-pointer flex items-center gap-1.5">
-                  {{ billWasPrinted(order) ? '🖨️ Reprint Bill' : '🖨️ Print Bill' }}
+                  {{ billWasPrinted(order) ? ('worker.tables.reprintBill' | translate) : ('worker.tables.printBill' | translate) }}
                 </button>
                 <button (click)="openCancelModal(order)" class="text-sm font-bold text-red-600 bg-red-50 border-2 border-red-200/80 hover:bg-red-100 hover:border-red-300 px-4 py-3.5 rounded-2xl active:scale-95 transition min-h-[52px] cursor-pointer flex items-center gap-1.5" title="Cancel order">
-                  🚫 Cancel
+                  🚫 {{ 'worker.activeOrders.cancelOrder' | translate }}
                 </button>
                 <button (click)="advance(order)" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
-                  ✓ Mark Ready
+                  ✓ {{ 'worker.activeOrders.markReady' | translate }}
                 </button>
               </div>
             </div>
@@ -78,7 +78,7 @@
 
         @if (preparing.length === 0) {
           <div class="bg-white rounded-3xl border-2 border-cream-dark p-10 text-center text-espresso-light/60 text-base font-medium">
-            Nothing in progress right now.
+            {{ 'common.noData' | translate }}
           </div>
         }
       </div>
@@ -88,7 +88,7 @@
     <div>
       <div class="flex items-center gap-2 mb-4">
         <span class="w-3 h-3 rounded-full bg-caramel"></span>
-        <h2 class="font-display text-xl font-bold text-espresso">Ready & Served</h2>
+        <h2 class="font-display text-xl font-bold text-espresso">{{ 'admin.orders.ready' | translate }}</h2>
         <span class="text-sm font-semibold text-espresso-light/60">({{ readyAndServed.length }})</span>
       </div>
 
@@ -98,15 +98,15 @@
             <div class="flex items-start justify-between mb-4">
               <div>
                 <div class="flex items-center gap-2">
-                  <p class="text-espresso font-bold text-lg">Order #{{ order.id }}</p>
+                  <p class="text-espresso font-bold text-lg">{{ 'admin.dashboard.orderId' | translate }}{{ order.id }}</p>
                   @if (order.status === 'Served') {
-                    <span class="bg-sage/15 text-sage text-xs font-extrabold uppercase px-2.5 py-1 rounded-md">Served</span>
+                    <span class="bg-sage/15 text-sage text-xs font-extrabold uppercase px-2.5 py-1 rounded-md">{{ 'admin.orders.completed' | translate }}</span>
                   } @else {
-                    <span class="bg-caramel/15 text-caramel-dark text-xs font-extrabold uppercase px-2.5 py-1 rounded-md">Ready</span>
+                    <span class="bg-caramel/15 text-caramel-dark text-xs font-extrabold uppercase px-2.5 py-1 rounded-md">{{ 'admin.orders.ready' | translate }}</span>
                   }
                 </div>
                 <p class="text-sm text-espresso-light/70 font-medium mt-0.5">
-                  {{ order.table ? 'Table ' + order.table : 'Takeaway' }} · {{ order.time }}
+                  {{ order.table ? ('worker.qrOrders.table' | translate) + ' ' + order.table : ('worker.pos.takeaway' | translate) }} · {{ order.time }}
                 </p>
               </div>
               <span [class]="typeClasses(order.type)" class="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-xs">
@@ -117,22 +117,22 @@
             <p class="text-espresso text-base font-medium mb-6 bg-caramel/8 p-4 rounded-2xl border border-caramel/20">{{ order.items.join(', ') }}</p>
 
             <div class="flex items-center justify-between pt-2 gap-2">
-              <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} TND</span>
+              <span class="text-caramel-dark font-bold text-xl">{{ order.total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
 
               <div class="flex items-center gap-2">
                 <button (click)="printBill(order)" class="text-sm font-bold text-espresso bg-cream border-2 border-espresso/20 hover:bg-cream-dark px-4 py-3.5 rounded-2xl active:scale-95 transition min-h-[52px] cursor-pointer flex items-center gap-1.5">
-                  {{ billWasPrinted(order) ? '🖨️ Reprint Bill' : '🖨️ Print Bill' }}
+                  {{ billWasPrinted(order) ? ('worker.tables.reprintBill' | translate) : ('worker.tables.printBill' | translate) }}
                 </button>
                 <button (click)="openCancelModal(order)" class="text-sm font-bold text-red-600 bg-red-50 border-2 border-red-200/80 hover:bg-red-100 hover:border-red-300 px-4 py-3.5 rounded-2xl active:scale-95 transition min-h-[52px] cursor-pointer flex items-center gap-1.5" title="Cancel order">
-                  🚫 Cancel
+                  🚫 {{ 'worker.activeOrders.cancelOrder' | translate }}
                 </button>
                 @if (order.status === 'Ready') {
                   <button (click)="advance(order)" class="text-base font-bold text-caramel-dark bg-caramel/15 border-2 border-caramel/30 px-6 py-3.5 rounded-2xl hover:bg-caramel/25 active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
-                    ✓ Mark Served
+                    ✓ {{ 'worker.activeOrders.markCompleted' | translate }}
                   </button>
                 } @else if (order.status === 'Served') {
                   <button (click)="openPayment(order)" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
-                    💳 Pay Order
+                    💳 {{ 'worker.tables.payBill' | translate }}
                   </button>
                 }
               </div>
@@ -142,7 +142,7 @@
 
         @if (readyAndServed.length === 0) {
           <div class="bg-white rounded-3xl border-2 border-cream-dark p-10 text-center text-espresso-light/60 text-base font-medium">
-            Nothing waiting for pickup or payment.
+            {{ 'common.noData' | translate }}
           </div>
         }
       </div>
@@ -163,10 +163,10 @@
     <div class="flex items-center justify-between px-6 pt-6 pb-2 border-b-2 border-cream-dark">
       <div>
         <h2 class="font-display text-2xl font-bold text-espresso">
-          💳 Order #{{ activePaymentOrder.id }} — Payment
+          💳 {{ 'admin.dashboard.orderId' | translate }}{{ activePaymentOrder.id }} — {{ 'worker.tables.paymentTitle' | translate }}
         </h2>
         <p class="text-sm text-espresso-light/60 font-medium mt-0.5">
-          {{ activePaymentOrder.table ? 'Table ' + activePaymentOrder.table : 'Takeaway' }} · {{ activePaymentOrder.time }}
+          {{ activePaymentOrder.table ? ('worker.qrOrders.table' | translate) + ' ' + activePaymentOrder.table : ('worker.pos.takeaway' | translate) }} · {{ activePaymentOrder.time }}
         </p>
       </div>
       <button (click)="closePayment()" class="w-10 h-10 rounded-xl bg-cream-dark hover:bg-espresso/10 text-espresso text-xl font-bold flex items-center justify-center transition cursor-pointer">
@@ -181,14 +181,14 @@
         [class]="paymentMode === 'full' ? 'bg-espresso text-cream shadow-sm' : 'bg-cream border-2 border-cream-dark text-espresso-light/70 hover:bg-cream-dark'"
         class="flex-1 text-sm font-bold py-3 rounded-2xl transition active:scale-95 cursor-pointer min-h-[46px]"
       >
-        🧾 Full Bill
+        🧾 {{ 'worker.tables.fullTableBill' | translate }}
       </button>
       <button
         (click)="switchMode('split')"
         [class]="paymentMode === 'split' ? 'bg-espresso text-cream shadow-sm' : 'bg-cream border-2 border-cream-dark text-espresso-light/70 hover:bg-cream-dark'"
         class="flex-1 text-sm font-bold py-3 rounded-2xl transition active:scale-95 cursor-pointer min-h-[46px]"
       >
-        ✂️ Split Bill
+        ✂️ {{ 'worker.tables.splitBill' | translate }}
       </button>
     </div>
 
@@ -198,7 +198,7 @@
       <!-- Items list -->
       <div class="mb-5">
         <p class="text-xs font-bold uppercase tracking-wider text-espresso-light/50 mb-3">
-          @if (paymentMode === 'split') { Select items this customer is paying for } @else { Items on this order }
+          @if (paymentMode === 'split') { {{ 'worker.tables.selectItemsPerson' | translate }} } @else { {{ 'worker.tables.itemsOnTable' | translate }} }
         </p>
 
         <div class="flex flex-col gap-2">
@@ -219,7 +219,7 @@
 
               <div class="flex-1 min-w-0">
                 <p class="text-base font-bold text-espresso truncate">{{ item.name }}</p>
-                <p class="text-xs text-espresso-light/50 font-medium">Qty: {{ item.qty }}</p>
+                <p class="text-xs text-espresso-light/50 font-medium">{{ 'common.quantity' | translate }}: {{ item.qty }}</p>
               </div>
               @if (paymentMode === 'split') {
                 <div class="flex items-center gap-1 shrink-0" (click)="$event.stopPropagation()">
@@ -228,13 +228,13 @@
                   <button (click)="changeSelectedQuantity(item, 1)" [disabled]="(item.selectedQty ?? 0) === item.qty" class="w-7 h-7 rounded-lg border border-cream-dark font-bold disabled:opacity-35 cursor-pointer">+</button>
                 </div>
               }
-              <span class="font-bold text-base text-espresso shrink-0">{{ (item.price * item.qty) | number:'1.2-2' }} TND</span>
+              <span class="font-bold text-base text-espresso shrink-0">{{ (item.price * item.qty) | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
             </div>
           }
 
           @if (unpaidItems.length === 0) {
             <div class="py-8 text-center text-espresso-light/60 text-base font-medium">
-              ✓ All items have been paid for.
+              ✓ {{ 'common.noData' | translate }}
             </div>
           }
         </div>
@@ -244,17 +244,17 @@
       <div class="rounded-2xl border-2 border-cream-dark bg-cream/40 px-5 py-4 mb-5">
         @if (paymentMode === 'split') {
           <div class="flex justify-between items-center mb-1">
-            <span class="text-sm text-espresso-light/60 font-semibold">Full Order Total</span>
-            <span class="font-bold text-espresso">{{ fullTotal | number:'1.2-2' }} TND</span>
+            <span class="text-sm text-espresso-light/60 font-semibold">{{ 'worker.tables.fullTableTotal' | translate }}</span>
+            <span class="font-bold text-espresso">{{ fullTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
           </div>
           <div class="flex justify-between items-center">
-            <span class="text-sm text-espresso-light/60 font-semibold">Selected Items Total</span>
-            <span class="font-display text-2xl font-extrabold text-espresso">{{ splitTotal | number:'1.2-2' }} TND</span>
+            <span class="text-sm text-espresso-light/60 font-semibold">{{ 'worker.tables.thisPersonItems' | translate }}</span>
+            <span class="font-display text-2xl font-extrabold text-espresso">{{ splitTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
           </div>
         } @else {
           <div class="flex justify-between items-center">
-            <span class="text-sm text-espresso-light/60 font-semibold">Grand Total</span>
-            <span class="font-display text-2xl font-extrabold text-espresso">{{ fullTotal | number:'1.2-2' }} TND</span>
+            <span class="text-sm text-espresso-light/60 font-semibold">{{ 'worker.tables.grandTotal' | translate }}</span>
+            <span class="font-display text-2xl font-extrabold text-espresso">{{ fullTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
           </div>
         }
       </div>
@@ -263,7 +263,7 @@
       @if (unpaidItems.length > 0 && (paymentMode === 'full' || hasSplitSelection)) {
         <div class="mb-4">
           <label class="block text-xs font-bold uppercase tracking-wider text-espresso-light/50 mb-2">
-            Amount Given by Customer (TND)
+            {{ 'worker.tables.amountGiven' | translate }} ({{ 'common.currency' | translate }})
           </label>
           <div class="relative">
             <input
@@ -274,12 +274,12 @@
               placeholder="0.00"
               class="amount-input"
             />
-            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-espresso-light/40 font-bold text-base pointer-events-none">TND</span>
+            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-espresso-light/40 font-bold text-base pointer-events-none">{{ 'common.currency' | translate }}</span>
           </div>
 
           <!-- Quick amounts -->
           <div class="flex gap-2 mt-3 flex-wrap">
-            <p class="text-xs text-espresso-light/50 font-semibold w-full mb-1">Quick amounts:</p>
+            <p class="text-xs text-espresso-light/50 font-semibold w-full mb-1">{{ 'worker.tables.quickAmounts' | translate }}</p>
             @for (qa of quickAmounts; track qa) {
               <button
                 (click)="setQuickAmount(qa)"
@@ -297,16 +297,16 @@
           @if (amountGiven >= currentTotal) {
             <div class="change-badge change-ok mb-5">
               <div>
-                <p class="text-xs font-bold uppercase tracking-wider opacity-70 mb-0.5">Return to Customer</p>
-                <p class="font-display text-3xl font-extrabold">{{ change | number:'1.2-2' }} TND</p>
+                <p class="text-xs font-bold uppercase tracking-wider opacity-70 mb-0.5">{{ 'worker.tables.returnToCustomer' | translate }}</p>
+                <p class="font-display text-3xl font-extrabold">{{ change | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
               </div>
               <span class="text-4xl">💚</span>
             </div>
           } @else {
             <div class="change-badge change-short mb-5">
               <div>
-                <p class="text-xs font-bold uppercase tracking-wider opacity-70 mb-0.5">Still Needs</p>
-                <p class="font-display text-3xl font-extrabold">{{ shortfall | number:'1.2-2' }} TND</p>
+                <p class="text-xs font-bold uppercase tracking-wider opacity-70 mb-0.5">{{ 'worker.tables.stillNeeds' | translate }}</p>
+                <p class="font-display text-3xl font-extrabold">{{ shortfall | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
               </div>
               <span class="text-4xl">⚠️</span>
             </div>
@@ -324,7 +324,7 @@
           [disabled]="!canConfirm"
           class="confirm-btn"
         >
-          ✓ Confirm Full Payment
+          ✓ {{ 'worker.tables.confirmFullPayment' | translate }}
         </button>
       } @else {
         <button
@@ -332,7 +332,7 @@
           [disabled]="!canConfirm"
           class="confirm-btn"
         >
-          ✓ Confirm Partial Payment ({{ selectedQuantity }} item{{ selectedQuantity === 1 ? '' : 's' }})
+          ✓ {{ 'worker.tables.confirmPartialPayment' | translate }} ({{ selectedQuantity }})
         </button>
       }
     </div>
@@ -355,10 +355,10 @@
 
       <div class="flex gap-3">
         <button (click)="closeCancelModal()" class="flex-1 py-3.5 px-4 rounded-2xl border-2 border-cream-dark text-espresso font-bold text-sm hover:bg-cream/60 transition cursor-pointer min-h-[48px]">
-          Keep Order
+          {{ 'common.cancel' | translate }}
         </button>
         <button (click)="confirmCancelOrder()" class="flex-1 py-3.5 px-4 rounded-2xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 active:scale-95 transition cursor-pointer shadow-md min-h-[48px]">
-          Yes, Cancel Order
+          {{ 'common.confirm' | translate }}
         </button>
       </div>
     </div>

@@ -12,12 +12,16 @@ interface NavItem {
   label: string;
   icon: string;
   badgeKey?: 'activeOrders' | 'qrPending';
+  translationKey: string;
 }
+
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
 
 @Component({
   selector: 'app-worker-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, CommonModule],
+  imports: [RouterOutlet, RouterLink, CommonModule, TranslatePipe, LanguageSwitcherComponent],
   templateUrl: './worker-layout.html',
   styleUrl: './worker-layout.css'
 })
@@ -30,12 +34,12 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
   changingShift = false;
 
   navItems: NavItem[] = [
-    { route: '/worker', label: 'Home', icon: 'home' },
-    { route: '/worker/new-order', label: 'POS', icon: 'pos' },
-    { route: '/worker/active-orders', label: 'Orders', icon: 'orders', badgeKey: 'activeOrders' },
-    { route: '/worker/qr-orders', label: 'QR', icon: 'qr', badgeKey: 'qrPending' },
-    { route: '/worker/tables', label: 'Tables', icon: 'tables' },
-    { route: '/worker/menu', label: 'Menu', icon: 'menu' },
+    { route: '/worker', label: 'Home', icon: 'home', translationKey: 'nav.dashboard' },
+    { route: '/worker/new-order', label: 'POS', icon: 'pos', translationKey: 'nav.pos' },
+    { route: '/worker/active-orders', label: 'Orders', icon: 'orders', badgeKey: 'activeOrders', translationKey: 'nav.activeOrders' },
+    { route: '/worker/qr-orders', label: 'QR', icon: 'qr', badgeKey: 'qrPending', translationKey: 'nav.qrOrders' },
+    { route: '/worker/tables', label: 'Tables', icon: 'tables', translationKey: 'nav.tables' },
+    { route: '/worker/menu', label: 'Menu', icon: 'menu', translationKey: 'nav.availability' },
   ];
 
   private readonly pageTitles: Record<string, string> = {

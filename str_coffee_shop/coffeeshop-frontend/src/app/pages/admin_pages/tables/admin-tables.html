@@ -10,8 +10,8 @@
         <rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8"/>
       </svg>
       <div>
-        <h1 class="at-title">Tables</h1>
-        <p class="at-subtitle">Manage restaurant seating — add or remove tables</p>
+        <h1 class="at-title">{{ 'admin.tables.title' | translate }}</h1>
+        <p class="at-subtitle">{{ 'admin.tables.title' | translate }}</p>
       </div>
     </div>
     <div class="at-badge">{{ tables.length }} table{{ tables.length !== 1 ? 's' : '' }}</div>
@@ -29,10 +29,10 @@
 
   <!-- ── Add table form ─────────────────────────────────────────────────── -->
   <div class="at-add-card">
-    <h2 class="at-add-title">Add New Table</h2>
+    <h2 class="at-add-title">{{ 'admin.tables.addTable' | translate }}</h2>
     <div class="at-add-form">
       <div class="at-field">
-        <label class="at-label" for="input-table-number">Table Number</label>
+        <label class="at-label" for="input-table-number">{{ 'admin.tables.tableNumber' | translate }}</label>
         <input
           id="input-table-number"
           class="at-input"
@@ -44,7 +44,7 @@
         />
       </div>
       <div class="at-field">
-        <label class="at-label" for="input-seats">Seats</label>
+        <label class="at-label" for="input-seats">{{ 'admin.tables.capacity' | translate }}</label>
         <input
           id="input-seats"
           class="at-input"
@@ -65,7 +65,7 @@
           <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
         <span class="at-spinner" *ngIf="addLoading"></span>
-        {{ addLoading ? 'Adding…' : 'Add Table' }}
+        {{ addLoading ? ('common.loading' | translate) : ('admin.tables.addTable' | translate) }}
       </button>
     </div>
     <p class="at-add-error" *ngIf="addError">{{ addError }}</p>
@@ -74,7 +74,7 @@
   <!-- ── Loading ────────────────────────────────────────────────────────── -->
   <div class="at-loading" *ngIf="loading">
     <span class="at-spinner-lg"></span>
-    <span>Loading tables…</span>
+    <span>{{ 'common.loading' | translate }}</span>
   </div>
 
   <!-- ── Empty state ────────────────────────────────────────────────────── -->
@@ -85,7 +85,7 @@
       <rect x="6" y="27" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
       <rect x="27" y="27" width="15" height="15" rx="3" stroke="currentColor" stroke-width="2"/>
     </svg>
-    <p>No tables yet. Add your first table above.</p>
+    <p>{{ 'common.noData' | translate }}</p>
   </div>
 
   <!-- ── Table grid ─────────────────────────────────────────────────────── -->
@@ -132,8 +132,8 @@
       <ng-container *ngIf="confirmDeleteId === t.id">
         <p class="at-confirm-text">Remove <strong>Table {{ t.number }}</strong>?</p>
         <div class="at-confirm-actions">
-          <button class="at-confirm-yes" [id]="'btn-confirm-delete-' + t.id" (click)="confirmDelete()">Remove</button>
-          <button class="at-confirm-no"  [id]="'btn-cancel-delete-' + t.id"  (click)="cancelDelete()">Cancel</button>
+          <button class="at-confirm-yes" [id]="'btn-confirm-delete-' + t.id" (click)="confirmDelete()">{{ 'common.delete' | translate }}</button>
+          <button class="at-confirm-no"  [id]="'btn-cancel-delete-' + t.id"  (click)="cancelDelete()">{{ 'common.cancel' | translate }}</button>
         </div>
       </ng-container>
     </div>
@@ -143,11 +143,11 @@
     <section class="qr-dialog" (click)="$event.stopPropagation()">
       <button class="qr-close no-print" (click)="closeQr()" aria-label="Close">×</button>
       <p class="qr-kicker">Coffee Shop · Table {{ qrTable.number }}</p>
-      <h2>Scan to order</h2>
+      <h2>{{ 'admin.tables.viewQr' | translate }}</h2>
       <img [src]="qrImageUrl(qrTable)" [alt]="'QR code for Table ' + qrTable.number" />
       <p class="qr-help">Scan this code to view the menu and order from Table {{ qrTable.number }}.</p>
       <p class="qr-link">{{ qrUrl(qrTable) }}</p>
-      <button class="qr-print no-print" (click)="printQr()">Print QR code</button>
+      <button class="qr-print no-print" (click)="printQr()">{{ 'admin.tables.qrCode' | translate }}</button>
     </section>
   </div>
 

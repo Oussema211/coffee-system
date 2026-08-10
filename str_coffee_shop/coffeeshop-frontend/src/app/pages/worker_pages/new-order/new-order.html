@@ -5,8 +5,8 @@
     <!-- Page title -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
       <div>
-        <h1 class="font-display text-3xl font-bold text-espresso mb-1">New Order <span class="text-caramel">POS</span></h1>
-        <p class="text-espresso-light/70 text-base">Search or tap any menu item to add it to the cart.</p>
+        <h1 class="font-display text-3xl font-bold text-espresso mb-1">{{ 'worker.pos.title' | translate }}</h1>
+        <p class="text-espresso-light/70 text-base">{{ 'worker.pos.selectItems' | translate }}</p>
       </div>
     </div>
 
@@ -15,7 +15,7 @@
       <input
         type="text"
         [(ngModel)]="searchQuery"
-        placeholder="Search menu items (e.g. 'la' for Latte)…"
+        [placeholder]="'customer.searchPlaceholder' | translate"
         class="w-full bg-white border-2 border-cream-dark rounded-2xl px-5 py-3.5 pl-12 text-base font-bold text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20 shadow-xs transition"
       />
       <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-espresso-light/40 pointer-events-none" viewBox="0 0 20 20" fill="none">
@@ -24,7 +24,7 @@
       </svg>
       @if (searchQuery) {
         <button (click)="searchQuery = ''" class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold uppercase tracking-wider text-espresso-light/60 hover:text-espresso bg-cream-dark hover:bg-espresso/10 px-3 py-1.5 rounded-xl transition cursor-pointer">
-          Clear
+          ✕
         </button>
       }
     </div>
@@ -39,7 +39,7 @@
             : 'bg-white text-espresso-light/80 border-2 border-cream-dark hover:bg-cream-dark font-semibold'"
           class="text-sm md:text-base px-6 py-3.5 rounded-2xl whitespace-nowrap active:scale-95 transition cursor-pointer min-h-[50px]"
         >
-          {{ cat }}
+          {{ cat === 'All' ? ('customer.allCategories' | translate) : cat }}
         </button>
       }
     </div>
@@ -49,7 +49,7 @@
         <svg class="animate-spin w-5 h-5 text-caramel" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
         </svg>
-        Loading menu items…
+        {{ 'common.loading' | translate }}
       </div>
     } @else if (menuError) {
       <div class="bg-red-50 border border-red-200 text-red-700 text-base rounded-3xl p-6 text-center font-medium">
@@ -80,7 +80,7 @@
 
             <div>
               <h3 class="font-display text-lg md:text-xl font-bold text-espresso group-hover:text-caramel-dark transition-colors truncate">{{ item.name }}</h3>
-              <p class="text-caramel-dark font-extrabold text-base md:text-lg mt-1">{{ item.price | number:'1.2-2' }} TND</p>
+              <p class="text-caramel-dark font-extrabold text-base md:text-lg mt-1">{{ item.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
             </div>
           </button>
         }
@@ -88,14 +88,7 @@
 
       @if (filteredItems.length === 0) {
         <div class="bg-white rounded-3xl border-2 border-cream-dark p-12 text-center text-espresso-light/60 text-base font-medium mt-4 flex flex-col items-center gap-3">
-          @if (searchQuery) {
-            <p>No items match "<span class="text-espresso font-bold">{{ searchQuery }}</span>".</p>
-            <button (click)="searchQuery = ''" class="text-xs font-bold uppercase tracking-wider text-caramel-dark bg-caramel/15 hover:bg-caramel/25 px-4 py-2 rounded-xl transition cursor-pointer">
-              Clear Search
-            </button>
-          } @else {
-            <p>No items in this category right now.</p>
-          }
+          <p>{{ 'common.noData' | translate }}</p>
         </div>
       }
     }
@@ -106,10 +99,10 @@
     <div class="pos-cart fixed top-24 right-6 z-10 w-80 xl:w-105 overflow-y-auto bg-white rounded-3xl border-2 border-cream-dark p-6 flex flex-col gap-6 shadow-sm">
 
       <div class="flex items-center justify-between border-b-2 border-cream-dark pb-4">
-        <h2 class="font-display text-2xl font-bold text-espresso">Current Order</h2>
+        <h2 class="font-display text-2xl font-bold text-espresso">{{ 'worker.pos.orderSummary' | translate }}</h2>
         @if (cart.length > 0) {
           <button (click)="clearCart()" class="text-sm font-bold text-espresso-light/70 hover:text-espresso bg-cream-dark hover:bg-espresso/10 px-3.5 py-1.5 rounded-xl transition cursor-pointer">
-            Clear All
+            {{ 'common.delete' | translate }}
           </button>
         }
       </div>
@@ -121,37 +114,34 @@
           [class]="orderType === 'Dine-in' ? 'bg-espresso text-cream font-bold shadow-inner' : 'bg-cream text-espresso-light/70 font-semibold border-2 border-cream-dark hover:bg-cream-dark'"
           class="text-base rounded-2xl py-3.5 active:scale-95 transition cursor-pointer min-h-[50px]"
         >
-          🍽️ Dine-in
+          🍽️ {{ 'worker.pos.dineIn' | translate }}
         </button>
         <button
           (click)="orderType = 'Takeaway'; selectedTable = null"
           [class]="orderType === 'Takeaway' ? 'bg-espresso text-cream font-bold shadow-inner' : 'bg-cream text-espresso-light/70 font-semibold border-2 border-cream-dark hover:bg-cream-dark'"
           class="text-base rounded-2xl py-3.5 active:scale-95 transition cursor-pointer min-h-[50px]"
         >
-          🛍️ Takeaway
+          🛍️ {{ 'worker.pos.takeaway' | translate }}
         </button>
       </div>
 
       @if (orderType === 'Dine-in') {
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-espresso-light/70 mb-2">Table Selection</label>
+          <label class="block text-xs font-bold uppercase tracking-wider text-espresso-light/70 mb-2">{{ 'worker.pos.tableSelect' | translate }}</label>
           <select
             [(ngModel)]="selectedTable"
             [disabled]="tablesLoading"
             class="w-full bg-cream border-2 border-cream-dark rounded-2xl px-5 py-3.5 text-base font-bold text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20 min-h-[52px]"
           >
             <option [ngValue]="null">
-              {{ tablesLoading ? 'Loading tables…' : 'Select Table…' }}
+              {{ tablesLoading ? ('common.loading' | translate) : ('worker.pos.tableSelect' | translate) }}
             </option>
             @for (t of tables; track t.id) {
-              <option [ngValue]="t.number">Table {{ t.number }} ({{ t.seats }} seats)</option>
+              <option [ngValue]="t.number">{{ 'worker.qrOrders.table' | translate }} {{ t.number }} ({{ t.seats }} {{ 'worker.tables.seats' | translate }})</option>
             }
           </select>
           @if (tablesError) {
             <p class="text-xs font-medium text-red-500 mt-1.5">{{ tablesError }}</p>
-          }
-          @if (!tablesLoading && tables.length === 0) {
-            <p class="text-xs font-medium text-espresso-light/60 mt-1.5">No tables available. Please ask admin to add tables.</p>
           }
         </div>
       }
@@ -162,7 +152,7 @@
           <div class="flex items-center justify-between gap-3 bg-cream/50 p-3.5 rounded-2xl border border-cream-dark">
             <div class="min-w-0 flex-1">
               <p class="text-base text-espresso font-bold truncate">{{ line.item.name }}</p>
-              <p class="text-xs text-caramel font-semibold">{{ line.item.price | number:'1.2-2' }} TND each</p>
+              <p class="text-xs text-caramel font-semibold">{{ line.item.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
             </div>
             <div class="flex items-center gap-3 shrink-0">
               <button (click)="decrement(line)" class="w-10 h-10 rounded-xl bg-white border-2 border-cream-dark text-espresso hover:bg-cream-dark text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer">−</button>
@@ -175,15 +165,15 @@
         @if (cart.length === 0) {
           <div class="py-10 text-center">
             <span class="text-3xl">☕</span>
-            <p class="text-espresso-light/60 text-base font-medium mt-2">Cart is empty — tap items to add them.</p>
+            <p class="text-espresso-light/60 text-base font-medium mt-2">{{ 'worker.pos.emptyCart' | translate }}</p>
           </div>
         }
       </div>
 
       <!-- Total & Submit -->
       <div class="border-t-2 border-cream-dark pt-5 flex items-center justify-between">
-        <span class="text-base text-espresso-light/70 font-semibold">Total ({{ cartCount }} item{{ cartCount === 1 ? '' : 's' }})</span>
-        <span class="font-display text-3xl font-bold text-espresso">{{ cartTotal | number:'1.2-2' }} TND</span>
+        <span class="text-base text-espresso-light/70 font-semibold">{{ 'common.total' | translate }} ({{ cartCount }} {{ 'customer.itemTotal' | translate }})</span>
+        <span class="font-display text-3xl font-bold text-espresso">{{ cartTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
       </div>
 
       @if (placedMessage) {
@@ -202,9 +192,9 @@
       >
         @if (placing) {
           <span class="w-5 h-5 border-2 border-cream/40 border-t-cream rounded-full animate-spin"></span>
-          Sending Order…
+          {{ 'worker.pos.processing' | translate }}
         } @else {
-          ☕ Place Order Now
+          ☕ {{ 'worker.pos.placeOrder' | translate }}
         }
       </button>
     </div>

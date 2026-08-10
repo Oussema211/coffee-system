@@ -27,10 +27,12 @@ interface TableInfo {
   orderItems: OrderItem[];
 }
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 @Component({
   selector: 'app-tables',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './tables.html',
   styleUrl: './tables.css'
 })

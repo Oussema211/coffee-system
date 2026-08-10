@@ -22,10 +22,12 @@ interface AlertItem {
   type: 'warning' | 'info';
 }
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 @Component({
   selector: 'app-worker-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './worker-dashboard.html',
   styleUrl: './worker-dashboard.css'
 })

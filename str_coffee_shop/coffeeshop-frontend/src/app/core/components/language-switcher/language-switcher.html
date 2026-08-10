@@ -1,0 +1,29 @@
+<div class="lang-switcher-container">
+  <button type="button" class="lang-switcher-btn" (click)="toggleDropdown()" [attr.aria-expanded]="isOpen">
+    <span class="lang-flag">{{ currentLangOption.flag }}</span>
+    <span class="lang-name">{{ currentLangOption.name }}</span>
+    <svg class="chevron-icon" [class.rotated]="isOpen" viewBox="0 0 20 20" fill="none">
+      <path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  @if (isOpen) {
+    <div class="lang-dropdown">
+      @for (lang of translationService.supportedLanguages; track lang.code) {
+        <button
+          type="button"
+          class="lang-option"
+          [class.active]="lang.code === translationService.currentLanguage"
+          (click)="selectLanguage(lang.code)">
+          <span class="lang-flag">{{ lang.flag }}</span>
+          <span class="lang-label">{{ lang.name }}</span>
+          @if (lang.code === translationService.currentLanguage) {
+            <svg class="check-icon" viewBox="0 0 20 20" fill="none">
+              <path d="M16.666 5L7.5 14.167 3.333 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          }
+        </button>
+      }
+    </div>
+  }
+</div>

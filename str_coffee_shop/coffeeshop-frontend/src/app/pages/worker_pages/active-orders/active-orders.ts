@@ -7,10 +7,12 @@ import { ReceiptPrintService } from '../../../core/receipt-print.service';
 export type OrderItem = OrderItemDTO;
 export type ActiveOrder = OrderDTO;
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 @Component({
   selector: 'app-active-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './active-orders.html',
   styleUrl: './active-orders.css'
 })

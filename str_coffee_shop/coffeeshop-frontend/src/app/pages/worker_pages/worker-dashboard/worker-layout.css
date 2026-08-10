@@ -180,7 +180,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.15rem;
+  gap: 0.2rem;
   text-decoration: none;
   color: rgba(247, 239, 227, 0.45);
   transition: color 0.15s, background 0.15s;
@@ -188,6 +188,9 @@
   user-select: none;
   min-height: 4rem;
   position: relative;
+  padding: 0.25rem 0.15rem;
+  text-align: center;
+  overflow: hidden;
 }
 
 .nav-tab:active {
@@ -216,6 +219,7 @@
   justify-content: center;
   width: 2.125rem;
   height: 2.125rem;
+  flex-shrink: 0;
 }
 
 .nav-icon-wrap svg {
@@ -226,8 +230,17 @@
 .nav-label {
   font-size: 0.625rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
+  text-align: center;
+  line-height: 1.1;
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 0.1rem;
 }
 
 .nav-badge {

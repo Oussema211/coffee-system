@@ -1,7 +1,7 @@
 <div class="mx-auto max-w-5xl p-5 md:p-8">
   <div class="mb-6">
-    <h1 class="font-display text-3xl font-bold text-espresso">Menu availability</h1>
-    <p class="mt-1 text-sm text-espresso-light/70">Hide items that are sold out. Hidden items are not shown on customer QR menus.</p>
+    <h1 class="font-display text-3xl font-bold text-espresso">{{ 'worker.menu.title' | translate }}</h1>
+    <p class="mt-1 text-sm text-espresso-light/70">{{ 'worker.menu.toggleNotice' | translate }}</p>
   </div>
 
   <div class="mb-6 rounded-2xl border border-cream-dark bg-white p-4">
@@ -13,7 +13,7 @@
       <input
         [(ngModel)]="searchQuery"
         type="search"
-        placeholder="Search menu items…"
+        [placeholder]="'common.search' | translate"
         class="w-full rounded-xl border-2 border-cream-dark bg-cream/40 py-3 pl-12 pr-4 text-sm font-medium text-espresso outline-none transition focus:border-caramel focus:bg-white"
       />
     </div>
@@ -29,9 +29,9 @@
     </div>
 
     <div class="flex gap-2">
-      <button (click)="availabilityFilter = 'all'" [class]="availabilityFilter === 'all' ? 'bg-espresso text-cream' : 'bg-cream text-espresso-light/70'" class="rounded-xl px-3 py-2 text-xs font-bold transition">All</button>
-      <button (click)="availabilityFilter = 'available'" [class]="availabilityFilter === 'available' ? 'bg-sage text-white' : 'bg-sage/10 text-sage'" class="rounded-xl px-3 py-2 text-xs font-bold transition">Available</button>
-      <button (click)="availabilityFilter = 'hidden'" [class]="availabilityFilter === 'hidden' ? 'bg-espresso-light text-cream' : 'bg-cream-dark text-espresso-light/70'" class="rounded-xl px-3 py-2 text-xs font-bold transition">Hidden</button>
+      <button (click)="availabilityFilter = 'all'" [class]="availabilityFilter === 'all' ? 'bg-espresso text-cream' : 'bg-cream text-espresso-light/70'" class="rounded-xl px-3 py-2 text-xs font-bold transition">{{ 'common.all' | translate }}</button>
+      <button (click)="availabilityFilter = 'available'" [class]="availabilityFilter === 'available' ? 'bg-sage text-white' : 'bg-sage/10 text-sage'" class="rounded-xl px-3 py-2 text-xs font-bold transition">{{ 'admin.menu.available' | translate }}</button>
+      <button (click)="availabilityFilter = 'hidden'" [class]="availabilityFilter === 'hidden' ? 'bg-espresso-light text-cream' : 'bg-cream-dark text-espresso-light/70'" class="rounded-xl px-3 py-2 text-xs font-bold transition">{{ 'admin.menu.unavailable' | translate }}</button>
     </div>
   </div>
 
@@ -43,7 +43,7 @@
   }
 
   @if (loading) {
-    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">Loading menu…</div>
+    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">{{ 'common.loading' | translate }}</div>
   } @else {
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       @for (item of filteredItems; track item.id) {
@@ -55,21 +55,21 @@
           </div>
           <div class="min-w-0 flex-1">
             <p class="truncate font-display text-lg font-bold text-espresso">{{ item.name }}</p>
-            <p class="text-xs text-espresso-light/60">{{ item.category }} · {{ item.price | number:'1.2-2' }} TND</p>
+            <p class="text-xs text-espresso-light/60">{{ item.category }} · {{ item.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
             <button
               (click)="toggleAvailability(item)"
               [disabled]="changingId !== null"
               [class]="item.available ? 'bg-sage/15 text-sage hover:bg-sage/25' : 'bg-cream-dark text-espresso-light/70 hover:bg-cream'"
               class="mt-3 rounded-xl px-3 py-2 text-xs font-bold transition disabled:cursor-wait disabled:opacity-60"
             >
-              {{ changingId === item.id ? 'Saving…' : (item.available ? 'Available — hide item' : 'Hidden — make available') }}
+              {{ changingId === item.id ? ('common.loading' | translate) : (item.available ? ('admin.menu.available' | translate) : ('admin.menu.unavailable' | translate)) }}
             </button>
           </div>
         </article>
       }
     </div>
     @if (filteredItems.length === 0) {
-      <div class="mt-6 rounded-2xl border border-cream-dark bg-white p-10 text-center text-sm text-espresso-light/60">No menu items match these filters.</div>
+      <div class="mt-6 rounded-2xl border border-cream-dark bg-white p-10 text-center text-sm text-espresso-light/60">{{ 'common.noData' | translate }}</div>
     }
   }
 </div>

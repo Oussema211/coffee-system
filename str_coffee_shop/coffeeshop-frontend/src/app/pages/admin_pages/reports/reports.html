@@ -1,15 +1,15 @@
 <div class="p-4 sm:p-6 lg:p-8">
-  <h1 class="font-display text-3xl text-espresso mb-1">Reports</h1>
-  <p class="text-espresso-light/60 text-sm mb-8">Live sales and order performance for this calendar week.</p>
+  <h1 class="font-display text-3xl text-espresso mb-1">{{ 'admin.reports.title' | translate }}</h1>
+  <p class="text-espresso-light/60 text-sm mb-8">{{ 'admin.reports.title' | translate }}</p>
 
   <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
     <div class="bg-white rounded-2xl border border-cream-dark p-5">
-      <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">This week</p>
-      <p class="font-display text-2xl text-espresso">{{ weekTotal | number:'1.2-2' }} TND</p>
+      <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">{{ 'admin.reports.totalRevenue' | translate }}</p>
+      <p class="font-display text-2xl text-espresso">{{ weekTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
     </div>
     <div class="bg-white rounded-2xl border border-cream-dark p-5">
-      <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">Avg. order value</p>
-      <p class="font-display text-2xl text-espresso">{{ averageOrderValue | number:'1.2-2' }} TND</p>
+      <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">{{ 'admin.reports.avgOrderValue' | translate }}</p>
+      <p class="font-display text-2xl text-espresso">{{ averageOrderValue | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
     </div>
     <div class="bg-white rounded-2xl border border-cream-dark p-5">
       <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">Best seller</p>
@@ -23,7 +23,7 @@
 
   <div class="grid lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2 bg-white rounded-2xl border border-cream-dark p-6">
-      <h3 class="font-display text-lg text-espresso mb-6">Sales this week</h3>
+      <h3 class="font-display text-lg text-espresso mb-6">{{ 'admin.reports.totalRevenue' | translate }}</h3>
       <div class="flex items-end justify-between gap-3 h-48">
         @for (day of weekSales; track day.day) {
           <div class="relative group flex-1 flex flex-col items-center gap-2 h-full justify-end">
@@ -33,7 +33,7 @@
               [attr.aria-label]="day.day + ': ' + (day.amount | number:'1.2-2') + ' TND'"
             ></div>
             <span class="pointer-events-none absolute bottom-8 z-10 hidden whitespace-nowrap rounded-lg bg-espresso px-2.5 py-1.5 text-xs font-medium text-cream shadow-lg group-hover:block">
-              {{ day.day }}: {{ day.amount | number:'1.2-2' }} TND
+              {{ day.day }}: {{ day.amount | number:'1.2-2' }} {{ 'common.currency' | translate }}
             </span>
             <span class="text-xs text-espresso-light/50">{{ day.day }}</span>
           </div>
@@ -45,7 +45,7 @@
     </div>
 
     <div class="bg-white rounded-2xl border border-cream-dark p-6">
-      <h3 class="font-display text-lg text-espresso mb-6">Top sellers</h3>
+      <h3 class="font-display text-lg text-espresso mb-6">{{ 'admin.reports.topSelling' | translate }}</h3>
       <div class="space-y-4">
         @for (item of topItems; track item.name) {
           <div class="flex items-center justify-between">

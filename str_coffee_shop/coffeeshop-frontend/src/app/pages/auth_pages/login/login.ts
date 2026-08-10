@@ -4,10 +4,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, LanguageSwitcherComponent],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })

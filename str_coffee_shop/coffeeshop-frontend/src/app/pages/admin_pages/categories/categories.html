@@ -3,8 +3,8 @@
   <!-- Header -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
     <div>
-      <h1 class="font-display text-3xl font-semibold text-espresso mb-1">Categories</h1>
-      <p class="text-espresso-light/70 text-sm">Manage menu categories — organize items and keep the menu structured.</p>
+      <h1 class="font-display text-3xl font-semibold text-espresso mb-1">{{ 'admin.categories.title' | translate }}</h1>
+      <p class="text-espresso-light/70 text-sm">{{ 'admin.categories.title' | translate }}</p>
     </div>
     <button
       (click)="openAddModal()"
@@ -14,7 +14,7 @@
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
       </svg>
-      Add Category
+      {{ 'admin.categories.addCategory' | translate }}
     </button>
   </div>
 
@@ -45,7 +45,7 @@
   @if (isLoading) {
     <div class="flex flex-col items-center justify-center py-20 gap-3">
       <div class="w-8 h-8 border-[3px] border-caramel/20 border-t-caramel rounded-full animate-spin"></div>
-      <p class="text-espresso-light/60 text-sm">Loading categories...</p>
+      <p class="text-espresso-light/60 text-sm">{{ 'common.loading' | translate }}</p>
     </div>
   }
 
@@ -54,11 +54,11 @@
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
       <div class="bg-white border border-cream-dark rounded-2xl p-5 text-center">
         <p class="text-4xl font-bold text-espresso">{{ categories.length }}</p>
-        <p class="text-xs text-espresso-light/60 mt-1 font-medium uppercase tracking-wider">Total Categories</p>
+        <p class="text-xs text-espresso-light/60 mt-1 font-medium uppercase tracking-wider">{{ 'admin.categories.title' | translate }}</p>
       </div>
       <div class="bg-white border border-cream-dark rounded-2xl p-5 text-center">
         <p class="text-4xl font-bold text-espresso">{{ totalItems }}</p>
-        <p class="text-xs text-espresso-light/60 mt-1 font-medium uppercase tracking-wider">Total Items</p>
+        <p class="text-xs text-espresso-light/60 mt-1 font-medium uppercase tracking-wider">{{ 'admin.dashboard.items' | translate }}</p>
       </div>
       <div class="bg-white border border-cream-dark rounded-2xl p-5 col-span-2 md:col-span-1 flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-caramel/10 flex items-center justify-center flex-shrink-0">
@@ -80,10 +80,10 @@
 
       <!-- Table Header -->
       <div class="grid min-w-[34rem] grid-cols-[1fr_2fr_auto_auto] gap-4 items-center px-5 py-3 bg-cream/30 border-b border-cream-dark">
-        <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60">Category</span>
-        <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60">Description</span>
-        <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60 text-center">Items</span>
-        <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60 text-right">Actions</span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60">{{ 'admin.categories.categoryName' | translate }}</span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60">{{ 'admin.menu.description' | translate }}</span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60 text-center">{{ 'admin.dashboard.items' | translate }}</span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-espresso-light/60 text-right">{{ 'common.actions' | translate }}</span>
       </div>
 
       <!-- Rows -->
@@ -150,10 +150,10 @@
                 d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
             </svg>
           </div>
-          <h4 class="font-display font-semibold text-espresso text-sm">No categories yet</h4>
-          <p class="text-xs text-espresso-light/60">Add your first category to start organizing the menu.</p>
+          <h4 class="font-display font-semibold text-espresso text-sm">{{ 'common.noData' | translate }}</h4>
+          <p class="text-xs text-espresso-light/60">{{ 'common.noData' | translate }}</p>
           <button (click)="openAddModal()" class="mt-1 text-xs text-caramel-dark font-semibold hover:underline cursor-pointer">
-            + Add a category
+            + {{ 'admin.categories.addCategory' | translate }}
           </button>
         </div>
       }
@@ -175,7 +175,7 @@
       <!-- Modal Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-cream-dark">
         <h2 class="font-display text-xl font-semibold text-espresso">
-          {{ editingCategory ? 'Edit Category' : 'Add New Category' }}
+          {{ editingCategory ? ('common.edit' | translate) : ('admin.categories.addCategory' | translate) }}
         </h2>
         <button (click)="closeModal()" class="text-espresso/40 hover:text-espresso p-1 rounded-lg hover:bg-cream transition cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,7 +200,7 @@
         <!-- Name Field -->
         <div>
           <label for="category-name" class="block text-xs font-semibold uppercase tracking-wider text-espresso-light/70 mb-1.5">
-            Category Name <span class="text-red-400">*</span>
+            {{ 'admin.categories.categoryName' | translate }} <span class="text-red-400">*</span>
           </label>
           <input
             id="category-name"
@@ -217,7 +217,7 @@
         <!-- Description Field -->
         <div>
           <label for="category-desc" class="block text-xs font-semibold uppercase tracking-wider text-espresso-light/70 mb-1.5">
-            Description <span class="text-espresso-light/40 font-normal normal-case tracking-normal">(optional)</span>
+            {{ 'admin.menu.description' | translate }} <span class="text-espresso-light/40 font-normal normal-case tracking-normal">(optional)</span>
           </label>
           <textarea
             id="category-desc"
@@ -235,7 +235,7 @@
             (click)="closeModal()"
             class="flex-1 text-sm font-medium text-espresso/70 py-2.5 rounded-xl border border-cream-dark hover:bg-cream transition cursor-pointer"
           >
-            Cancel
+            {{ 'common.cancel' | translate }}
           </button>
           <button
             type="submit"
@@ -246,7 +246,7 @@
             @if (isSaving) {
               <span class="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin"></span>
             }
-            {{ editingCategory ? 'Save Changes' : 'Create Category' }}
+            {{ editingCategory ? ('common.save' | translate) : ('admin.categories.addCategory' | translate) }}
           </button>
         </div>
       </form>

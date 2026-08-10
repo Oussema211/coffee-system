@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MenuItem, MenuService } from '../../../core/menu.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
 type AvailabilityFilter = 'all' | 'available' | 'hidden';
 
 @Component({
   selector: 'app-worker-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './worker-menu.html'
 })
 export class WorkerMenuComponent implements OnInit {

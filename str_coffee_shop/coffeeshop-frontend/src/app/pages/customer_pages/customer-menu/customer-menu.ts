@@ -8,10 +8,13 @@ import { MenuItem } from '../../../core/menu.service';
 
 interface CartItem extends MenuItem { quantity: number; }
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
+
 @Component({
   selector: 'app-customer-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe, LanguageSwitcherComponent],
   templateUrl: './customer-menu.html',
   styleUrl: './customer-menu.css'
 })

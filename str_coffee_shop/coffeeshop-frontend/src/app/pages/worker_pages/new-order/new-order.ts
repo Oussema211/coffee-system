@@ -12,10 +12,12 @@ interface CartLine {
   qty: number;
 }
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+
 @Component({
   selector: 'app-new-order',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './new-order.html',
   styleUrl: './new-order.css'
 })

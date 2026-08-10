@@ -46,12 +46,18 @@
   </div>
 
   <!-- Right form panel (Warm Cream, clear readable inputs) -->
-  <div class="lg:w-1/2 bg-cream flex items-center justify-center px-6 py-14 lg:px-16">
-    <div class="w-full max-w-sm">
+  <div class="relative lg:w-1/2 bg-cream flex flex-col justify-between px-6 py-10 lg:px-16">
+
+    <!-- Top Language Switcher Bar -->
+    <div class="flex justify-end w-full mb-6">
+      <app-language-switcher />
+    </div>
+
+    <div class="w-full max-w-sm mx-auto my-auto">
 
       <div class="mb-10">
-        <h2 class="font-display text-3xl text-espresso font-bold">Welcome back</h2>
-        <p class="text-espresso-light/70 text-sm mt-2">Sign in to your Black Bear account to continue.</p>
+        <h2 class="font-display text-3xl text-espresso font-bold">{{ 'auth.loginTitle' | translate }}</h2>
+        <p class="text-espresso-light/70 text-sm mt-2">{{ 'auth.loginSubtitle' | translate }}</p>
       </div>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5" novalidate>
@@ -59,31 +65,31 @@
         <!-- Username -->
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wide text-espresso-light/80 mb-2">
-            Username
+            {{ 'auth.usernameLabel' | translate }}
           </label>
           <input
             type="text"
             formControlName="username"
-            placeholder="johndoe"
+            [placeholder]="'auth.usernamePlaceholder' | translate"
             class="w-full bg-white border border-cream-dark rounded-xl px-4 py-3 text-espresso
                    placeholder:text-espresso-light/40 outline-none transition
                    focus:border-caramel focus:ring-2 focus:ring-caramel/30 font-medium"
           />
           @if (form.get('username')?.invalid && form.get('username')?.touched) {
-            <p class="text-xs text-red-600 mt-1.5 font-medium">Username is required.</p>
+            <p class="text-xs text-red-600 mt-1.5 font-medium">{{ 'auth.usernameLabel' | translate }} is required.</p>
           }
         </div>
 
         <!-- Password -->
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wide text-espresso-light/80 mb-2">
-            Password
+            {{ 'auth.passwordLabel' | translate }}
           </label>
           <div class="relative">
             <input
               [type]="showPassword ? 'text' : 'password'"
               formControlName="password"
-              placeholder="••••••••"
+              [placeholder]="'auth.passwordPlaceholder' | translate"
               class="w-full bg-white border border-cream-dark rounded-xl px-4 py-3 pr-14 text-espresso
                      placeholder:text-espresso-light/40 outline-none transition
                      focus:border-caramel focus:ring-2 focus:ring-caramel/30 font-medium"
@@ -97,7 +103,7 @@
             </button>
           </div>
           @if (form.get('password')?.invalid && form.get('password')?.touched) {
-            <p class="text-xs text-red-600 mt-1.5 font-medium">Password is required.</p>
+            <p class="text-xs text-red-600 mt-1.5 font-medium">{{ 'auth.passwordLabel' | translate }} is required.</p>
           }
         </div>
 
@@ -117,12 +123,11 @@
             </span>
             <span class="stay-connected-text">Stay connected</span>
           </label>
-          <span class="text-espresso-light/50 text-xs">(keep logged in)</span>
         </div>
 
         @if (errorMessage) {
           <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 font-medium">
-            {{ errorMessage }}
+            {{ 'auth.loginError' | translate }}
           </div>
         }
 
@@ -137,9 +142,9 @@
         >
           @if (loading) {
             <span class="w-4 h-4 border-2 border-cream/40 border-t-cream rounded-full animate-spin"></span>
-            Signing in…
+            {{ 'auth.loggingIn' | translate }}
           } @else {
-            Sign in
+            {{ 'auth.loginButton' | translate }}
           }
         </button>
       </form>

@@ -1,8 +1,8 @@
 <div class="p-4 sm:p-6 lg:p-8">
   <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6 sm:mb-8">
     <div>
-      <h1 class="font-display text-3xl text-espresso mb-1">Orders</h1>
-      <p class="text-espresso-light/60 text-sm">Today's transactions, {{ orders.length }} orders so far.</p>
+      <h1 class="font-display text-3xl text-espresso mb-1">{{ 'admin.orders.title' | translate }}</h1>
+      <p class="text-espresso-light/60 text-sm">{{ orders.length }} {{ 'admin.orders.title' | translate }}</p>
     </div>
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
       <button
@@ -11,11 +11,11 @@
         [disabled]="clearing"
         class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {{ clearing ? 'Clearing…' : 'Clear orders older than 7 days' }}
+        {{ clearing ? ('common.loading' | translate) : ('admin.orders.clearOld' | translate) }}
       </button>
       <div class="bg-white border border-cream-dark rounded-xl px-5 py-3 text-right">
-        <p class="text-xs uppercase tracking-wide text-espresso-light/50">Today's total</p>
-        <p class="font-display text-xl text-espresso">{{ todaysTotal | number:'1.2-2' }} $</p>
+        <p class="text-xs uppercase tracking-wide text-espresso-light/50">{{ 'admin.reports.totalRevenue' | translate }}</p>
+        <p class="font-display text-xl text-espresso">{{ todaysTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
       </div>
     </div>
   </div>
@@ -24,13 +24,13 @@
     <table class="w-full min-w-[760px] text-sm">
       <thead>
         <tr class="border-b border-cream-dark text-left">
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Order</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Items</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Worker</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Type</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Time</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Total</th>
-          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Status</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'admin.dashboard.orderId' | translate }}</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'admin.dashboard.items' | translate }}</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'admin.shiftReports.worker' | translate }}</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'admin.dashboard.type' | translate }}</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'common.time' | translate }}</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'common.total' | translate }}</th>
+          <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'common.status' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -39,13 +39,13 @@
             <td class="px-6 py-4 text-espresso font-medium">#{{ order.id }}</td>
             <td class="px-6 py-4 text-espresso-light/70">{{ order.items.join(', ') }}</td>
             <td class="px-6 py-4 text-espresso-light/70">
-              {{ order.workerName || 'Customer / unavailable' }}
+              {{ order.workerName || ('customer.welcome' | translate) }}
             </td>
             <td class="px-6 py-4 text-espresso-light/70">
-              {{ order.type }}@if (order.table !== null) { · Table {{ order.table }} }
+              {{ order.type }}@if (order.table !== null) { · {{ 'worker.qrOrders.table' | translate }} {{ order.table }} }
             </td>
             <td class="px-6 py-4 text-espresso-light/50">{{ order.time }}</td>
-            <td class="px-6 py-4 text-espresso font-medium">{{ order.total | number:'1.2-2' }} $</td>
+            <td class="px-6 py-4 text-espresso font-medium">{{ order.total | number:'1.2-2' }} {{ 'common.currency' | translate }}</td>
             <td class="px-6 py-4">
               <span
                 [class]="statusClass(order.status)"
@@ -58,7 +58,7 @@
         }
         @if (!loading && !errorMessage && orders.length === 0) {
           <tr>
-            <td colspan="7" class="px-6 py-10 text-center text-espresso-light/60">No orders found.</td>
+            <td colspan="7" class="px-6 py-10 text-center text-espresso-light/60">{{ 'common.noData' | translate }}</td>
           </tr>
         }
       </tbody>
@@ -66,13 +66,13 @@
   </div>
 
   @if (loading) {
-    <p class="mt-4 text-center text-sm text-espresso-light/60">Loading orders…</p>
+    <p class="mt-4 text-center text-sm text-espresso-light/60">{{ 'common.loading' | translate }}</p>
   }
 
   @if (errorMessage) {
     <div class="mt-4 flex items-center justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
       <span>{{ errorMessage }}</span>
-      <button type="button" (click)="loadOrders()" class="font-medium underline">Try again</button>
+      <button type="button" (click)="loadOrders()" class="font-medium underline">{{ 'common.error' | translate }}</button>
     </div>
   }
 

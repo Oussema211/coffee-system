@@ -11,19 +11,20 @@
     </div>
 
     <div class="topbar-right">
+      <app-language-switcher />
       <button
         class="shift-btn"
         [class.shift-active]="shift.checkedIn"
         [disabled]="changingShift"
         (click)="toggleShift()"
       >
-        {{ changingShift ? 'Saving…' : (shift.checkedIn ? 'Check out' : 'Check in') }}
+        {{ changingShift ? ('worker.header.checking' | translate) : (shift.checkedIn ? ('worker.header.checkOut' | translate) : ('worker.header.checkIn' | translate)) }}
       </button>
       <div class="worker-chip">
         <span class="worker-avatar">{{ (username || 'W')[0].toUpperCase() }}</span>
         <span class="worker-name">{{ username || 'Worker' }}</span>
       </div>
-      <button class="logout-btn" (click)="logout()" aria-label="Log out">
+      <button class="logout-btn" (click)="logout()" [attr.aria-label]="'common.logout' | translate">
         <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path d="M7 3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h3M13 14l3-4-3-4M16 10H8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -35,7 +36,7 @@
   <main class="worker-main">
     @if (!shift.checkedIn) {
       <div class="check-in-banner" role="status">
-        Check in using the button above to unlock worker actions.
+        {{ 'worker.dashboard.activeShiftPrompt' | translate }}
       </div>
     }
     <router-outlet />
@@ -99,7 +100,7 @@
             <span class="nav-badge">{{ badges[item.badgeKey] > 9 ? '9+' : badges[item.badgeKey] }}</span>
           }
         </span>
-        <span class="nav-label">{{ item.label }}</span>
+        <span class="nav-label">{{ item.translationKey | translate }}</span>
       </a>
     }
   </nav>

@@ -1,15 +1,15 @@
 <div class="p-4 sm:p-6 lg:p-8">
   <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
     <div>
-      <h1 class="font-display text-3xl text-espresso mb-1">Shift Reports</h1>
-      <p class="text-espresso-light/60 text-sm">Check-in and check-out history for every worker.</p>
+      <h1 class="font-display text-3xl text-espresso mb-1">{{ 'admin.shiftReports.title' | translate }}</h1>
+      <p class="text-espresso-light/60 text-sm">{{ 'admin.shiftReports.title' | translate }}</p>
     </div>
     <button
       (click)="deleteOldShifts()"
       [disabled]="clearing"
       class="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100 disabled:cursor-wait disabled:opacity-60"
     >
-      {{ clearing ? 'Removing…' : 'Delete shifts older than 7 days' }}
+      {{ clearing ? ('common.loading' | translate) : ('admin.orders.clearOld' | translate) }}
     </button>
   </div>
 
@@ -21,19 +21,19 @@
   }
 
   @if (loading) {
-    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">Loading shift history…</div>
+    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">{{ 'common.loading' | translate }}</div>
   } @else if (shifts.length === 0) {
-    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">No shifts have been recorded yet.</div>
+    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">{{ 'common.noData' | translate }}</div>
   } @else {
     <div class="overflow-x-auto rounded-2xl border border-cream-dark bg-white">
       <table class="w-full min-w-[720px] text-sm">
         <thead>
           <tr class="border-b border-cream-dark text-left">
-            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wide text-espresso-light/50">Worker</th>
-            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wide text-espresso-light/50">Username</th>
-            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wide text-espresso-light/50">Check-in</th>
-            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wide text-espresso-light/50">Check-out</th>
-            <th class="px-6 py-4 text-right text-xs font-medium uppercase tracking-wide text-espresso-light/50">Duration</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wide text-espresso-light/50">{{ 'admin.shiftReports.worker' | translate }}</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wide text-espresso-light/50">{{ 'admin.workers.username' | translate }}</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wide text-espresso-light/50">{{ 'admin.shiftReports.checkIn' | translate }}</th>
+            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wide text-espresso-light/50">{{ 'admin.shiftReports.checkOut' | translate }}</th>
+            <th class="px-6 py-4 text-right text-xs font-medium uppercase tracking-wide text-espresso-light/50">{{ 'common.time' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -42,7 +42,7 @@
               <td class="px-6 py-4 font-medium text-espresso">{{ shift.workerName }}</td>
               <td class="px-6 py-4 text-espresso-light/70">&#64;{{ shift.username }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-espresso-light/70">{{ shift.checkInAt | date:'MMM d, y, h:mm a' }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-espresso-light/70">{{ shift.checkOutAt ? (shift.checkOutAt | date:'MMM d, y, h:mm a') : 'Still checked in' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-espresso-light/70">{{ shift.checkOutAt ? (shift.checkOutAt | date:'MMM d, y, h:mm a') : ('admin.shiftReports.ongoing' | translate) }}</td>
               <td class="px-6 py-4 text-right font-medium text-espresso">{{ duration(shift) }}</td>
             </tr>
           }

@@ -1,36 +1,39 @@
 <main class="menu-page">
   <header class="menu-header">
-    <div class="brand">
-      <img src="logo_one.jpg" alt="Black Bear Coffee Shop logo" />
-      <div>
-        <span class="eyebrow">Coffee Shop</span>
-        <strong>Black Bear</strong>
+    <div class="flex items-center justify-between w-full mb-3">
+      <div class="brand">
+        <img src="logo_one.jpg" alt="Black Bear Coffee Shop logo" />
+        <div>
+          <span class="eyebrow">{{ 'common.tagline' | translate }}</span>
+          <strong>{{ 'common.appName' | translate }}</strong>
+        </div>
       </div>
+      <app-language-switcher />
     </div>
-    <h1>Table {{ tableNumber }}</h1>
-    <p>Search or tap any item to add it to your order.</p>
+    <h1>{{ 'customer.table' | translate }} {{ tableNumber }}</h1>
+    <p>{{ 'customer.searchPlaceholder' | translate }}</p>
   </header>
 
-  <section class="state" *ngIf="loading">Loading the menu…</section>
+  <section class="state" *ngIf="loading">{{ 'common.loading' | translate }}</section>
   <section class="state state-error" *ngIf="!loading && error && !tableValid">{{ error }}</section>
 
   <section class="thank-you" *ngIf="orderSent">
     <span class="check">✓</span>
-    <h2>Order sent!</h2>
-    <p>Your order #{{ orderId }} has been sent to the coffee shop team for Table {{ tableNumber }}.</p>
-    <button (click)="orderSent = false">Add another item</button>
+    <h2>{{ 'customer.orderConfirmedTitle' | translate }}</h2>
+    <p>{{ 'customer.orderConfirmedMsg' | translate }} ({{ 'customer.orderNumber' | translate }} #{{ orderId }})</p>
+    <button (click)="orderSent = false">{{ 'customer.orderAnother' | translate }}</button>
   </section>
 
   <ng-container *ngIf="tableValid && !orderSent">
     <div class="search-wrap">
       <span>⌕</span>
-      <input [(ngModel)]="searchQuery" type="search" placeholder="Search menu items…" aria-label="Search menu items" />
-      <button *ngIf="searchQuery" (click)="searchQuery = ''" aria-label="Clear search">Clear</button>
+      <input [(ngModel)]="searchQuery" type="search" [placeholder]="'customer.searchPlaceholder' | translate" [attr.aria-label]="'customer.searchPlaceholder' | translate" />
+      <button *ngIf="searchQuery" (click)="searchQuery = ''" aria-label="Clear search">✕</button>
     </div>
 
     <nav class="category-tabs" aria-label="Menu categories">
       <button *ngFor="let category of categories" (click)="activeCategory = category" [class.active]="activeCategory === category">
-        {{ category }}
+        {{ category === 'All' ? ('customer.allCategories' | translate) : category }}
       </button>
     </nav>
 
@@ -40,26 +43,26 @@
         <div class="item-content">
           <p class="category">{{ item.category }}</p>
           <h2>{{ item.name }}</h2>
-          <p class="price">{{ item.price | number:'1.2-2' }} TND</p>
+          <p class="price">{{ item.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
           <div class="quantity-controls" *ngIf="quantity(item)" (click)="$event.stopPropagation()">
             <button (click)="remove(item)" [attr.aria-label]="'Remove ' + item.name">−</button>
             <span>{{ quantity(item) }}</span>
             <button (click)="add(item)" [attr.aria-label]="'Add ' + item.name">+</button>
           </div>
-          <span class="tap-to-add" *ngIf="!quantity(item)">Tap to add</span>
+          <span class="tap-to-add" *ngIf="!quantity(item)">+ {{ 'common.add' | translate }}</span>
         </div>
       </button>
     </section>
 
     <p class="state" *ngIf="!filteredMenu.length">
-      {{ searchQuery ? 'No items match your search.' : 'There are no items in this category right now.' }}
+      {{ 'common.noData' | translate }}
     </p>
   </ng-container>
 </main>
 
 <aside class="cart-bar" *ngIf="tableValid && !orderSent && itemCount">
-  <div><strong>{{ itemCount }} item{{ itemCount !== 1 ? 's' : '' }}</strong><span>{{ total | number:'1.2-2' }} TND</span></div>
-  <button (click)="confirmOrder()" [disabled]="submitting">{{ submitting ? 'Sending…' : 'Review & confirm' }}</button>
+  <div><strong>{{ itemCount }} {{ 'customer.itemTotal' | translate }}</strong><span>{{ total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span></div>
+  <button (click)="confirmOrder()" [disabled]="submitting">{{ submitting ? ('customer.sending' | translate) : ('customer.placeOrder' | translate) }}</button>
 </aside>
 
 <p class="request-error" *ngIf="tableValid && error">{{ error }}</p>

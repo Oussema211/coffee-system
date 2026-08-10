@@ -1,34 +1,34 @@
 <div class="p-4 sm:p-6 lg:p-8">
   <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6 sm:mb-8">
     <div>
-      <h1 class="font-display text-3xl text-espresso mb-1">Workers</h1>
-      <p class="text-espresso-light/60 text-sm">Everyone with a login to the shop's POS.</p>
+      <h1 class="font-display text-3xl text-espresso mb-1">{{ 'admin.workers.title' | translate }}</h1>
+      <p class="text-espresso-light/60 text-sm">{{ 'admin.workers.title' | translate }}</p>
     </div>
     <button (click)="openAddModal()" class="bg-espresso text-cream text-sm font-medium rounded-xl px-5 py-3 hover:bg-espresso-light transition">
-      + Add worker
+      + {{ 'admin.workers.addWorker' | translate }}
     </button>
   </div>
 
   @if (loading) {
     <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/60 text-sm">
-      Loading workers...
+      {{ 'common.loading' | translate }}
     </div>
   } @else if (workers.length === 0) {
     <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/60 text-sm">
-      No workers found. Click "+ Add worker" to create your first worker account.
+      {{ 'common.noData' | translate }}
     </div>
   } @else {
     <div class="bg-white rounded-2xl border border-cream-dark overflow-x-auto">
       <table class="w-full min-w-[900px] text-sm">
         <thead>
           <tr class="border-b border-cream-dark text-left">
-            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Worker</th>
-            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Username</th>
-            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Status</th>
-            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Last check-in</th>
-            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Last check-out</th>
-            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide text-right">Orders</th>
-            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide text-right">Sales</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'admin.workers.fullName' | translate }}</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'admin.workers.username' | translate }}</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'common.status' | translate }}</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'admin.shiftReports.checkIn' | translate }}</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">{{ 'admin.shiftReports.checkOut' | translate }}</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide text-right">{{ 'admin.shiftReports.ordersHandled' | translate }}</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide text-right">{{ 'admin.shiftReports.totalSales' | translate }}</th>
             <th class="px-6 py-4"></th>
           </tr>
         </thead>
@@ -55,10 +55,10 @@
               <td class="px-6 py-4 text-espresso-light/50 whitespace-nowrap">{{ worker.lastCheckIn ? (worker.lastCheckIn | date:'MMM d, h:mm a') : '—' }}</td>
               <td class="px-6 py-4 text-espresso-light/50 whitespace-nowrap">{{ worker.lastCheckOut ? (worker.lastCheckOut | date:'MMM d, h:mm a') : '—' }}</td>
               <td class="px-6 py-4 text-right text-espresso font-medium">{{ worker.ordersSold }}</td>
-              <td class="px-6 py-4 text-right text-espresso font-medium whitespace-nowrap">{{ worker.salesTotal | number:'1.2-2' }} TND</td>
+              <td class="px-6 py-4 text-right text-espresso font-medium whitespace-nowrap">{{ worker.salesTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}</td>
               <td class="px-6 py-4 text-right">
                 <button (click)="removeWorker(worker)" class="text-xs font-medium text-red-500/70 hover:text-red-600">
-                  Remove
+                  {{ 'common.delete' | translate }}
                 </button>
               </td>
             </tr>
@@ -72,23 +72,23 @@
 @if (showModal) {
   <div class="fixed inset-0 bg-espresso/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl w-full max-w-md p-6">
-      <h2 class="font-display text-xl text-espresso mb-5">Add worker</h2>
+      <h2 class="font-display text-xl text-espresso mb-5">{{ 'admin.workers.addWorker' | translate }}</h2>
 
       <form [formGroup]="form" (ngSubmit)="addWorker()" class="space-y-4">
         <div>
-          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">Full name</label>
+          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">{{ 'admin.workers.fullName' | translate }}</label>
           <input type="text" formControlName="name" placeholder="Jane Doe"
             class="w-full bg-cream border border-cream-dark rounded-xl px-4 py-2.5 text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20" />
         </div>
 
         <div>
-          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">Username</label>
+          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">{{ 'admin.workers.username' | translate }}</label>
           <input type="text" formControlName="username" placeholder="jane.d"
             class="w-full bg-cream border border-cream-dark rounded-xl px-4 py-2.5 text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20" />
         </div>
 
         <div>
-          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">Temporary password</label>
+          <label class="block text-xs font-medium uppercase tracking-wide text-espresso-light/70 mb-2">{{ 'auth.passwordLabel' | translate }}</label>
           <input type="password" formControlName="password" placeholder="••••••••"
             class="w-full bg-cream border border-cream-dark rounded-xl px-4 py-2.5 text-espresso outline-none focus:border-caramel focus:ring-2 focus:ring-caramel/20" />
         </div>
@@ -101,10 +101,10 @@
 
         <div class="flex gap-3 pt-2">
           <button type="button" (click)="closeModal()" class="flex-1 text-sm font-medium text-espresso/70 py-3 rounded-xl border border-cream-dark hover:bg-cream transition">
-            Cancel
+            {{ 'common.cancel' | translate }}
           </button>
           <button type="submit" [disabled]="saving" class="flex-1 text-sm font-medium text-cream bg-espresso py-3 rounded-xl hover:bg-espresso-light transition disabled:opacity-50">
-            {{ saving ? 'Saving...' : 'Add worker' }}
+            {{ saving ? ('common.loading' | translate) : ('admin.workers.addWorker' | translate) }}
           </button>
         </div>
       </form>
