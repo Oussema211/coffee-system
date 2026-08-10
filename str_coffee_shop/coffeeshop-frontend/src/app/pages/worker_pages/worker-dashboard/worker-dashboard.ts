@@ -31,8 +31,6 @@ interface AlertItem {
 })
 export class WorkerDashboardComponent implements OnInit, OnDestroy {
   username: string | null;
-  clockedIn = true;
-  shiftStart: string | null = '08:30 AM';
   liveTime = '';
   liveDate = '';
 
@@ -66,13 +64,6 @@ export class WorkerDashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subs.unsubscribe();
     if (this.clockTimer) clearInterval(this.clockTimer);
-  }
-
-  toggleClock(): void {
-    this.clockedIn = !this.clockedIn;
-    this.shiftStart = this.clockedIn
-      ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      : null;
   }
 
   private tickClock(): void {

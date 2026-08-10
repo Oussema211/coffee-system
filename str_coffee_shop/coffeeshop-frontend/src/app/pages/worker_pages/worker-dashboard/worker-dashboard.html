@@ -8,19 +8,6 @@
       <p class="hero-greeting">Hello, {{ username || 'Worker' }}</p>
     </div>
 
-    <button
-      (click)="toggleClock()"
-      class="shift-btn"
-      [class.shift-on]="clockedIn"
-      [class.shift-off]="!clockedIn"
-      id="btn-clock-toggle"
-    >
-      <span class="shift-dot"></span>
-      <span class="shift-label">{{ clockedIn ? 'On Shift' : 'Clock In' }}</span>
-      @if (clockedIn && shiftStart) {
-        <span class="shift-since">since {{ shiftStart }}</span>
-      }
-    </button>
   </section>
 
   <!-- Alerts — things that need attention right now -->

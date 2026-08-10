@@ -11,6 +11,14 @@
     </div>
 
     <div class="topbar-right">
+      <button
+        class="shift-btn"
+        [class.shift-active]="shift.checkedIn"
+        [disabled]="changingShift"
+        (click)="toggleShift()"
+      >
+        {{ changingShift ? 'Saving…' : (shift.checkedIn ? 'Check out' : 'Check in') }}
+      </button>
       <div class="worker-chip">
         <span class="worker-avatar">{{ (username || 'W')[0].toUpperCase() }}</span>
         <span class="worker-name">{{ username || 'Worker' }}</span>
@@ -70,6 +78,11 @@
                 <rect x="14" y="6" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="2"/>
                 <rect x="2" y="16" width="8" height="5" rx="1" stroke="currentColor" stroke-width="2"/>
                 <rect x="14" y="16" width="8" height="5" rx="1" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            }
+            @case ('menu') {
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             }
           }

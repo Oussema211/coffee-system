@@ -138,6 +138,26 @@
   padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
 }
 
+.shift-btn {
+  border: 1px solid rgba(247, 239, 227, 0.25);
+  border-radius: 0.7rem;
+  background: transparent;
+  color: #F7EFE3;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.shift-btn.shift-active {
+  background: #C9852B;
+  border-color: #C9852B;
+  color: #2B1B14;
+}
+
+.shift-btn:disabled { opacity: 0.65; cursor: wait; }
+
 /* ── Bottom navigation ────────────────────────────────────────────── */
 .worker-bottom-nav {
   position: fixed;
@@ -264,6 +284,10 @@
     width: 1.75rem;
     height: 1.75rem;
   }
+}
+
+@media (max-width: 520px) {
+  .worker-chip { display: none; }
 }
 
 @media (min-width: 1024px) {

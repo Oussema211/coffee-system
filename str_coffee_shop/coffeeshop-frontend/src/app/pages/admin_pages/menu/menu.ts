@@ -41,7 +41,6 @@ export class Menu implements OnInit {
       name: ['', Validators.required],
       category: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0.01)]],
-      available: [true]
     });
   }
 
@@ -124,7 +123,6 @@ export class Menu implements OnInit {
       name: '',
       category: this.formCategories[0] || '',
       price: 0,
-      available: true
     });
     this.showModal = true;
   }
@@ -137,7 +135,6 @@ export class Menu implements OnInit {
       name: item.name,
       category: item.category,
       price: item.price,
-      available: item.available
     });
     this.showModal = true;
   }
@@ -214,22 +211,6 @@ export class Menu implements OnInit {
         }
       });
     }
-  }
-
-  toggleAvailability(item: MenuItem): void {
-    const previousState = item.available;
-    item.available = !previousState;
-
-    this.menuService.toggleAvailability(item.id).subscribe({
-      next: (updatedItem) => {
-        item.available = updatedItem.available;
-      },
-      error: (err) => {
-        console.error('Failed to toggle availability:', err);
-        item.available = previousState;
-        alert('Failed to toggle availability status.');
-      }
-    });
   }
 
   deleteItem(item: MenuItem): void {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { WorkerService, WorkerModel } from '../../../core/worker.service';
+import { WorkerService, WorkerReport } from '../../../core/worker.service';
 
 @Component({
   selector: 'app-workers',
@@ -10,7 +10,7 @@ import { WorkerService, WorkerModel } from '../../../core/worker.service';
   templateUrl: './workers.html'
 })
 export class Workers implements OnInit {
-  workers: WorkerModel[] = [];
+  workers: WorkerReport[] = [];
   loading = false;
   saving = false;
   errorMessage = '';
@@ -35,7 +35,7 @@ export class Workers implements OnInit {
   loadWorkers(): void {
     this.loading = true;
     this.errorMessage = '';
-    this.workerService.getWorkers().subscribe({
+    this.workerService.getWorkerReport().subscribe({
       next: (data) => {
         this.workers = data;
         this.loading = false;
@@ -68,7 +68,7 @@ export class Workers implements OnInit {
 
     this.workerService.addWorker(this.form.value).subscribe({
       next: (createdWorker) => {
-        this.workers.push(createdWorker);
+        this.workers.push({ ...createdWorker, lastCheckIn: null, lastCheckOut: null, ordersSold: 0, salesTotal: 0 });
         this.saving = false;
         this.closeModal();
       },
@@ -79,7 +79,7 @@ export class Workers implements OnInit {
     });
   }
 
-  removeWorker(worker: WorkerModel): void {
+  removeWorker(worker: WorkerReport): void {
     if (!confirm(`Are you sure you want to remove worker "${worker.name}"?`)) {
       return;
     }

@@ -41,11 +41,6 @@ public class MenuItemController {
         return ResponseEntity.ok(menuItemService.updateMenuItem(id, request));
     }
 
-    @PatchMapping("/api/admin/menu/{id}/toggle")
-    public ResponseEntity<MenuItemDTO> toggleAvailability(@PathVariable Long id) {
-        return ResponseEntity.ok(menuItemService.toggleAvailability(id));
-    }
-
     @PostMapping("/api/admin/menu/upload-image")
     public ResponseEntity<?> uploadImage(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
         if (file.isEmpty()) {
@@ -90,5 +85,10 @@ public class MenuItemController {
     @GetMapping("/api/worker/menu")
     public ResponseEntity<List<MenuItemDTO>> getAllMenuItemsWorker() {
         return ResponseEntity.ok(menuItemService.getAllMenuItems());
+    }
+
+    @PatchMapping("/api/worker/menu/{id}/toggle")
+    public ResponseEntity<MenuItemDTO> toggleAvailabilityForWorker(@PathVariable Long id) {
+        return ResponseEntity.ok(menuItemService.toggleAvailability(id));
     }
 }

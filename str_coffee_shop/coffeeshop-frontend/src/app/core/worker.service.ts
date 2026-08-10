@@ -6,8 +6,23 @@ export interface WorkerModel {
   id: number;
   name: string;
   username: string;
-  status: 'Active' | 'Off shift';
+  status: 'Active' | 'Checked in' | 'Off shift';
   joined: string;
+}
+
+export interface WorkerReport extends WorkerModel {
+  lastCheckIn: string | null;
+  lastCheckOut: string | null;
+  ordersSold: number;
+  salesTotal: number;
+}
+
+export interface ShiftReport {
+  id: number;
+  workerName: string;
+  username: string;
+  checkInAt: string;
+  checkOutAt: string | null;
 }
 
 export interface CreateWorkerPayload {
@@ -24,6 +39,18 @@ export class WorkerService {
 
   getWorkers(): Observable<WorkerModel[]> {
     return this.http.get<WorkerModel[]>(this.baseUrl);
+  }
+
+  getWorkerReport(): Observable<WorkerReport[]> {
+    return this.http.get<WorkerReport[]>(`${this.baseUrl}/report`);
+  }
+
+  getShiftReports(): Observable<ShiftReport[]> {
+    return this.http.get<ShiftReport[]>(`${this.baseUrl}/shifts`);
+  }
+
+  deleteShiftsOlderThanSevenDays(): Observable<{ deletedCount: number }> {
+    return this.http.delete<{ deletedCount: number }>(`${this.baseUrl}/shifts/older-than-seven-days`);
   }
 
   addWorker(payload: CreateWorkerPayload): Observable<WorkerModel> {

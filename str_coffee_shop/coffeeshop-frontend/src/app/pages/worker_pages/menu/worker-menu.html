@@ -1,0 +1,75 @@
+<div class="mx-auto max-w-5xl p-5 md:p-8">
+  <div class="mb-6">
+    <h1 class="font-display text-3xl font-bold text-espresso">Menu availability</h1>
+    <p class="mt-1 text-sm text-espresso-light/70">Hide items that are sold out. Hidden items are not shown on customer QR menus.</p>
+  </div>
+
+  <div class="mb-6 rounded-2xl border border-cream-dark bg-white p-4">
+    <div class="relative mb-4">
+      <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-espresso-light/40" viewBox="0 0 20 20" fill="none">
+        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
+        <path d="M13.5 13.5 17.5 17.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <input
+        [(ngModel)]="searchQuery"
+        type="search"
+        placeholder="Search menu items…"
+        class="w-full rounded-xl border-2 border-cream-dark bg-cream/40 py-3 pl-12 pr-4 text-sm font-medium text-espresso outline-none transition focus:border-caramel focus:bg-white"
+      />
+    </div>
+
+    <div class="mb-3 flex gap-2 overflow-x-auto pb-1">
+      @for (category of categories; track category) {
+        <button
+          (click)="selectedCategory = category"
+          [class]="selectedCategory === category ? 'bg-espresso text-cream' : 'border-2 border-cream-dark bg-white text-espresso-light/80'"
+          class="whitespace-nowrap rounded-xl px-4 py-2 text-sm font-bold transition"
+        >{{ category }}</button>
+      }
+    </div>
+
+    <div class="flex gap-2">
+      <button (click)="availabilityFilter = 'all'" [class]="availabilityFilter === 'all' ? 'bg-espresso text-cream' : 'bg-cream text-espresso-light/70'" class="rounded-xl px-3 py-2 text-xs font-bold transition">All</button>
+      <button (click)="availabilityFilter = 'available'" [class]="availabilityFilter === 'available' ? 'bg-sage text-white' : 'bg-sage/10 text-sage'" class="rounded-xl px-3 py-2 text-xs font-bold transition">Available</button>
+      <button (click)="availabilityFilter = 'hidden'" [class]="availabilityFilter === 'hidden' ? 'bg-espresso-light text-cream' : 'bg-cream-dark text-espresso-light/70'" class="rounded-xl px-3 py-2 text-xs font-bold transition">Hidden</button>
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="mb-5 flex items-center justify-between gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <span>{{ errorMessage }}</span>
+      <button (click)="loadItems()" class="font-bold underline">Retry</button>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">Loading menu…</div>
+  } @else {
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      @for (item of filteredItems; track item.id) {
+        <article class="flex gap-4 rounded-2xl border border-cream-dark bg-white p-4" [class.opacity-60]="!item.available">
+          <div class="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-cream-dark">
+            @if (item.imageUrl) {
+              <img [src]="item.imageUrl" [alt]="item.name" class="h-full w-full object-cover" />
+            }
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-display text-lg font-bold text-espresso">{{ item.name }}</p>
+            <p class="text-xs text-espresso-light/60">{{ item.category }} · {{ item.price | number:'1.2-2' }} TND</p>
+            <button
+              (click)="toggleAvailability(item)"
+              [disabled]="changingId !== null"
+              [class]="item.available ? 'bg-sage/15 text-sage hover:bg-sage/25' : 'bg-cream-dark text-espresso-light/70 hover:bg-cream'"
+              class="mt-3 rounded-xl px-3 py-2 text-xs font-bold transition disabled:cursor-wait disabled:opacity-60"
+            >
+              {{ changingId === item.id ? 'Saving…' : (item.available ? 'Available — hide item' : 'Hidden — make available') }}
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+    @if (filteredItems.length === 0) {
+      <div class="mt-6 rounded-2xl border border-cream-dark bg-white p-10 text-center text-sm text-espresso-light/60">No menu items match these filters.</div>
+    }
+  }
+</div>

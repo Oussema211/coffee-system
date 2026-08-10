@@ -79,6 +79,10 @@ public class OrderService {
             MenuItem menuItem = menuItemRepository.findById(itemReq.getMenuItemId())
                     .orElseThrow(() -> new IllegalArgumentException("Menu item not found with id: " + itemReq.getMenuItemId()));
 
+            if ("QR".equalsIgnoreCase(request.getOrderType()) && !menuItem.isAvailable()) {
+                throw new IllegalArgumentException("This menu item is currently unavailable");
+            }
+
             BigDecimal lineTotal = menuItem.getPrice().multiply(BigDecimal.valueOf(itemReq.getQuantity()));
             additionalTotal = additionalTotal.add(lineTotal);
 

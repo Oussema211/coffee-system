@@ -5,6 +5,7 @@ import { filter, Subscription, interval } from 'rxjs';
 import { AuthService } from '../../../core/auth.service';
 import { OrderService } from '../../../core/order.service';
 import { TableService } from '../../../core/table.service';
+import { ShiftService, ShiftStatus } from '../../../core/shift.service';
 
 interface NavItem {
   route: string;
@@ -25,6 +26,8 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
   pageTitle = 'Dashboard';
   currentTime = '';
   badges = { activeOrders: 0, qrPending: 0 };
+  shift: ShiftStatus = { checkedIn: false, checkInAt: null, checkOutAt: null };
+  changingShift = false;
 
   navItems: NavItem[] = [
     { route: '/worker', label: 'Home', icon: 'home' },
@@ -32,6 +35,7 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     { route: '/worker/active-orders', label: 'Orders', icon: 'orders', badgeKey: 'activeOrders' },
     { route: '/worker/qr-orders', label: 'QR', icon: 'qr', badgeKey: 'qrPending' },
     { route: '/worker/tables', label: 'Tables', icon: 'tables' },
+    { route: '/worker/menu', label: 'Menu', icon: 'menu' },
   ];
 
   private readonly pageTitles: Record<string, string> = {
@@ -40,6 +44,7 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     '/worker/active-orders': 'Active Orders',
     '/worker/qr-orders': 'QR Orders',
     '/worker/tables': 'Tables',
+    '/worker/menu': 'Menu Availability',
   };
 
   private subs = new Subscription();
@@ -49,7 +54,8 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     public router: Router,
     private orderService: OrderService,
-    private tableService: TableService
+    private tableService: TableService,
+    private shiftService: ShiftService
   ) {
     this.username = this.auth.getUsername();
   }
@@ -65,6 +71,7 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     this.tickClock();
     this.clockInterval = setInterval(() => this.tickClock(), 30_000);
     this.refreshBadges();
+    this.refreshShift();
     this.subs.add(interval(20_000).subscribe(() => this.refreshBadges()));
   }
 
@@ -81,6 +88,19 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
   logout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);
+  }
+
+  toggleShift(): void {
+    if (this.changingShift) return;
+    this.changingShift = true;
+    const request = this.shift.checkedIn ? this.shiftService.checkOut() : this.shiftService.checkIn();
+    request.subscribe({
+      next: (shift) => {
+        this.shift = shift;
+        this.changingShift = false;
+      },
+      error: () => this.changingShift = false
+    });
   }
 
   private updatePageTitle(url: string): void {
@@ -105,6 +125,13 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
           o => o.type === 'QR' && o.status === 'Pending'
         ).length;
       },
+      error: () => {}
+    });
+  }
+
+  private refreshShift(): void {
+    this.shiftService.getCurrent().subscribe({
+      next: (shift) => this.shift = shift,
       error: () => {}
     });
   }

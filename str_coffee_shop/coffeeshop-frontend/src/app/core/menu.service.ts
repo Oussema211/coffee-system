@@ -60,8 +60,8 @@ export class MenuService {
     return this.http.put<MenuItem>(`${this.baseUrl}/${id}`, payload);
   }
 
-  toggleAvailability(id: number): Observable<MenuItem> {
-    return this.http.patch<MenuItem>(`${this.baseUrl}/${id}/toggle`, {});
+  toggleWorkerAvailability(id: number): Observable<MenuItem> {
+    return this.http.patch<MenuItem>(`${this.workerUrl}/${id}/toggle`, {});
   }
 
   deleteMenuItem(id: number): Observable<void> {

@@ -18,14 +18,17 @@
       No workers found. Click "+ Add worker" to create your first worker account.
     </div>
   } @else {
-    <div class="bg-white rounded-2xl border border-cream-dark overflow-hidden">
+    <div class="bg-white rounded-2xl border border-cream-dark overflow-x-auto">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-cream-dark text-left">
             <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Worker</th>
             <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Username</th>
             <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Status</th>
-            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Joined</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Last check-in</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide">Last check-out</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide text-right">Orders</th>
+            <th class="px-6 py-4 font-medium text-espresso-light/50 uppercase text-xs tracking-wide text-right">Sales</th>
             <th class="px-6 py-4"></th>
           </tr>
         </thead>
@@ -43,13 +46,16 @@
               <td class="px-6 py-4 text-espresso-light/70">&#64;{{ worker.username }}</td>
               <td class="px-6 py-4">
                 <span
-                  [class]="worker.status === 'Active' ? 'bg-sage/15 text-sage' : 'bg-cream-dark text-espresso-light/60'"
+                  [class]="worker.status === 'Checked in' ? 'bg-sage/15 text-sage' : 'bg-cream-dark text-espresso-light/60'"
                   class="text-xs font-medium px-2.5 py-1 rounded-md"
                 >
                   {{ worker.status }}
                 </span>
               </td>
-              <td class="px-6 py-4 text-espresso-light/50">{{ worker.joined }}</td>
+              <td class="px-6 py-4 text-espresso-light/50 whitespace-nowrap">{{ worker.lastCheckIn ? (worker.lastCheckIn | date:'MMM d, h:mm a') : '—' }}</td>
+              <td class="px-6 py-4 text-espresso-light/50 whitespace-nowrap">{{ worker.lastCheckOut ? (worker.lastCheckOut | date:'MMM d, h:mm a') : '—' }}</td>
+              <td class="px-6 py-4 text-right text-espresso font-medium">{{ worker.ordersSold }}</td>
+              <td class="px-6 py-4 text-right text-espresso font-medium whitespace-nowrap">{{ worker.salesTotal | number:'1.2-2' }} TND</td>
               <td class="px-6 py-4 text-right">
                 <button (click)="removeWorker(worker)" class="text-xs font-medium text-red-500/70 hover:text-red-600">
                   Remove

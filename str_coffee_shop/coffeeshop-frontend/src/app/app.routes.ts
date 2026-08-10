@@ -9,6 +9,7 @@ import { Workers } from './pages/admin_pages/workers/workers';
 import { Reports } from './pages/admin_pages/reports/reports';
 import { Categories } from './pages/admin_pages/categories/categories';
 import { AdminTablesComponent } from './pages/admin_pages/tables/admin-tables';
+import { ShiftReportsComponent } from './pages/admin_pages/shift-reports/shift-reports';
 
 import { WorkerLayoutComponent } from './pages/worker_pages/worker-dashboard/worker-layout';
 import { WorkerDashboardComponent } from './pages/worker_pages/worker-dashboard/worker-dashboard';
@@ -16,6 +17,7 @@ import { ActiveOrdersComponent } from './pages/worker_pages/active-orders/active
 import { NewOrderComponent } from './pages/worker_pages/new-order/new-order';
 import { QrOrdersComponent } from './pages/worker_pages/qr-orders/qr-orders';
 import { TablesComponent } from './pages/worker_pages/tables/tables';
+import { WorkerMenuComponent } from './pages/worker_pages/menu/worker-menu';
 import { CustomerMenuComponent } from './pages/customer_pages/customer-menu/customer-menu';
 
 import { authGuard } from './core/auth.guard';
@@ -34,6 +36,7 @@ export const routes: Routes = [
       { path: 'menu', component: Menu },
       { path: 'orders', component: Orders },
       { path: 'workers', component: Workers },
+      { path: 'shift-reports', component: ShiftReportsComponent },
       { path: 'reports', component: Reports },
       { path: 'categories', component: Categories },
       { path: 'tables', component: AdminTablesComponent },
@@ -49,6 +52,7 @@ export const routes: Routes = [
       { path: 'new-order', component: NewOrderComponent },
       { path: 'qr-orders', component: QrOrdersComponent },
       { path: 'tables', component: TablesComponent },
+      { path: 'menu', component: WorkerMenuComponent },
     ]
   },
   { path: '**', redirectTo: 'login' }
