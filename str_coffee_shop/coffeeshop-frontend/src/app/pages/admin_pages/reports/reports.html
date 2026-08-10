@@ -26,8 +26,15 @@
       <h3 class="font-display text-lg text-espresso mb-6">Sales this week</h3>
       <div class="flex items-end justify-between gap-3 h-48">
         @for (day of weekSales; track day.day) {
-          <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-            <div class="w-full bg-caramel/80 rounded-t-lg hover:bg-caramel transition" [style.height.%]="barHeight(day.amount)"></div>
+          <div class="relative group flex-1 flex flex-col items-center gap-2 h-full justify-end">
+            <div
+              class="w-full bg-caramel/80 rounded-t-lg hover:bg-caramel transition cursor-help"
+              [style.height.%]="barHeight(day.amount)"
+              [attr.aria-label]="day.day + ': ' + (day.amount | number:'1.2-2') + ' TND'"
+            ></div>
+            <span class="pointer-events-none absolute bottom-8 z-10 hidden whitespace-nowrap rounded-lg bg-espresso px-2.5 py-1.5 text-xs font-medium text-cream shadow-lg group-hover:block">
+              {{ day.day }}: {{ day.amount | number:'1.2-2' }} TND
+            </span>
             <span class="text-xs text-espresso-light/50">{{ day.day }}</span>
           </div>
         }
