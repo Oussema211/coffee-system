@@ -65,7 +65,7 @@
           >
             @if (item.imageUrl) {
               <div class="relative w-full h-32 rounded-2xl overflow-hidden border border-cream-dark shadow-2xs">
-                <img [src]="item.imageUrl" [alt]="item.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" />
+                <img [src]="item.imageUrl" (error)="item.imageUrl = ''" [alt]="item.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" />
                 <span class="absolute top-2.5 left-2.5 text-xs font-bold uppercase tracking-wider text-caramel-dark bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-lg shadow-xs">
                   {{ item.category }}
                 </span>

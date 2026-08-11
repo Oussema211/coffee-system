@@ -42,6 +42,7 @@ export class Menu implements OnInit {
       name: ['', Validators.required],
       category: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0.01)]],
+      imageUrl: ['']
     });
   }
 
@@ -97,6 +98,10 @@ export class Menu implements OnInit {
     this.selectedCategory = cat;
   }
 
+  onImageError(item: MenuItem): void {
+    item.imageUrl = '';
+  }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -111,9 +116,17 @@ export class Menu implements OnInit {
     }
   }
 
+  onUrlInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.value && !this.selectedFile) {
+      this.imagePreviewUrl = input.value;
+    }
+  }
+
   removeImage(): void {
     this.selectedFile = null;
     this.imagePreviewUrl = null;
+    this.form.patchValue({ imageUrl: '' });
   }
 
   openAddModal(): void {
@@ -124,6 +137,7 @@ export class Menu implements OnInit {
       name: '',
       category: this.formCategories[0] || '',
       price: 0,
+      imageUrl: ''
     });
     this.showModal = true;
   }
@@ -136,6 +150,7 @@ export class Menu implements OnInit {
       name: item.name,
       category: item.category,
       price: item.price,
+      imageUrl: item.imageUrl || ''
     });
     this.showModal = true;
   }
@@ -168,11 +183,8 @@ export class Menu implements OnInit {
         }
       });
     } else {
-      // Use existing or empty image URL
-      const currentImageUrl = this.imagePreviewUrl && !this.imagePreviewUrl.startsWith('data:') 
-        ? this.imagePreviewUrl 
-        : (this.editingItem?.imageUrl || '');
-      this.executeSave(currentImageUrl);
+      const finalUrl = this.form.value.imageUrl || this.imagePreviewUrl || '';
+      this.executeSave(finalUrl);
     }
   }
 

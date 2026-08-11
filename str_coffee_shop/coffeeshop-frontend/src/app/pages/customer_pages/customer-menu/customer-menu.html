@@ -39,7 +39,7 @@
 
     <section class="menu-grid">
       <button class="menu-item" *ngFor="let item of filteredMenu" (click)="add(item)">
-        <img *ngIf="item.imageUrl" [src]="item.imageUrl" [alt]="item.name" />
+        <img *ngIf="item.imageUrl" [src]="item.imageUrl" (error)="item.imageUrl = ''" [alt]="item.name" />
         <div class="item-content">
           <p class="category">{{ item.category }}</p>
           <h2>{{ item.name }}</h2>
