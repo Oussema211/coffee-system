@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrderService, OrderDTO, OrderItemDTO } from '../../../core/order.service';
 import { ReceiptPrintService } from '../../../core/receipt-print.service';
+import { TranslationService } from '../../../core/translation.service';
 
 export type OrderItem = OrderItemDTO;
 export type ActiveOrder = OrderDTO;
@@ -42,7 +43,8 @@ export class ActiveOrdersComponent implements OnInit {
 
   constructor(
     private orderService: OrderService,
-    private receiptPrintService: ReceiptPrintService
+    private receiptPrintService: ReceiptPrintService,
+    private translate: TranslationService
   ) {}
 
   ngOnInit(): void {
@@ -57,7 +59,7 @@ export class ActiveOrdersComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.error = 'Failed to load active orders from backend.';
+        this.error = this.translate.translate('worker.activeOrders.loadError');
         this.loading = false;
       }
     });
@@ -95,10 +97,10 @@ export class ActiveOrdersComponent implements OnInit {
         order.status = updatedOrder.status;
         this.advancingId = null;
       },
-      error: (err) => {
-        this.advancingId = null;
-        alert('Failed to update status: ' + (err.error?.message || 'Server error'));
-      }
+        error: (err) => {
+          this.advancingId = null;
+          alert(this.translate.translate('worker.activeOrders.updateError') + ': ' + (err.error?.message || 'Server error'));
+        }
     });
   }
 
@@ -121,14 +123,14 @@ export class ActiveOrdersComponent implements OnInit {
     this.orderService.cancelOrder(order.id).subscribe({
       next: () => {
         this.orders = this.orders.filter(o => o.id !== order.id);
-        this.flashSuccess(`Order #${order.id} was successfully cancelled.`);
+        this.flashSuccess(this.translate.translate('worker.activeOrders.cancelSuccess', { id: order.id }));
         this.closeCancelModal();
         this.cancelling = false;
       },
-      error: (err) => {
-        this.cancelling = false;
-        alert('Failed to cancel order: ' + (err.error?.message || 'Server error'));
-      }
+        error: (err) => {
+          this.cancelling = false;
+          alert(this.translate.translate('worker.activeOrders.cancelError') + ': ' + (err.error?.message || 'Server error'));
+        }
     });
   }
 
@@ -234,14 +236,14 @@ export class ActiveOrdersComponent implements OnInit {
       next: () => {
         this.paying = false;
         const changeAmt = this.change;
-        this.flashSuccess(`Order #${order.id} fully paid. Change: ${changeAmt.toFixed(2)} TND`);
+        this.flashSuccess(this.translate.translate('worker.activeOrders.paymentSuccess', { id: order.id, change: changeAmt.toFixed(2) }));
         this.closePayment();
         this.orders = this.orders.filter(o => o.id !== order.id);
       },
-      error: (err) => {
-        this.paying = false;
-        alert('Failed to process payment: ' + (err.error?.message || 'Server error'));
-      }
+        error: (err) => {
+          this.paying = false;
+          alert(this.translate.translate('worker.activeOrders.paymentError') + ': ' + (err.error?.message || 'Server error'));
+        }
     });
   }
 
@@ -258,11 +260,11 @@ export class ActiveOrdersComponent implements OnInit {
         this.paying = false;
         const changeAmt = this.change;
         if (updatedOrder.status === 'Completed') {
-          this.flashSuccess(`Order #${order.id} fully paid. Change: ${changeAmt.toFixed(2)} TND. Order completed!`);
+          this.flashSuccess(this.translate.translate('worker.activeOrders.paymentSuccessDone', { id: order.id, change: changeAmt.toFixed(2) }));
           this.closePayment();
           this.orders = this.orders.filter(o => o.id !== order.id);
         } else {
-          this.flashSuccess(`Partial payment confirmed for Order #${order.id}. Change: ${changeAmt.toFixed(2)} TND`);
+          this.flashSuccess(this.translate.translate('worker.activeOrders.partialPayment', { id: order.id, change: changeAmt.toFixed(2) }));
           const idx = this.orders.findIndex(o => o.id === order.id);
           if (idx !== -1) {
             this.orders[idx] = updatedOrder;
@@ -270,10 +272,10 @@ export class ActiveOrdersComponent implements OnInit {
           this.amountGiven = null;
         }
       },
-      error: (err) => {
-        this.paying = false;
-        alert('Failed to process split payment: ' + (err.error?.message || 'Server error'));
-      }
+        error: (err) => {
+          this.paying = false;
+          alert(this.translate.translate('worker.activeOrders.splitPaymentError') + ': ' + (err.error?.message || 'Server error'));
+        }
     });
   }
 

@@ -38,7 +38,7 @@
           class="at-input"
           type="number"
           min="1"
-          placeholder="e.g. 9"
+           placeholder="{{ 'admin.tables.placeholderNumber' | translate }}"
           [(ngModel)]="newNumber"
           (keydown.enter)="addTable()"
         />
@@ -50,7 +50,7 @@
           class="at-input"
           type="number"
           min="1"
-          placeholder="e.g. 4"
+           placeholder="{{ 'admin.tables.placeholderSeats' | translate }}"
           [(ngModel)]="newSeats"
           (keydown.enter)="addTable()"
         />
@@ -126,13 +126,13 @@
           class="at-qr-btn"
           [id]="'btn-qr-' + t.id"
           (click)="openQr(t)"
-          title="View and print table QR code"
+           title="{{ 'admin.tables.viewQrTitle' | translate }}"
         >QR</button>
       </ng-container>
 
       <!-- Delete confirmation inline -->
       <ng-container *ngIf="confirmDeleteId === t.id">
-        <p class="at-confirm-text">Remove <strong>Table {{ t.number }}</strong>?</p>
+         <p class="at-confirm-text">{{ 'admin.tables.deleteConfirm' | translate:{number: t.number} }}</p>
         <div class="at-confirm-actions">
           <button class="at-confirm-yes" [id]="'btn-confirm-delete-' + t.id" (click)="confirmDelete()" [disabled]="deleting">
             @if (deleting) {
@@ -150,10 +150,10 @@
   <div class="qr-backdrop" *ngIf="qrTable" (click)="closeQr()">
     <section class="qr-dialog" (click)="$event.stopPropagation()">
       <button class="qr-close no-print" (click)="closeQr()" aria-label="Close">×</button>
-      <p class="qr-kicker">Coffee Shop · Table {{ qrTable.number }}</p>
+      <p class="qr-kicker">{{ 'admin.tables.qrKicker' | translate:{number: qrTable.number} }}</p>
       <h2>{{ 'admin.tables.viewQr' | translate }}</h2>
-      <img [src]="qrImageUrl(qrTable)" [alt]="'QR code for Table ' + qrTable.number" />
-      <p class="qr-help">Scan this code to view the menu and order from Table {{ qrTable.number }}.</p>
+      <img [src]="qrImageUrl(qrTable)" [alt]="('admin.tables.qrAlt' | translate:{number: qrTable.number})" />
+      <p class="qr-help">{{ 'admin.tables.qrHelp' | translate:{number: qrTable.number} }}</p>
       <p class="qr-link">{{ qrUrl(qrTable) }}</p>
       <button class="qr-print no-print" (click)="printQr()">{{ 'admin.tables.qrCode' | translate }}</button>
     </section>

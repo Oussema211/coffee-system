@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableService, TableItem } from '../../../core/table.service';
+import { TranslationService } from '../../../core/translation.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
 
@@ -30,7 +31,10 @@ export class AdminTablesComponent implements OnInit {
   deleting = false;
   qrTable: TableItem | null = null;
 
-  constructor(private tableService: TableService) {}
+  constructor(
+    private tableService: TableService,
+    private translate: TranslationService
+  ) {}
 
   ngOnInit(): void {
     this.loadTables();
@@ -45,7 +49,7 @@ export class AdminTablesComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.errorMsg = 'Failed to load tables. Is the backend running?';
+        this.errorMsg = this.translate.translate('admin.tables.loadError');
         this.loading = false;
       }
     });
@@ -53,7 +57,7 @@ export class AdminTablesComponent implements OnInit {
 
   addTable(): void {
     if (!this.newNumber || !this.newSeats) {
-      this.addError = 'Both table number and seat count are required.';
+      this.addError = this.translate.translate('admin.tables.requiredError');
       return;
     }
     this.addLoading = true;
@@ -64,10 +68,10 @@ export class AdminTablesComponent implements OnInit {
         this.newNumber = null;
         this.newSeats = null;
         this.addLoading = false;
-        this.flash(`Table ${created.number} added successfully.`);
+        this.flash(this.translate.translate('admin.tables.addSuccess', { number: created.number }));
       },
       error: (err) => {
-        this.addError = err?.error?.error ?? 'Failed to create table.';
+        this.addError = err?.error?.error ?? this.translate.translate('admin.tables.createError');
         this.addLoading = false;
       }
     });
@@ -91,12 +95,12 @@ export class AdminTablesComponent implements OnInit {
         this.tables = this.tables.filter(x => x.id !== id);
         this.confirmDeleteId = null;
         this.deleting = false;
-        this.flash(`Table ${t?.number ?? ''} removed.`);
+        this.flash(this.translate.translate('admin.tables.removeSuccess', { number: t?.number ?? '' }));
       },
       error: () => {
         this.confirmDeleteId = null;
         this.deleting = false;
-        this.errorMsg = 'Failed to delete table.';
+        this.errorMsg = this.translate.translate('admin.tables.deleteError');
       }
     });
   }
@@ -107,7 +111,7 @@ export class AdminTablesComponent implements OnInit {
   }
 
   seatLabel(n: number): string {
-    return n === 1 ? '1 seat' : `${n} seats`;
+    return n === 1 ? this.translate.translate('admin.tables.seatCount_one', { count: n }) : this.translate.translate('admin.tables.seatCount_other', { count: n });
   }
 
   qrUrl(table: TableItem): string {

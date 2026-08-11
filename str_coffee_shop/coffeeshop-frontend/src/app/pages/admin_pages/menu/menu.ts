@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { MenuService, MenuItem } from '../../../core/menu.service';
 import { CategoryService } from '../../../core/category.service';
+import { TranslationService } from '../../../core/translation.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
 
@@ -38,7 +39,8 @@ export class Menu implements OnInit {
   constructor(
     private fb: FormBuilder,
     private menuService: MenuService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private translate: TranslationService
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -82,7 +84,7 @@ export class Menu implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load menu items:', err);
-        this.errorMessage = 'Failed to load menu items. Please ensure the backend is running.';
+        this.errorMessage = this.translate.translate('admin.menu.loadError');
         this.isLoading = false;
       }
     });
@@ -181,7 +183,7 @@ export class Menu implements OnInit {
         error: (err) => {
           console.error('Failed to upload image:', err);
           this.isSaving = false;
-          alert('Failed to upload image. Please try again.');
+          alert(this.translate.translate('admin.menu.uploadError'));
         }
       });
     } else {
@@ -209,7 +211,7 @@ export class Menu implements OnInit {
         error: (err) => {
           console.error('Failed to update menu item:', err);
           this.isSaving = false;
-          alert('Failed to update menu item.');
+          alert(this.translate.translate('admin.menu.updateError'));
         }
       });
     } else {
@@ -222,14 +224,14 @@ export class Menu implements OnInit {
         error: (err) => {
           console.error('Failed to create menu item:', err);
           this.isSaving = false;
-          alert('Failed to create menu item.');
+          alert(this.translate.translate('admin.menu.createError'));
         }
       });
     }
   }
 
   deleteItem(item: MenuItem): void {
-    if (confirm(`Are you sure you want to delete "${item.name}"?`)) {
+    if (confirm(this.translate.translate('admin.menu.deleteConfirmNamed', { name: item.name }))) {
       this.deletingId = item.id;
       this.menuService.deleteMenuItem(item.id).subscribe({
         next: () => {
@@ -239,7 +241,7 @@ export class Menu implements OnInit {
         error: (err) => {
           this.deletingId = null;
           console.error('Failed to delete menu item:', err);
-          alert('Failed to delete menu item.');
+          alert(this.translate.translate('admin.menu.deleteError'));
         }
       });
     }

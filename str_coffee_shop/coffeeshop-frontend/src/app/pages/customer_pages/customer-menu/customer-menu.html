@@ -28,7 +28,7 @@
     <div class="search-wrap">
       <span>⌕</span>
       <input [(ngModel)]="searchQuery" type="search" [placeholder]="'customer.searchPlaceholder' | translate" [attr.aria-label]="'customer.searchPlaceholder' | translate" />
-      <button *ngIf="searchQuery" (click)="searchQuery = ''" aria-label="Clear search">✕</button>
+      <button *ngIf="searchQuery" (click)="searchQuery = ''" [attr.aria-label]="'customer.clearSearch' | translate">✕</button>
     </div>
 
     <nav class="category-tabs" aria-label="Menu categories">
@@ -45,9 +45,9 @@
           <h2>{{ item.name }}</h2>
           <p class="price">{{ item.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
           <div class="quantity-controls" *ngIf="quantity(item)" (click)="$event.stopPropagation()">
-            <button (click)="remove(item)" [attr.aria-label]="'Remove ' + item.name">−</button>
-            <span>{{ quantity(item) }}</span>
-            <button (click)="add(item)" [attr.aria-label]="'Add ' + item.name">+</button>
+             <button (click)="remove(item)" [attr.aria-label]="'customer.removeItem' | translate:{name: item.name}">−</button>
+             <span>{{ quantity(item) }}</span>
+             <button (click)="add(item)" [attr.aria-label]="'customer.addItem' | translate:{name: item.name}">+</button>
           </div>
           <span class="tap-to-add" *ngIf="!quantity(item)">+ {{ 'common.add' | translate }}</span>
         </div>

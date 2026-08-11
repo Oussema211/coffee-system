@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WorkerService, WorkerReport } from '../../../core/worker.service';
+import { TranslationService } from '../../../core/translation.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
 
@@ -22,7 +23,8 @@ export class Workers implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private translate: TranslationService
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -44,7 +46,7 @@ export class Workers implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = 'Failed to load workers from server.';
+        this.errorMessage = this.translate.translate('admin.workers.loadError');
         this.loading = false;
       }
     });
@@ -77,13 +79,13 @@ export class Workers implements OnInit {
       },
       error: (err) => {
         this.saving = false;
-        this.errorMessage = err?.error?.message || 'Failed to create worker. Username may already exist.';
+        this.errorMessage = err?.error?.message || this.translate.translate('admin.workers.createError');
       }
     });
   }
 
   removeWorker(worker: WorkerReport): void {
-    if (!confirm(`Are you sure you want to remove worker "${worker.name}"?`)) {
+    if (!confirm(this.translate.translate('admin.workers.removeConfirm', { name: worker.name }))) {
       return;
     }
 
@@ -95,7 +97,7 @@ export class Workers implements OnInit {
       },
       error: () => {
         this.deletingId = null;
-        alert('Failed to remove worker.');
+        alert(this.translate.translate('admin.workers.removeError'));
       }
     });
   }

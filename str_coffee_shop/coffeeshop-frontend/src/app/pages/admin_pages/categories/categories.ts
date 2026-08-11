@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoryService, Category } from '../../../core/category.service';
+import { TranslationService } from '../../../core/translation.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
 
@@ -31,7 +32,8 @@ export class Categories implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private translate: TranslationService
   ) {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -53,7 +55,7 @@ export class Categories implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load categories:', err);
-        this.errorMessage = 'Failed to load categories. Please ensure the backend is running.';
+        this.errorMessage = this.translate.translate('admin.categories.loadError');
         this.isLoading = false;
       }
     });
@@ -100,11 +102,11 @@ export class Categories implements OnInit {
           if (idx !== -1) this.categories[idx] = updated;
           this.isSaving = false;
           this.closeModal();
-          this.showSuccess(`"${updated.name}" updated successfully.`);
+          this.showSuccess(this.translate.translate('admin.categories.updateSuccess', { name: updated.name }));
         },
         error: (err) => {
           this.isSaving = false;
-          const msg = err.error?.error || 'Failed to update category.';
+          const msg = err.error?.error || this.translate.translate('admin.categories.updateError');
           this.errorMessage = msg;
         }
       });
@@ -115,11 +117,11 @@ export class Categories implements OnInit {
           this.categories.sort((a, b) => a.name.localeCompare(b.name));
           this.isSaving = false;
           this.closeModal();
-          this.showSuccess(`"${created.name}" added successfully.`);
+          this.showSuccess(this.translate.translate('admin.categories.createSuccess', { name: created.name }));
         },
         error: (err) => {
           this.isSaving = false;
-          const msg = err.error?.error || 'Failed to create category.';
+          const msg = err.error?.error || this.translate.translate('admin.categories.createError');
           this.errorMessage = msg;
         }
       });
@@ -127,17 +129,17 @@ export class Categories implements OnInit {
   }
 
   deleteCategory(category: Category): void {
-    if (!confirm(`Delete category "${category.name}"? This will not delete existing menu items using this category.`)) return;
+    if (!confirm(this.translate.translate('admin.categories.deleteConfirmNamed', { name: category.name }))) return;
 
     this.isDeleting = category.id;
     this.categoryService.deleteCategory(category.id).subscribe({
       next: () => {
         this.categories = this.categories.filter(c => c.id !== category.id);
         this.isDeleting = null;
-        this.showSuccess(`"${category.name}" deleted successfully.`);
+        this.showSuccess(this.translate.translate('admin.categories.deleteSuccess', { name: category.name }));
       },
       error: (err) => {
-        const msg = err.error?.error || 'Failed to delete category.';
+        const msg = err.error?.error || this.translate.translate('admin.categories.deleteError');
         this.errorMessage = msg;
         this.isDeleting = null;
       }

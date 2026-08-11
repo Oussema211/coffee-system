@@ -16,13 +16,13 @@
 
   <!-- Stats grid -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    @for (stat of stats; track stat.label) {
+    @for (stat of stats; track stat.labelKey) {
       <div class="bg-white rounded-2xl border border-cream-dark p-5">
-        <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">{{ stat.label }}</p>
+        <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">{{ stat.labelKey | translate }}</p>
         <p class="font-display text-2xl text-espresso mb-1">{{ stat.value }}</p>
         <p class="text-xs"
            [class]="stat.trend === 'up' ? 'text-sage' : 'text-espresso-light/40'">
-          {{ stat.sub }}
+          {{ stat.subKey | translate:stat.subParams }}
         </p>
       </div>
     }
@@ -70,7 +70,7 @@
 
     <!-- Quick links -->
     <div class="flex flex-col gap-3">
-      <h2 class="font-display text-lg text-espresso px-1">Quick actions</h2>
+      <h2 class="font-display text-lg text-espresso px-1">{{ 'admin.dashboard.quickActions' | translate }}</h2>
 
       <a routerLink="/admin/menu"
          class="bg-white rounded-2xl border border-cream-dark p-5 flex items-center gap-4 hover:border-caramel/50 hover:shadow-sm transition group">
@@ -81,8 +81,8 @@
           </svg>
         </div>
         <div>
-          <p class="font-medium text-espresso text-sm">Manage Menu</p>
-          <p class="text-xs text-espresso-light/50">Prices, items, availability</p>
+          <p class="font-medium text-espresso text-sm">{{ 'admin.dashboard.manageMenu' | translate }}</p>
+          <p class="text-xs text-espresso-light/50">{{ 'admin.dashboard.manageMenuDesc' | translate }}</p>
         </div>
       </a>
 
@@ -95,8 +95,8 @@
           </svg>
         </div>
         <div>
-          <p class="font-medium text-espresso text-sm">Workers</p>
-          <p class="text-xs text-espresso-light/50">Add or remove staff</p>
+          <p class="font-medium text-espresso text-sm">{{ 'admin.dashboard.workersCard' | translate }}</p>
+          <p class="text-xs text-espresso-light/50">{{ 'admin.dashboard.workersDesc' | translate }}</p>
         </div>
       </a>
 
@@ -108,8 +108,8 @@
           </svg>
         </div>
         <div>
-          <p class="font-medium text-espresso text-sm">Reports</p>
-          <p class="text-xs text-espresso-light/50">Sales & performance</p>
+          <p class="font-medium text-espresso text-sm">{{ 'admin.dashboard.reportsCard' | translate }}</p>
+          <p class="text-xs text-espresso-light/50">{{ 'admin.dashboard.reportsDesc' | translate }}</p>
         </div>
       </a>
     </div>

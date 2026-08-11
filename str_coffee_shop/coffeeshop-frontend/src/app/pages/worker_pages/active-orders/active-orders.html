@@ -357,9 +357,9 @@
       <div class="w-16 h-16 rounded-2xl bg-red-100 text-red-600 text-3xl font-bold flex items-center justify-center mx-auto mb-4">
         ⚠️
       </div>
-      <h3 class="font-display text-2xl font-bold text-espresso mb-2">Cancel Order #{{ orderToCancel.id }}?</h3>
+      <h3 class="font-display text-2xl font-bold text-espresso mb-2">{{ 'worker.activeOrders.cancelModalTitle' | translate:{id: orderToCancel.id} }}</h3>
       <p class="text-espresso-light/70 text-sm mb-6 font-medium leading-relaxed">
-        Are you sure you want to cancel this order for {{ orderToCancel.table ? 'Table ' + orderToCancel.table : 'Takeaway' }}? This will release the table and remove the order from active orders.
+        {{ 'worker.activeOrders.cancelModalMsg' | translate:{tableInfo: orderToCancel.table ? ('worker.activeOrders.tableLabel' | translate) + ' ' + orderToCancel.table : ('worker.activeOrders.takeawayLabel' | translate)} }}
       </p>
 
       <div class="flex gap-3">

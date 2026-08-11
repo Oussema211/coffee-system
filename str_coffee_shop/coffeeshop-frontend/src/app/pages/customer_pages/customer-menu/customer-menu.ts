@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { CustomerService } from '../../../core/customer.service';
 import { MenuItem } from '../../../core/menu.service';
+import { TranslationService } from '../../../core/translation.service';
 
 interface CartItem extends MenuItem { quantity: number; }
 
@@ -33,13 +34,17 @@ export class CustomerMenuComponent implements OnInit {
   submitting = false;
   orderId: number | null = null;
 
-  constructor(private route: ActivatedRoute, private customerService: CustomerService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private customerService: CustomerService,
+    private translate: TranslationService
+  ) {}
 
   ngOnInit(): void {
     this.tableNumber = Number(this.route.snapshot.paramMap.get('tableNumber'));
     if (!Number.isInteger(this.tableNumber) || this.tableNumber < 1) {
       this.loading = false;
-      this.error = 'This QR code is not valid.';
+      this.error = this.translate.translate('customer.invalidTable');
       return;
     }
     forkJoin({ table: this.customerService.getTable(this.tableNumber), menu: this.customerService.getMenu() }).subscribe({
@@ -49,7 +54,7 @@ export class CustomerMenuComponent implements OnInit {
         this.categories = ['All', ...Array.from(new Set(menu.map(item => item.category))).filter(Boolean)];
         this.loading = false;
       },
-      error: () => { this.error = 'This table is not available. Please ask a member of staff for help.'; this.loading = false; }
+      error: () => { this.error = this.translate.translate('customer.unavailableTable'); this.loading = false; }
     });
   }
 
@@ -85,7 +90,7 @@ export class CustomerMenuComponent implements OnInit {
       items: this.cartItems.map(item => ({ menuItemId: item.id, quantity: item.quantity }))
     }).subscribe({
       next: (order) => { this.orderId = order.id; this.orderSent = true; this.cart.clear(); this.submitting = false; },
-      error: (err) => { this.error = err?.error?.error ?? 'We could not send your order. Please try again.'; this.submitting = false; }
+      error: (err) => { this.error = err?.error?.error ?? this.translate.translate('customer.orderError'); this.submitting = false; }
     });
   }
 }

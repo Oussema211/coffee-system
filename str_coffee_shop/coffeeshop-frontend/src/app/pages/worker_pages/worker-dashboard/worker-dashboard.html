@@ -13,10 +13,10 @@
   <!-- Alerts — things that need attention right now -->
   @if (alerts.length) {
     <section class="dash-alerts">
-      @for (alert of alerts; track alert.message) {
+      @for (alert of alerts; track alert.messageKey) {
         <a [routerLink]="alert.route" class="alert-card" [class.alert-warning]="alert.type === 'warning'">
-          <span class="alert-msg">{{ alert.message }}</span>
-          <span class="alert-action">{{ alert.action }} →</span>
+          <span class="alert-msg">{{ alert.messageKey | translate:alert.messageParams }}</span>
+          <span class="alert-action">{{ alert.actionKey | translate }} →</span>
         </a>
       }
     </section>
@@ -37,12 +37,12 @@
   <section class="dash-stats">
     <h2 class="section-label">{{ 'admin.dashboard.title' | translate }}</h2>
     <div class="stats-grid">
-      @for (stat of stats; track stat.label) {
+      @for (stat of stats; track stat.labelKey) {
         @if (stat.route) {
           <a [routerLink]="stat.route" class="stat-tile" [ngClass]="stat.accent" [class.stat-alert]="stat.alert">
             <span class="stat-value">{{ stat.value }}</span>
-            <span class="stat-label">{{ stat.label }}</span>
-            <span class="stat-sub">{{ stat.sub }}</span>
+            <span class="stat-label">{{ stat.labelKey | translate }}</span>
+            <span class="stat-sub">{{ stat.subKey | translate:stat.subParams }}</span>
           </a>
         }
       }

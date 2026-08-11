@@ -6,10 +6,10 @@ import { AuthService } from '../../../core/auth.service';
 import { OrderService } from '../../../core/order.service';
 import { TableService } from '../../../core/table.service';
 import { ShiftService, ShiftStatus } from '../../../core/shift.service';
+import { TranslationService } from '../../../core/translation.service';
 
 interface NavItem {
   route: string;
-  label: string;
   icon: string;
   badgeKey?: 'activeOrders' | 'qrPending';
   translationKey: string;
@@ -38,21 +38,21 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
   loggingOut = false;
 
   navItems: NavItem[] = [
-    { route: '/worker', label: 'Home', icon: 'home', translationKey: 'nav.dashboard' },
-    { route: '/worker/new-order', label: 'POS', icon: 'pos', translationKey: 'nav.pos' },
-    { route: '/worker/active-orders', label: 'Orders', icon: 'orders', badgeKey: 'activeOrders', translationKey: 'nav.activeOrders' },
-    { route: '/worker/qr-orders', label: 'QR', icon: 'qr', badgeKey: 'qrPending', translationKey: 'nav.qrOrders' },
-    { route: '/worker/tables', label: 'Tables', icon: 'tables', translationKey: 'nav.tables' },
-    { route: '/worker/menu', label: 'Menu', icon: 'menu', translationKey: 'nav.availability' },
+    { route: '/worker', icon: 'home', translationKey: 'nav.dashboard' },
+    { route: '/worker/new-order', icon: 'pos', translationKey: 'nav.pos' },
+    { route: '/worker/active-orders', icon: 'orders', badgeKey: 'activeOrders', translationKey: 'nav.activeOrders' },
+    { route: '/worker/qr-orders', icon: 'qr', badgeKey: 'qrPending', translationKey: 'nav.qrOrders' },
+    { route: '/worker/tables', icon: 'tables', translationKey: 'nav.tables' },
+    { route: '/worker/menu', icon: 'menu', translationKey: 'nav.availability' },
   ];
 
   private readonly pageTitles: Record<string, string> = {
-    '/worker': 'Dashboard',
-    '/worker/new-order': 'New Order',
-    '/worker/active-orders': 'Active Orders',
-    '/worker/qr-orders': 'QR Orders',
-    '/worker/tables': 'Tables',
-    '/worker/menu': 'Menu Availability',
+    '/worker': 'worker.layout.dashboard',
+    '/worker/new-order': 'worker.layout.newOrder',
+    '/worker/active-orders': 'worker.layout.activeOrders',
+    '/worker/qr-orders': 'worker.layout.qrOrders',
+    '/worker/tables': 'worker.layout.tables',
+    '/worker/menu': 'worker.layout.menuAvailability',
   };
 
   private subs = new Subscription();
@@ -63,7 +63,8 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     public router: Router,
     private orderService: OrderService,
     private tableService: TableService,
-    private shiftService: ShiftService
+    private shiftService: ShiftService,
+    private translate: TranslationService
   ) {
     this.username = this.auth.getUsername();
   }
@@ -134,7 +135,7 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
 
   private updatePageTitle(url: string): void {
     const path = url.split('?')[0];
-    this.pageTitle = this.pageTitles[path] ?? 'Worker POS';
+    this.pageTitle = this.translate.translate(this.pageTitles[path] || 'worker.layout.workerPos');
   }
 
   private tickClock(): void {

@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MenuItem, MenuService } from '../../../core/menu.service';
 import { TableService, TableItem } from '../../../core/table.service';
 import { OrderService, CreateOrderRequest } from '../../../core/order.service';
+import { TranslationService } from '../../../core/translation.service';
 
 interface CartLine {
   item: MenuItem;
@@ -45,7 +46,8 @@ export class NewOrderComponent implements OnInit {
     private route: ActivatedRoute,
     private tableService: TableService,
     private menuService: MenuService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private translate: TranslationService
   ) {
     // If we arrived here from a table card ("Start order"), preselect that table.
     const tableParam = this.route.snapshot.queryParamMap.get('table');
@@ -62,7 +64,7 @@ export class NewOrderComponent implements OnInit {
         this.tablesLoading = false;
       },
       error: () => {
-        this.tablesError = 'Failed to load tables';
+        this.tablesError = this.translate.translate('worker.pos.tablesLoadError');
         this.tablesLoading = false;
       }
     });
@@ -75,7 +77,7 @@ export class NewOrderComponent implements OnInit {
         this.menuLoading = false;
       },
       error: () => {
-        this.menuError = 'Failed to load menu from backend.';
+        this.menuError = this.translate.translate('worker.pos.menuLoadError');
         this.menuLoading = false;
       }
     });
@@ -147,15 +149,15 @@ export class NewOrderComponent implements OnInit {
         this.placing = false;
         this.placedMessage =
           this.orderType === 'Dine-in'
-            ? `Order #${createdOrder.id} sent to the counter — Table ${this.selectedTable}.`
-            : `Takeaway order #${createdOrder.id} sent to the counter.`;
+            ? this.translate.translate('worker.pos.orderSuccessDine', { id: createdOrder.id, table: this.selectedTable })
+            : this.translate.translate('worker.pos.orderSuccessTakeaway', { id: createdOrder.id });
         this.clearCart();
         this.selectedTable = null;
         setTimeout(() => (this.placedMessage = ''), 3500);
       },
       error: (err) => {
         this.placing = false;
-        this.placedMessage = 'Failed to place order: ' + (err.error?.message || 'Server error');
+        this.placedMessage = this.translate.translate('worker.pos.orderError') + ': ' + (err.error?.message || 'Server error');
         setTimeout(() => (this.placedMessage = ''), 3500);
       }
     });

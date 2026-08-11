@@ -74,7 +74,19 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       items: "Items",
       amount: "Amount",
       status: "Status",
-      viewAllOrders: "View All Orders"
+      viewAllOrders: "View All Orders",
+      todaySalesSub: "excluding cancelled orders",
+      pendingCount: "{{count}} pending",
+      ofStaff: "of {{count}} staff",
+      hiddenCount: "{{count}} hidden",
+      loadError: "Unable to load dashboard data. Please try again.",
+      quickActions: "Quick actions",
+      manageMenu: "Manage Menu",
+      manageMenuDesc: "Prices, items, availability",
+      workersCard: "Workers",
+      workersDesc: "Add or remove staff",
+      reportsCard: "Reports",
+      reportsDesc: "Sales & performance"
     },
     menu: {
       title: "Menu Management",
@@ -87,7 +99,23 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       unavailable: "Unavailable",
       image: "Image",
       description: "Description",
-      deleteConfirm: "Are you sure you want to delete this menu item?"
+      deleteConfirm: "Are you sure you want to delete this menu item?",
+      loadError: "Failed to load menu items. Please ensure the backend is running.",
+      nameRequired: "Item name is required.",
+      currentImage: "Current Image",
+      imageSize: "{{size}} KB",
+      imageAttached: "Image attached",
+      choosePicture: "Choose Picture from PC",
+      imageHint: "PNG, JPG, WEBP up to 5MB",
+      priceRequired: "Please enter a valid price greater than 0 TND.",
+      uploadError: "Failed to upload image. Please try again.",
+      updateError: "Failed to update menu item.",
+      createError: "Failed to create menu item.",
+      deleteError: "Failed to delete menu item.",
+      deleteConfirmNamed: "Are you sure you want to delete \"{{name}}\"?",
+      placeholderName: "e.g. Hazelnut Latte",
+      placeholderImageUrl: "Paste Image URL (or upload below)",
+      placeholderPrice: "0.00"
     },
     orders: {
       title: "Orders History",
@@ -100,7 +128,13 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       ready: "Ready",
       completed: "Completed",
       cancelled: "Cancelled",
-      clearOld: "Clear orders older than 7 days"
+      clearOld: "Clear orders older than 7 days",
+      loadError: "Failed to load orders from server.",
+      clearConfirm: "Delete all orders older than 7 days? This cannot be undone.",
+      clearSuccess: "{{count}} old order removed.",
+      clearSuccessPlural: "{{count}} old orders removed.",
+      clearError: "Failed to remove old orders.",
+      colTime: "Time"
     },
     workers: {
       title: "Worker Management",
@@ -111,13 +145,31 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       role: "Role",
       workerRole: "Worker",
       adminRole: "Administrator",
-      deleteConfirm: "Are you sure you want to delete this worker?"
+      deleteConfirm: "Are you sure you want to delete this worker?",
+      loadError: "Failed to load workers from server.",
+      createError: "Failed to create worker. Username may already exist.",
+      removeConfirm: "Are you sure you want to remove worker \"{{name}}\"?",
+      removeError: "Failed to remove worker.",
+      placeholderName: "Jane Doe",
+      placeholderUsername: "jane.d",
+      placeholderPassword: "••••••••"
     },
     categories: {
       title: "Category Management",
       addCategory: "Add Category",
       categoryName: "Category Name",
-      deleteConfirm: "Are you sure you want to delete this category?"
+      deleteConfirm: "Are you sure you want to delete this category?",
+      loadError: "Failed to load categories. Please ensure the backend is running.",
+      updateSuccess: "\"{{name}}\" updated successfully.",
+      updateError: "Failed to update category.",
+      createSuccess: "\"{{name}}\" added successfully.",
+      createError: "Failed to create category.",
+      deleteSuccess: "\"{{name}}\" deleted successfully.",
+      deleteError: "Failed to delete category.",
+      deleteConfirmNamed: "Delete category \"{{name}}\"? This will not delete existing menu items using this category.",
+      nameRule: "Name must be at least 2 characters.",
+      placeholderName: "e.g. Cold Drinks",
+      placeholderDescription: "Describe what this category includes..."
     },
     tables: {
       title: "Table Management",
@@ -125,14 +177,35 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       tableNumber: "Table Number",
       capacity: "Seats",
       qrCode: "QR Code",
-      viewQr: "View QR Code"
+      viewQr: "View QR Code",
+      loadError: "Failed to load tables. Is the backend running?",
+      requiredError: "Both table number and seat count are required.",
+      createError: "Failed to create table.",
+      deleteError: "Failed to delete table.",
+      addSuccess: "Table {{number}} added successfully.",
+      removeSuccess: "Table {{number}} removed.",
+      seatCount_one: "{{count}} seat",
+      seatCount_other: "{{count}} seats",
+      removeTableTitle: "Remove table",
+      viewQrTitle: "View and print table QR code",
+      deleteConfirm: "Remove <strong>Table {{number}}</strong>?",
+      qrKicker: "Coffee Shop · Table {{number}}",
+      qrAlt: "QR code for Table {{number}}",
+      qrHelp: "Scan this code to view the menu and order from Table {{number}}.",
+      placeholderNumber: "e.g. 9",
+      placeholderSeats: "e.g. 4"
     },
     reports: {
       title: "Analytics & Reports",
       totalRevenue: "Total Revenue",
       totalOrdersCount: "Total Orders",
       avgOrderValue: "Average Order Value",
-      topSelling: "Top Selling Items"
+      topSelling: "Top Selling Items",
+      loadError: "Unable to load report data. Please try again.",
+      bestSeller: "Best seller",
+      weekSalesEmpty: "No sales recorded this week.",
+      soldCount: "{{count}} sold",
+      noItemsSold: "No items sold this week."
     },
     shiftReports: {
       title: "Shift Reports",
@@ -141,7 +214,13 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       checkOut: "Check Out",
       ordersHandled: "Orders Handled",
       totalSales: "Total Sales",
-      ongoing: "Ongoing"
+      ongoing: "Ongoing",
+      loadError: "Failed to load shift history.",
+      clearConfirm: "Delete shifts that started more than 7 days ago? This cannot be undone.",
+      clearSuccess: "{{count}} old shift removed.",
+      clearSuccessPlural: "{{count}} old shifts removed.",
+      clearError: "Failed to remove old shifts.",
+      inProgress: "In progress"
     }
   },
   worker: {
@@ -152,13 +231,39 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       checkOut: "Check Out",
       checking: "Updating..."
     },
+    layout: {
+      dashboard: "Dashboard",
+      newOrder: "New Order",
+      activeOrders: "Active Orders",
+      qrOrders: "QR Orders",
+      tables: "Tables",
+      menuAvailability: "Menu Availability",
+      workerPos: "Worker POS",
+      welcome: "Welcome"
+    },
     dashboard: {
       title: "Worker Dashboard",
       welcome: "Welcome back!",
       quickPos: "Open POS / New Order",
       viewActive: "View Active Orders",
       viewQr: "View QR Orders",
-      activeShiftPrompt: "Please check in to start taking orders."
+      activeShiftPrompt: "Please check in to start taking orders.",
+      inProgress: "In Progress",
+      qrPending: "QR Pending",
+      tablesFree: "Tables Free",
+      servedToday: "Served Today",
+      preparingOrReady: "preparing or ready",
+      awaitingApproval: "awaiting approval",
+      ofTotal: "of {{total}} total",
+      tablesFreeSub: "{{occupied}} occupied · {{total}} total",
+      readyToServe: "{{count}} ready to serve",
+      needsApproval: "needs your approval",
+      allClear: "all clear",
+      review: "Review",
+      view: "View",
+      noActiveOrders: "No active orders — ready for the next customer",
+      newOrderAction: "New Order",
+      occupiedCount: "occupied"
     },
     pos: {
       title: "New Order (POS)",
@@ -173,25 +278,56 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       processing: "Processing...",
       orderSuccess: "Order placed successfully!",
       receipt: "Receipt",
-      printReceipt: "Print Receipt"
+      printReceipt: "Print Receipt",
+      tablesLoadError: "Failed to load tables",
+      menuLoadError: "Failed to load menu from backend.",
+      orderSuccessDine: "Order #{{id}} sent to the counter — Table {{table}}.",
+      orderSuccessTakeaway: "Takeaway order #{{id}} sent to the counter.",
+      orderError: "Failed to place order"
     },
     activeOrders: {
       title: "Active Orders",
       markPreparing: "Start Preparing",
       markReady: "Mark Ready",
       markCompleted: "Complete Order",
-      cancelOrder: "Cancel"
+      cancelOrder: "Cancel",
+      loadError: "Failed to load active orders from backend.",
+      updateError: "Failed to update status",
+      cancelSuccess: "Order #{{id}} was successfully cancelled.",
+      cancelError: "Failed to cancel order",
+      paymentSuccess: "Order #{{id}} fully paid. Change: {{change}} TND",
+      paymentSuccessDone: "Order #{{id}} fully paid. Change: {{change}} TND. Order completed!",
+      partialPayment: "Partial payment confirmed for Order #{{id}}. Change: {{change}} TND",
+      paymentError: "Failed to process payment",
+      splitPaymentError: "Failed to process split payment",
+      retry: "Retry",
+      cancelOrderTitle: "Cancel",
+      cancelModalTitle: "Cancel Order #{{id}}",
+      cancelModalMsg: "Are you sure you want to cancel this order for {{tableInfo}}? This will release the table and remove the order from active orders.",
+      tableLabel: "Table",
+      takeawayLabel: "Takeaway"
     },
     qrOrders: {
       title: "Pending QR Orders",
       table: "Table",
       accept: "Accept & Prepare",
       reject: "Reject Order",
-      noPending: "No pending QR orders at the moment."
+      noPending: "No pending QR orders at the moment.",
+      loadError: "Could not load incoming QR orders.",
+      declineError: "Could not decline this order. Please try again.",
+      acceptError: "Could not accept this order. Please try again.",
+      refresh: "Refresh",
+      qrBadge: "QR"
     },
     tables: {
       title: "Tables Floor Plan",
       freeTables: "free tables",
+      loadError: "Could not load tables from server.",
+      paymentSuccessFull: "Table {{number}} fully paid. Change: {{change}} TND",
+      allItemsPaidClear: "All items paid. Change: {{change}} TND. Table cleared!",
+      partialPaymentConfirm: "Partial payment confirmed. Change: {{change}} TND",
+      paymentError: "Payment failed",
+      splitPaymentError: "Split payment failed",
       occupiedCount: "occupied",
       seats: "Seats",
       seatedSince: "Seated since",
@@ -227,7 +363,9 @@ export const EN_TRANSLATIONS: Record<string, any> = {
     },
     menu: {
       title: "Menu Availability Toggle",
-      toggleNotice: "Toggle availability of menu items live for customer ordering."
+      toggleNotice: "Toggle availability of menu items live for customer ordering.",
+      loadError: "Failed to load menu items.",
+      updateError: "Could not update {{name}}."
     }
   },
   customer: {
@@ -245,6 +383,14 @@ export const EN_TRANSLATIONS: Record<string, any> = {
     orderConfirmedTitle: "Order Received!",
     orderNumber: "Order Number",
     orderConfirmedMsg: "Thank you! Our baristas are preparing your order now.",
-    orderAnother: "Order Something Else"
+    orderAnother: "Order Something Else",
+    orderError: "We could not send your order. Please try again.",
+    clearSearch: "Clear search",
+    removeItem: "Remove {{name}}",
+    addItem: "Add {{name}}"
+  },
+  login: {
+    stayConnected: "Stay connected",
+    roleInfo: "Role is assigned by <strong>EL Satour</strong> — clock in, serve great coffee, or meet the Satour! ☕⚡"
   }
 };

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ShiftReport, WorkerService } from '../../../core/worker.service';
+import { TranslationService } from '../../../core/translation.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
 
@@ -17,7 +18,10 @@ export class ShiftReportsComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  constructor(private workerService: WorkerService) {}
+  constructor(
+    private workerService: WorkerService,
+    private translate: TranslationService
+  ) {}
 
   ngOnInit(): void {
     this.loadShifts();
@@ -32,33 +36,35 @@ export class ShiftReportsComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = 'Failed to load shift history.';
+        this.errorMessage = this.translate.translate('admin.shiftReports.loadError');
         this.loading = false;
       }
     });
   }
 
   deleteOldShifts(): void {
-    if (!confirm('Delete shifts that started more than 7 days ago? This cannot be undone.')) return;
+    if (!confirm(this.translate.translate('admin.shiftReports.clearConfirm'))) return;
 
     this.clearing = true;
     this.errorMessage = '';
     this.successMessage = '';
     this.workerService.deleteShiftsOlderThanSevenDays().subscribe({
       next: ({ deletedCount }) => {
-        this.successMessage = `${deletedCount} old shift${deletedCount === 1 ? '' : 's'} removed.`;
+        this.successMessage = deletedCount === 1
+          ? this.translate.translate('admin.shiftReports.clearSuccess', { count: deletedCount })
+          : this.translate.translate('admin.shiftReports.clearSuccessPlural', { count: deletedCount });
         this.clearing = false;
         this.loadShifts();
       },
       error: () => {
-        this.errorMessage = 'Failed to remove old shifts.';
+        this.errorMessage = this.translate.translate('admin.shiftReports.clearError');
         this.clearing = false;
       }
     });
   }
 
   duration(shift: ShiftReport): string {
-    if (!shift.checkOutAt) return 'In progress';
+    if (!shift.checkOutAt) return this.translate.translate('admin.shiftReports.inProgress');
     const minutes = Math.max(0, Math.round((new Date(shift.checkOutAt).getTime() - new Date(shift.checkInAt).getTime()) / 60_000));
     return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
   }

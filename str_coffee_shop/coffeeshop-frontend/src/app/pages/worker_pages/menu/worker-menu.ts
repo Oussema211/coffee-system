@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MenuItem, MenuService } from '../../../core/menu.service';
+import { TranslationService } from '../../../core/translation.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
 
@@ -23,7 +24,10 @@ export class WorkerMenuComponent implements OnInit {
   availabilityFilter: AvailabilityFilter = 'all';
   searchQuery = '';
 
-  constructor(private menuService: MenuService) {}
+  constructor(
+    private menuService: MenuService,
+    private translate: TranslationService
+  ) {}
 
   ngOnInit(): void {
     this.loadItems();
@@ -39,7 +43,7 @@ export class WorkerMenuComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = 'Failed to load menu items.';
+        this.errorMessage = this.translate.translate('worker.menu.loadError');
         this.loading = false;
       }
     });
@@ -68,7 +72,7 @@ export class WorkerMenuComponent implements OnInit {
         this.changingId = null;
       },
       error: () => {
-        this.errorMessage = `Could not update ${item.name}.`;
+        this.errorMessage = this.translate.translate('worker.menu.updateError', { name: item.name });
         this.changingId = null;
       }
     });

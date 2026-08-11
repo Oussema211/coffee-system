@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
+import { TranslationService } from '../../../core/translation.service';
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
@@ -24,7 +25,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private translate: TranslationService
   ) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
@@ -72,7 +74,7 @@ export class LoginComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.errorMessage = 'Invalid username or password.';
+        this.errorMessage = this.translate.translate('auth.loginError');
       }
     });
   }

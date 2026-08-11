@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardService, DailySales, TopItem } from '../../../core/dashboard.service';
+import { TranslationService } from '../../../core/translation.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
 
@@ -19,7 +20,10 @@ export class Reports implements OnInit {
   loading = true;
   errorMessage = '';
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private translate: TranslationService
+  ) {}
 
   ngOnInit(): void {
     this.dashboardService.getReports().subscribe({
@@ -32,7 +36,7 @@ export class Reports implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = 'Unable to load report data. Please try again.';
+        this.errorMessage = this.translate.translate('admin.reports.loadError');
         this.loading = false;
       }
     });

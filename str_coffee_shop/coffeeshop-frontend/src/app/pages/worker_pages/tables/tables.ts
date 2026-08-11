@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { TableService } from '../../../core/table.service';
 import { OrderService } from '../../../core/order.service';
 import { ReceiptPrintService } from '../../../core/receipt-print.service';
+import { TranslationService } from '../../../core/translation.service';
 
 export interface OrderItem {
   id: number;
@@ -59,7 +60,8 @@ export class TablesComponent implements OnInit {
     private router: Router,
     private tableService: TableService,
     private orderService: OrderService,
-    private receiptPrintService: ReceiptPrintService
+    private receiptPrintService: ReceiptPrintService,
+    private translate: TranslationService
   ) {}
 
   ngOnInit(): void {
@@ -89,7 +91,7 @@ export class TablesComponent implements OnInit {
         this.tablesLoading = false;
       },
       error: () => {
-        this.tablesError = 'Could not load tables from server.';
+        this.tablesError = this.translate.translate('worker.tables.loadError');
         this.tablesLoading = false;
       }
     });
@@ -186,7 +188,7 @@ export class TablesComponent implements OnInit {
 
     if (!table.activeOrderId) {
       table.orderItems.forEach(i => (i.paid = true));
-      this.flashSuccess(`Table ${table.number} fully paid. Change: ${changeAmt.toFixed(2)} TND`);
+      this.flashSuccess(this.translate.translate('worker.tables.paymentSuccessFull', { number: table.number, change: changeAmt.toFixed(2) }));
       this.closePayment();
       table.status = 'Cleaning';
       table.since = undefined;
@@ -197,13 +199,13 @@ export class TablesComponent implements OnInit {
     this.orderService.payOrder(table.activeOrderId, { paymentType: 'full' }).subscribe({
       next: () => {
         this.paying = false;
-        this.flashSuccess(`Table ${table.number} fully paid. Change: ${changeAmt.toFixed(2)} TND`);
+      this.flashSuccess(this.translate.translate('worker.tables.paymentSuccessFull', { number: table.number, change: changeAmt.toFixed(2) }));
         this.closePayment();
         this.loadTables();
       },
       error: (err) => {
         this.paying = false;
-        alert('Payment failed: ' + (err.error?.message || 'Server error'));
+        alert(this.translate.translate('worker.tables.paymentError') + ': ' + (err.error?.message || 'Server error'));
       }
     });
   }
@@ -226,7 +228,7 @@ export class TablesComponent implements OnInit {
       });
       const allPaid = table.orderItems.every(i => i.paid);
       if (allPaid) {
-        this.flashSuccess(`All items paid. Change: ${changeAmt.toFixed(2)} TND. Table cleared!`);
+        this.flashSuccess(this.translate.translate('worker.tables.allItemsPaidClear', { change: changeAmt.toFixed(2) }));
         this.closePayment();
         table.status = 'Cleaning';
         table.since = undefined;
@@ -243,17 +245,17 @@ export class TablesComponent implements OnInit {
         this.paying = false;
         const allPaid = updatedOrder.status === 'Completed';
         if (allPaid) {
-          this.flashSuccess(`All items paid. Change: ${changeAmt.toFixed(2)} TND. Table cleared!`);
+        this.flashSuccess(this.translate.translate('worker.tables.allItemsPaidClear', { change: changeAmt.toFixed(2) }));
           this.closePayment();
         } else {
-          this.flashSuccess(`Partial payment confirmed. Change: ${changeAmt.toFixed(2)} TND`);
+        this.flashSuccess(this.translate.translate('worker.tables.partialPaymentConfirm', { change: changeAmt.toFixed(2) }));
           this.amountGiven = null;
         }
         this.loadTables();
       },
       error: (err) => {
         this.paying = false;
-        alert('Split payment failed: ' + (err.error?.message || 'Server error'));
+        alert(this.translate.translate('worker.tables.splitPaymentError') + ': ' + (err.error?.message || 'Server error'));
       }
     });
   }

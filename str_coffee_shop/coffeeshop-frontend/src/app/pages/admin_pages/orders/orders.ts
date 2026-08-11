@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrderDTO, OrderService } from '../../../core/order.service';
+import { TranslationService } from '../../../core/translation.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
 
@@ -17,7 +18,10 @@ export class Orders implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private translate: TranslationService
+  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
@@ -33,14 +37,14 @@ export class Orders implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = 'Failed to load orders from server.';
+        this.errorMessage = this.translate.translate('admin.orders.loadError');
         this.loading = false;
       }
     });
   }
 
   clearOrdersOlderThanSevenDays(): void {
-    const confirmed = confirm('Delete all orders older than 7 days? This cannot be undone.');
+    const confirmed = confirm(this.translate.translate('admin.orders.clearConfirm'));
     if (!confirmed) return;
 
     this.clearing = true;
@@ -49,12 +53,14 @@ export class Orders implements OnInit {
 
     this.orderService.deleteOrdersOlderThanSevenDays().subscribe({
       next: ({ deletedCount }) => {
-        this.successMessage = `${deletedCount} old order${deletedCount === 1 ? '' : 's'} removed.`;
+        this.successMessage = deletedCount === 1
+          ? this.translate.translate('admin.orders.clearSuccess', { count: deletedCount })
+          : this.translate.translate('admin.orders.clearSuccessPlural', { count: deletedCount });
         this.clearing = false;
         this.loadOrders();
       },
       error: () => {
-        this.errorMessage = 'Failed to remove old orders.';
+        this.errorMessage = this.translate.translate('admin.orders.clearError');
         this.clearing = false;
       }
     });

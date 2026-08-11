@@ -121,7 +121,7 @@
                 <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </span>
-            <span class="stay-connected-text">Stay connected</span>
+            <span class="stay-connected-text">{{ 'login.stayConnected' | translate }}</span>
           </label>
         </div>
 
@@ -149,8 +149,7 @@
         </button>
       </form>
 
-      <p class="text-center text-xs text-espresso-light/70 mt-8 leading-relaxed italic">
-        Role is assigned by <strong class="text-espresso font-bold">EL Satour</strong> — clock in, serve great coffee, or meet the Satour! ☕⚡
+      <p class="text-center text-xs text-espresso-light/70 mt-8 leading-relaxed italic" [innerHTML]="'login.roleInfo' | translate">
       </p>
     </div>
   </div>

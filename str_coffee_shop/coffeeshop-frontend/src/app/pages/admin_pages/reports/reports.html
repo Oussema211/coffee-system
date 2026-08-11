@@ -12,7 +12,7 @@
       <p class="font-display text-2xl text-espresso">{{ averageOrderValue | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
     </div>
     <div class="bg-white rounded-2xl border border-cream-dark p-5">
-      <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">Best seller</p>
+        <p class="text-xs uppercase tracking-wide text-espresso-light/50 mb-2">{{ 'admin.reports.bestSeller' | translate }}</p>
       <p class="font-display text-2xl text-espresso">{{ bestSeller }}</p>
     </div>
   </div>
@@ -46,7 +46,7 @@
         }
       </div>
       @if (!loading && weekTotal === 0) {
-        <p class="mt-4 text-center text-sm text-espresso-light/60">No sales recorded this week.</p>
+        <p class="mt-4 text-center text-sm text-espresso-light/60">{{ 'admin.reports.weekSalesEmpty' | translate }}</p>
       }
     </div>
 
@@ -56,12 +56,12 @@
         @for (item of topItems; track item.name) {
           <div class="flex items-center justify-between">
             <span class="text-sm text-espresso-light/80">{{ item.name }}</span>
-            <span class="text-sm font-medium text-espresso">{{ item.sold }} sold</span>
+            <span class="text-sm font-medium text-espresso">{{ item.sold }} {{ 'admin.reports.soldCount' | translate:{count: item.sold} }}</span>
           </div>
         }
       </div>
       @if (!loading && topItems.length === 0) {
-        <p class="text-sm text-espresso-light/60">No items sold this week.</p>
+        <p class="text-sm text-espresso-light/60">{{ 'admin.reports.noItemsSold' | translate }}</p>
       }
     </div>
   </div>

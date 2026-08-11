@@ -74,7 +74,19 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       items: "Articles",
       amount: "Montant",
       status: "Statut",
-      viewAllOrders: "Voir Toutes les Commandes"
+      viewAllOrders: "Voir Toutes les Commandes",
+      todaySalesSub: "hors commandes annulées",
+      pendingCount: "{{count}} en attente",
+      ofStaff: "sur {{count}} employés",
+      hiddenCount: "{{count}} masqués",
+      loadError: "Impossible de charger les données du tableau de bord. Veuillez réessayer.",
+      quickActions: "Actions rapides",
+      manageMenu: "Gérer le Menu",
+      manageMenuDesc: "Prix, articles, disponibilité",
+      workersCard: "Employés",
+      workersDesc: "Ajouter ou supprimer du personnel",
+      reportsCard: "Rapports",
+      reportsDesc: "Ventes et performances"
     },
     menu: {
       title: "Gestion du Menu",
@@ -87,7 +99,23 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       unavailable: "Indisponible",
       image: "URL de l'image",
       description: "Description",
-      deleteConfirm: "Voulez-vous vraiment supprimer cet article du menu ?"
+      deleteConfirm: "Voulez-vous vraiment supprimer cet article du menu ?",
+      loadError: "Échec du chargement des articles du menu. Assurez-vous que le serveur est en cours d'exécution.",
+      nameRequired: "Le nom de l'article est obligatoire.",
+      currentImage: "Image actuelle",
+      imageSize: "{{size}} Ko",
+      imageAttached: "Image jointe",
+      choosePicture: "Choisir une image depuis le PC",
+      imageHint: "PNG, JPG, WEBP jusqu'à 5 Mo",
+      priceRequired: "Veuillez entrer un prix valide supérieur à 0 TND.",
+      uploadError: "Échec du téléchargement de l'image. Veuillez réessayer.",
+      updateError: "Échec de la mise à jour de l'article.",
+      createError: "Échec de la création de l'article.",
+      deleteError: "Échec de la suppression de l'article.",
+      deleteConfirmNamed: "Voulez-vous vraiment supprimer « {{name}} » ?",
+      placeholderName: "ex. Latte Noisette",
+      placeholderImageUrl: "Coller l'URL de l'image (ou télécharger ci-dessous)",
+      placeholderPrice: "0.00"
     },
     orders: {
       title: "Historique des Commandes",
@@ -100,7 +128,13 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       ready: "Prête",
       completed: "Terminée",
       cancelled: "Annulée",
-      clearOld: "Effacer les commandes de plus de 7 jours"
+      clearOld: "Effacer les commandes de plus de 7 jours",
+      loadError: "Échec du chargement des commandes depuis le serveur.",
+      clearConfirm: "Supprimer toutes les commandes de plus de 7 jours ? Cette action est irréversible.",
+      clearSuccess: "{{count}} ancienne commande supprimée.",
+      clearSuccessPlural: "{{count}} anciennes commandes supprimées.",
+      clearError: "Échec de la suppression des anciennes commandes.",
+      colTime: "Heure"
     },
     workers: {
       title: "Gestion des Employés",
@@ -111,13 +145,31 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       role: "Rôle",
       workerRole: "Employé",
       adminRole: "Administrateur",
-      deleteConfirm: "Voulez-vous vraiment supprimer cet employé ?"
+      deleteConfirm: "Voulez-vous vraiment supprimer cet employé ?",
+      loadError: "Échec du chargement des employés depuis le serveur.",
+      createError: "Échec de la création de l'employé. Le nom d'utilisateur existe peut-être déjà.",
+      removeConfirm: "Voulez-vous vraiment supprimer l'employé « {{name}} » ?",
+      removeError: "Échec de la suppression de l'employé.",
+      placeholderName: "Jane Doe",
+      placeholderUsername: "jane.d",
+      placeholderPassword: "••••••••"
     },
     categories: {
       title: "Gestion des Catégories",
       addCategory: "Ajouter une Catégorie",
       categoryName: "Nom de la Catégorie",
-      deleteConfirm: "Voulez-vous vraiment supprimer cette catégorie ?"
+      deleteConfirm: "Voulez-vous vraiment supprimer cette catégorie ?",
+      loadError: "Échec du chargement des catégories. Assurez-vous que le serveur est en cours d'exécution.",
+      updateSuccess: "« {{name}} » mis à jour avec succès.",
+      updateError: "Échec de la mise à jour de la catégorie.",
+      createSuccess: "« {{name}} » ajouté avec succès.",
+      createError: "Échec de la création de la catégorie.",
+      deleteSuccess: "« {{name}} » supprimé avec succès.",
+      deleteError: "Échec de la suppression de la catégorie.",
+      deleteConfirmNamed: "Supprimer la catégorie « {{name}} » ? Cela ne supprimera pas les articles existants utilisant cette catégorie.",
+      nameRule: "Le nom doit contenir au moins 2 caractères.",
+      placeholderName: "ex. Boissons Froides",
+      placeholderDescription: "Décrivez ce que cette catégorie contient..."
     },
     tables: {
       title: "Gestion des Tables",
@@ -125,14 +177,35 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       tableNumber: "Numéro de Table",
       capacity: "Places",
       qrCode: "Code QR",
-      viewQr: "Voir le Code QR"
+      viewQr: "Voir le Code QR",
+      loadError: "Échec du chargement des tables. Le serveur est-il en cours d'exécution ?",
+      requiredError: "Le numéro de table et le nombre de places sont tous deux requis.",
+      createError: "Échec de la création de la table.",
+      deleteError: "Échec de la suppression de la table.",
+      addSuccess: "Table {{number}} ajoutée avec succès.",
+      removeSuccess: "Table {{number}} supprimée.",
+      seatCount_one: "{{count}} place",
+      seatCount_other: "{{count}} places",
+      removeTableTitle: "Supprimer la table",
+      viewQrTitle: "Voir et imprimer le code QR de la table",
+      deleteConfirm: "Supprimer la <strong>Table {{number}}</strong> ?",
+      qrKicker: "Coffee Shop · Table {{number}}",
+      qrAlt: "Code QR pour la Table {{number}}",
+      qrHelp: "Scannez ce code pour voir le menu et commander depuis la Table {{number}}.",
+      placeholderNumber: "ex. 9",
+      placeholderSeats: "ex. 4"
     },
     reports: {
       title: "Analyses & Rapports",
       totalRevenue: "Chiffre d'Affaires",
       totalOrdersCount: "Nombre de Commandes",
       avgOrderValue: "Panier Moyen",
-      topSelling: "Meilleures Ventes"
+      topSelling: "Meilleures Ventes",
+      loadError: "Impossible de charger les données du rapport. Veuillez réessayer.",
+      bestSeller: "Meilleure vente",
+      weekSalesEmpty: "Aucune vente enregistrée cette semaine.",
+      soldCount: "{{count}} vendus",
+      noItemsSold: "Aucun article vendu cette semaine."
     },
     shiftReports: {
       title: "Rapports de Service",
@@ -141,7 +214,13 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       checkOut: "Fin de poste",
       ordersHandled: "Commandes Traitées",
       totalSales: "Total Ventes",
-      ongoing: "En cours"
+      ongoing: "En cours",
+      loadError: "Échec du chargement de l'historique des services.",
+      clearConfirm: "Supprimer les services commencés il y a plus de 7 jours ? Cette action est irréversible.",
+      clearSuccess: "{{count}} ancien service supprimé.",
+      clearSuccessPlural: "{{count}} anciens services supprimés.",
+      clearError: "Échec de la suppression des anciens services.",
+      inProgress: "En cours"
     }
   },
   worker: {
@@ -158,7 +237,33 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       quickPos: "Ouvrir Caisse / Nouvelle Commande",
       viewActive: "Voir Commandes Actives",
       viewQr: "Voir Commandes QR",
-      activeShiftPrompt: "Veuillez pointer votre prise de poste pour prendre des commandes."
+      activeShiftPrompt: "Veuillez pointer votre prise de poste pour prendre des commandes.",
+      inProgress: "En Cours",
+      qrPending: "QR en Attente",
+      tablesFree: "Tables Libres",
+      servedToday: "Servis Aujourd'hui",
+      preparingOrReady: "en préparation ou prêt",
+      awaitingApproval: "en attente d'approbation",
+      ofTotal: "sur {{total}} au total",
+      tablesFreeSub: "{{occupied}} occupée(s) · {{total}} au total",
+      readyToServe: "{{count}} prêt(s) à servir",
+      needsApproval: "nécessite votre approbation",
+      allClear: "tout est clair",
+      review: "Examiner",
+      view: "Voir",
+      noActiveOrders: "Aucune commande active — prêt pour le prochain client",
+      newOrderAction: "Nouvelle Commande",
+      occupiedCount: "occupée(s)"
+    },
+    layout: {
+      dashboard: "Accueil",
+      newOrder: "Nouvelle Commande",
+      activeOrders: "Commandes Actives",
+      qrOrders: "Commandes QR",
+      tables: "Tables",
+      menuAvailability: "Disponibilité Menu",
+      workerPos: "Caisse Employé",
+      welcome: "Bienvenue"
     },
     pos: {
       title: "Nouvelle Commande (POS)",
@@ -173,21 +278,46 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       processing: "Traitement...",
       orderSuccess: "Commande enregistrée avec succès !",
       receipt: "Reçu",
-      printReceipt: "Imprimer le reçu"
+      printReceipt: "Imprimer le reçu",
+      tablesLoadError: "Échec du chargement des tables",
+      menuLoadError: "Échec du chargement du menu depuis le serveur.",
+      orderSuccessDine: "Commande n°{{id}} envoyée en caisse — Table {{table}}.",
+      orderSuccessTakeaway: "Commande à emporter n°{{id}} envoyée en caisse.",
+      orderError: "Échec de la commande"
     },
     activeOrders: {
       title: "Commandes Actives",
       markPreparing: "Préparer",
       markReady: "Marquer Prête",
       markCompleted: "Terminer",
-      cancelOrder: "Annuler"
+      cancelOrder: "Annuler",
+      loadError: "Échec du chargement des commandes actives depuis le serveur.",
+      updateError: "Échec de la mise à jour du statut",
+      cancelSuccess: "Commande n°{{id}} annulée avec succès.",
+      cancelError: "Échec de l'annulation de la commande",
+      paymentSuccess: "Commande n°{{id}} entièrement payée. Monnaie : {{change}} TND",
+      paymentSuccessDone: "Commande n°{{id}} entièrement payée. Monnaie : {{change}} TND. Commande terminée !",
+      partialPayment: "Paiement partiel confirmé pour la commande n°{{id}}. Monnaie : {{change}} TND",
+      paymentError: "Échec du traitement du paiement",
+      splitPaymentError: "Échec du paiement partagé",
+      retry: "Réessayer",
+      cancelOrderTitle: "Annuler",
+      cancelModalTitle: "Annuler la commande n°{{id}}",
+      cancelModalMsg: "Êtes-vous sûr de vouloir annuler cette commande pour {{tableInfo}} ? Cela libérera la table et supprimera la commande des commandes actives.",
+      tableLabel: "Table",
+      takeawayLabel: "À emporter"
     },
     qrOrders: {
       title: "Commandes QR en attente",
       table: "Table",
       accept: "Accepter & Préparer",
       reject: "Refuser",
-      noPending: "Aucune commande QR en attente."
+      noPending: "Aucune commande QR en attente.",
+      loadError: "Impossible de charger les commandes QR entrantes.",
+      declineError: "Impossible de refuser cette commande. Veuillez réessayer.",
+      acceptError: "Impossible d'accepter cette commande. Veuillez réessayer.",
+      refresh: "Actualiser",
+      qrBadge: "QR"
     },
     tables: {
       title: "Plan des Tables",
@@ -223,11 +353,19 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       availableStatus: "Disponible",
       occupiedStatus: "Occupée",
       cleaningStatus: "Nettoyage",
-      reservedStatus: "Réservée"
+      reservedStatus: "Réservée",
+      loadError: "Impossible de charger les tables depuis le serveur.",
+      paymentSuccessFull: "Table {{number}} entièrement payée. Monnaie : {{change}} TND",
+      allItemsPaidClear: "Tous les articles payés. Monnaie : {{change}} TND. Table libérée !",
+      partialPaymentConfirm: "Paiement partiel confirmé. Monnaie : {{change}} TND",
+      paymentError: "Échec du paiement",
+      splitPaymentError: "Échec du paiement partagé"
     },
     menu: {
       title: "Gestion des Disponibilités",
-      toggleNotice: "Activez ou désactivez la disponibilité des articles en direct."
+      toggleNotice: "Activez ou désactivez la disponibilité des articles en direct.",
+      loadError: "Échec du chargement des articles du menu.",
+      updateError: "Impossible de mettre à jour {{name}}."
     }
   },
   customer: {
@@ -245,6 +383,14 @@ export const FR_TRANSLATIONS: Record<string, any> = {
     orderConfirmedTitle: "Commande Reçue !",
     orderNumber: "Commande N°",
     orderConfirmedMsg: "Merci ! Nos baristas préparent votre commande dès maintenant.",
-    orderAnother: "Commander autre chose"
+    orderAnother: "Commander autre chose",
+    orderError: "Nous n'avons pas pu envoyer votre commande. Veuillez réessayer.",
+    clearSearch: "Effacer la recherche",
+    removeItem: "Retirer {{name}}",
+    addItem: "Ajouter {{name}}"
+  },
+  login: {
+    stayConnected: "Rester connecté",
+    roleInfo: "Le rôle est assigné par <strong>EL Satour</strong> — pointez, servez du bon café, ou rencontrez le Satour ! ☕⚡"
   }
 };

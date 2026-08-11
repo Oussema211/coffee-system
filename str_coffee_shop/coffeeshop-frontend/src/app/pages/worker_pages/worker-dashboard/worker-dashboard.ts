@@ -5,20 +5,23 @@ import { AuthService } from '../../../core/auth.service';
 import { TableService } from '../../../core/table.service';
 import { OrderService } from '../../../core/order.service';
 import { interval, Subscription } from 'rxjs';
+import { TranslationService } from '../../../core/translation.service';
 
 interface StatTile {
-  label: string;
+  labelKey: string;
   value: string;
-  sub: string;
+  subKey: string;
+  subParams: Record<string, any>;
   accent: string;
   route?: string;
   alert?: boolean;
 }
 
 interface AlertItem {
-  message: string;
+  messageKey: string;
+  messageParams: Record<string, any>;
   route: string;
-  action: string;
+  actionKey: string;
   type: 'warning' | 'info';
 }
 
@@ -37,10 +40,10 @@ export class WorkerDashboardComponent implements OnInit, OnDestroy {
   liveDate = '';
 
   stats: StatTile[] = [
-    { label: 'In Progress', value: '0', sub: 'preparing or ready', accent: 'accent-caramel', route: '/worker/active-orders' },
-    { label: 'QR Pending', value: '0', sub: 'awaiting approval', accent: 'accent-espresso', route: '/worker/qr-orders', alert: false },
-    { label: 'Tables Free', value: '0', sub: 'of 0 total', accent: 'accent-sage', route: '/worker/tables' },
-    { label: 'Served Today', value: '0', sub: 'completed orders', accent: 'accent-cream', route: '/worker/active-orders' },
+    { labelKey: 'worker.dashboard.inProgress', value: '0', subKey: 'common.loading', subParams: {}, accent: 'accent-caramel', route: '/worker/active-orders' },
+    { labelKey: 'worker.dashboard.qrPending', value: '0', subKey: 'common.loading', subParams: {}, accent: 'accent-espresso', route: '/worker/qr-orders', alert: false },
+    { labelKey: 'worker.dashboard.tablesFree', value: '0', subKey: 'common.loading', subParams: {}, accent: 'accent-sage', route: '/worker/tables' },
+    { labelKey: 'worker.dashboard.servedToday', value: '0', subKey: 'common.loading', subParams: {}, accent: 'accent-cream', route: '/worker/active-orders' },
   ];
 
   alerts: AlertItem[] = [];
@@ -51,7 +54,8 @@ export class WorkerDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private auth: AuthService,
     private tableService: TableService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private translate: TranslationService
   ) {
     this.username = this.auth.getUsername();
   }
@@ -81,10 +85,11 @@ export class WorkerDashboardComponent implements OnInit, OnDestroy {
         const free = tables.filter(t => t.status === 'Available').length;
         const occupied = tables.filter(t => t.status === 'Occupied').length;
 
-        const tableStat = this.stats.find(s => s.label === 'Tables Free');
+        const tableStat = this.stats.find(s => s.labelKey === 'worker.dashboard.tablesFree');
         if (tableStat) {
           tableStat.value = String(free);
-          tableStat.sub = `${occupied} occupied · ${total} total`;
+          tableStat.subKey = 'worker.dashboard.tablesFreeSub';
+          tableStat.subParams = { occupied, total };
         }
       },
       error: () => {}
@@ -97,21 +102,23 @@ export class WorkerDashboardComponent implements OnInit, OnDestroy {
         const ready = orders.filter(o => o.status === 'Ready').length;
         const served = orders.filter(o => o.status === 'Served' || o.status === 'Completed').length;
 
-        const progressStat = this.stats.find(s => s.label === 'In Progress');
+        const progressStat = this.stats.find(s => s.labelKey === 'worker.dashboard.inProgress');
         if (progressStat) {
           progressStat.value = String(inProgress);
-          progressStat.sub = ready > 0 ? `${ready} ready to serve` : 'preparing or ready';
+          progressStat.subKey = ready > 0 ? 'worker.dashboard.readyToServe' : 'worker.dashboard.preparingOrReady';
+          progressStat.subParams = ready > 0 ? { count: ready } : {};
           progressStat.alert = ready > 0;
         }
 
-        const qrStat = this.stats.find(s => s.label === 'QR Pending');
+        const qrStat = this.stats.find(s => s.labelKey === 'worker.dashboard.qrPending');
         if (qrStat) {
           qrStat.value = String(qrPending);
-          qrStat.sub = qrPending > 0 ? 'needs your approval' : 'all clear';
+          qrStat.subKey = qrPending > 0 ? 'worker.dashboard.needsApproval' : 'worker.dashboard.allClear';
+          qrStat.subParams = {};
           qrStat.alert = qrPending > 0;
         }
 
-        const servedStat = this.stats.find(s => s.label === 'Served Today');
+        const servedStat = this.stats.find(s => s.labelKey === 'worker.dashboard.servedToday');
         if (servedStat) servedStat.value = String(served);
 
         this.buildAlerts(qrPending, ready, inProgress);
@@ -124,25 +131,28 @@ export class WorkerDashboardComponent implements OnInit, OnDestroy {
     this.alerts = [];
     if (qrPending > 0) {
       this.alerts.push({
-        message: `${qrPending} QR order${qrPending > 1 ? 's' : ''} waiting for approval`,
+        messageKey: 'worker.dashboard.qrPending',
+        messageParams: { count: qrPending },
         route: '/worker/qr-orders',
-        action: 'Review',
+        actionKey: 'worker.dashboard.review',
         type: 'warning'
       });
     }
     if (ready > 0) {
       this.alerts.push({
-        message: `${ready} order${ready > 1 ? 's' : ''} ready to serve`,
+        messageKey: 'worker.dashboard.readyToServe',
+        messageParams: { count: ready },
         route: '/worker/active-orders',
-        action: 'View',
+        actionKey: 'worker.dashboard.view',
         type: 'info'
       });
     }
     if (inProgress === 0 && qrPending === 0) {
       this.alerts.push({
-        message: 'No active orders — ready for the next customer',
+        messageKey: 'worker.dashboard.noActiveOrders',
+        messageParams: {},
         route: '/worker/new-order',
-        action: 'New Order',
+        actionKey: 'worker.dashboard.newOrderAction',
         type: 'info'
       });
     }

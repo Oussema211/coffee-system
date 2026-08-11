@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OrderDTO, OrderService } from '../../../core/order.service';
+import { TranslationService } from '../../../core/translation.service';
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
@@ -19,7 +20,10 @@ export class QrOrdersComponent implements OnInit, OnDestroy {
   updatingId: number | null = null;
   private refreshTimer?: ReturnType<typeof setInterval>;
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private translate: TranslationService
+  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
@@ -34,7 +38,7 @@ export class QrOrdersComponent implements OnInit, OnDestroy {
     if (showLoading) this.loading = true;
     this.orderService.getPendingQrOrders().subscribe({
       next: (orders) => { this.pending = orders; this.error = ''; this.loading = false; },
-      error: () => { this.error = 'Could not load incoming QR orders.'; this.loading = false; }
+      error: () => { this.error = this.translate.translate('worker.qrOrders.loadError'); this.loading = false; }
     });
   }
 
@@ -46,7 +50,7 @@ export class QrOrdersComponent implements OnInit, OnDestroy {
     this.updatingId = order.id;
     this.orderService.cancelOrder(order.id).subscribe({
       next: () => { this.pending = this.pending.filter(item => item.id !== order.id); this.updatingId = null; },
-      error: () => { this.error = 'Could not decline this order. Please try again.'; this.updatingId = null; }
+      error: () => { this.error = this.translate.translate('worker.qrOrders.declineError'); this.updatingId = null; }
     });
   }
 
@@ -54,7 +58,7 @@ export class QrOrdersComponent implements OnInit, OnDestroy {
     this.updatingId = order.id;
     this.orderService.updateOrderStatus(order.id, status).subscribe({
       next: () => { this.pending = this.pending.filter(item => item.id !== order.id); this.updatingId = null; },
-      error: () => { this.error = 'Could not accept this order. Please try again.'; this.updatingId = null; }
+      error: () => { this.error = this.translate.translate('worker.qrOrders.acceptError'); this.updatingId = null; }
     });
   }
 }
