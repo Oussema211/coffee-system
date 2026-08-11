@@ -63,7 +63,7 @@
   @if (!isLoading && !errorMessage) {
     <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
       @for (item of filteredItems; track item.id) {
-        <div class="bg-white rounded-2xl border border-cream-dark hover:border-caramel/30 hover:shadow-md transition duration-200 p-5 flex flex-col justify-between gap-4 group">
+        <div class="bg-white rounded-2xl border border-cream-dark hover:border-caramel/30 hover:shadow-md transition duration-200 p-4 sm:p-5 flex flex-col justify-between gap-4 group min-w-0">
           
           <!-- Item Picture Banner -->
           <div class="relative w-full h-36 rounded-xl overflow-hidden bg-cream/40 border border-cream-dark/60 flex items-center justify-center">
@@ -95,29 +95,29 @@
           </div>
 
           <!-- Card Actions -->
-          <div class="flex items-center gap-2 pt-3 border-t border-cream-dark">
+          <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-cream-dark">
             <button 
               (click)="openEditModal(item)" 
-              class="flex-1 text-xs font-medium text-espresso/70 hover:text-espresso py-2 px-3 rounded-xl hover:bg-cream transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
+              class="flex-1 min-w-0 text-xs font-medium text-espresso/70 hover:text-espresso py-2 px-2.5 sm:px-3 rounded-xl hover:bg-cream transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
               </svg>
-              {{ 'common.edit' | translate }}
+              <span class="truncate">{{ 'common.edit' | translate }}</span>
             </button>
             <button 
               (click)="deleteItem(item)" 
               [disabled]="deletingId !== null"
-              class="flex-1 text-xs font-medium text-red-500/80 hover:text-red-600 py-2 px-3 rounded-xl hover:bg-red-50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
+              class="flex-1 min-w-0 text-xs font-medium text-red-500/80 hover:text-red-600 py-2 px-2.5 sm:px-3 rounded-xl hover:bg-red-50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
             >
               @if (deletingId === item.id) {
                 <app-loading [size]="14" />
               } @else {
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                 </svg>
               }
-              {{ 'common.delete' | translate }}
+              <span class="truncate">{{ 'common.delete' | translate }}</span>
             </button>
           </div>
         </div>
