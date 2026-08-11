@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { MenuItem } from './menu.service';
 import { CreateOrderRequest, OrderDTO } from './order.service';
 import { TableItem } from './table.service';
 import { environment } from '../../environments/environment';
+import { resolveImageUrl } from './utils/image-url.util';
 
 @Injectable({ providedIn: 'root' })
 export class CustomerService {
@@ -17,7 +18,12 @@ export class CustomerService {
   }
 
   getMenu(): Observable<MenuItem[]> {
-    return this.http.get<MenuItem[]>(`${this.baseUrl}/menu`);
+    return this.http.get<MenuItem[]>(`${this.baseUrl}/menu`).pipe(
+      map(items => items.map(item => ({
+        ...item,
+        imageUrl: resolveImageUrl(item.imageUrl)
+      })))
+    );
   }
 
   placeOrder(payload: CreateOrderRequest): Observable<OrderDTO> {
