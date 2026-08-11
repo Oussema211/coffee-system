@@ -12,15 +12,17 @@
   <!-- ───── Sidebar ───── -->
   <aside class="sidebar">
 
-    <!-- Brand & Language Switcher -->
-    <div class="sidebar-brand flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <img src="logo_one.jpg" alt="Black Bear Coffee Shop" class="brand-logo" />
-        <div class="brand-text">
-          <span class="brand-name">{{ 'common.appName' | translate }}</span>
-          <span class="brand-tagline">{{ 'common.tagline' | translate }}</span>
-        </div>
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <img src="logo_one.jpg" alt="Black Bear Coffee Shop" class="brand-logo" />
+      <div class="brand-text">
+        <span class="brand-name">{{ 'common.appName' | translate }}</span>
+        <span class="brand-tagline">{{ 'common.tagline' | translate }}</span>
       </div>
+    </div>
+
+    <!-- Language Switcher -->
+    <div class="sidebar-lang">
       <app-language-switcher />
     </div>
 
