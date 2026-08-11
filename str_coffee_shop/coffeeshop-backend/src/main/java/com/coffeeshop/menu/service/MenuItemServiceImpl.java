@@ -92,7 +92,7 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .category(item.getCategory())
                 .price(item.getPrice())
                 .available(item.isAvailable())
-                .imageUrl(item.getImageUrl())
+                .imageUrl(com.coffeeshop.util.ImageUtils.resolveImageUrl(item.getImageUrl()))
                 .build();
     }
 }

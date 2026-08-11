@@ -26,15 +26,11 @@ public class CustomerController {
     private final RestaurantTableRepository tableRepository;
 
     @GetMapping("/menu")
-    public ResponseEntity<List<MenuItemDTO>> getAvailableMenu(HttpServletRequest request) {
-        String publicBaseUrl = request.getScheme() + "://" + request.getServerName()
-                + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort());
+    public ResponseEntity<List<MenuItemDTO>> getAvailableMenu() {
         return ResponseEntity.ok(menuItemService.getAllMenuItems().stream()
                 .filter(MenuItemDTO::isAvailable)
                 .map(item -> {
-                    if (item.getImageUrl() != null && item.getImageUrl().startsWith("http://localhost:8080/")) {
-                        item.setImageUrl(publicBaseUrl + item.getImageUrl().substring("http://localhost:8080".length()));
-                    }
+                    item.setImageUrl(com.coffeeshop.util.ImageUtils.resolveImageUrl(item.getImageUrl()));
                     return item;
                 })
                 .toList());

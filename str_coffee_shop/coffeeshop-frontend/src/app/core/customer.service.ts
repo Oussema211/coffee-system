@@ -4,12 +4,11 @@ import { Observable } from 'rxjs';
 import { MenuItem } from './menu.service';
 import { CreateOrderRequest, OrderDTO } from './order.service';
 import { TableItem } from './table.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CustomerService {
-  // Use the same host as the QR page so a phone on the local network can
-  // reach the backend too (instead of trying to call localhost on the phone).
-  private readonly baseUrl = window.location.protocol + '//' + window.location.hostname + ':8080/api/public';
+  private readonly baseUrl = `${environment.apiUrl}/api/public`;
 
   constructor(private http: HttpClient) {}
 

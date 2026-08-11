@@ -66,7 +66,7 @@ public class MenuItemController {
             java.nio.file.Path filePath = uploadPath.resolve(filename);
             java.nio.file.Files.copy(file.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 
-            String fileUrl = "http://localhost:8080/uploads/menu/" + filename;
+            String fileUrl = com.coffeeshop.util.ImageUtils.resolveImageUrl("/uploads/menu/" + filename);
             return ResponseEntity.ok(java.util.Map.of("imageUrl", fileUrl));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
