@@ -109,3 +109,16 @@
   </nav>
 
 </div>
+
+@if (showLogoutDialog) {
+  <app-confirm-dialog
+    [titleKey]="'common.logoutConfirmTitle'"
+    [messageKey]="'common.logoutConfirmMessage'"
+    [confirmKey]="'common.yes'"
+    [cancelKey]="'common.no'"
+    [loading]="loggingOut"
+    [danger]="true"
+    (confirmed)="confirmLogout()"
+    (cancelled)="closeLogoutDialog()"
+  />
+}

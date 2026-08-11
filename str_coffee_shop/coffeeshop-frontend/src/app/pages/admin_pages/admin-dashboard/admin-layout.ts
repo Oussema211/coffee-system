@@ -5,16 +5,18 @@ import { Router } from '@angular/router';
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
+import { ConfirmDialogComponent } from '../../../core/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, LanguageSwitcherComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, LanguageSwitcherComponent, ConfirmDialogComponent],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css'
 })
 export class AdminLayoutComponent {
   username: string | null;
+  showLogoutDialog = false;
 
   navItems = [
     { label: 'Dashboard', icon: 'grid',    path: '/admin' },
@@ -30,7 +32,15 @@ export class AdminLayoutComponent {
   }
 
   logout(): void {
+    this.showLogoutDialog = true;
+  }
+
+  confirmLogout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);
+  }
+
+  closeLogoutDialog(): void {
+    this.showLogoutDialog = false;
   }
 }

@@ -18,11 +18,12 @@ interface NavItem {
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
 import { LoadingComponent } from '../../../core/components/loading/loading';
+import { ConfirmDialogComponent } from '../../../core/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-worker-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, CommonModule, TranslatePipe, LanguageSwitcherComponent, LoadingComponent],
+  imports: [RouterOutlet, RouterLink, CommonModule, TranslatePipe, LanguageSwitcherComponent, LoadingComponent, ConfirmDialogComponent],
   templateUrl: './worker-layout.html',
   styleUrl: './worker-layout.css'
 })
@@ -33,6 +34,8 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
   badges = { activeOrders: 0, qrPending: 0 };
   shift: ShiftStatus = { checkedIn: false, checkInAt: null, checkOutAt: null };
   changingShift = false;
+  showLogoutDialog = false;
+  loggingOut = false;
 
   navItems: NavItem[] = [
     { route: '/worker', label: 'Home', icon: 'home', translationKey: 'nav.dashboard' },
@@ -91,6 +94,11 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
+    this.showLogoutDialog = true;
+  }
+
+  confirmLogout(): void {
+    this.loggingOut = true;
     if (this.shift.checkedIn) {
       this.shiftService.checkOut().subscribe({
         next: () => this.finishLogout(),
@@ -99,6 +107,11 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     } else {
       this.finishLogout();
     }
+  }
+
+  closeLogoutDialog(): void {
+    if (this.loggingOut) return;
+    this.showLogoutDialog = false;
   }
 
   private finishLogout(): void {

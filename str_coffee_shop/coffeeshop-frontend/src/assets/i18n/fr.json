@@ -48,6 +48,8 @@
     "confirm": "Confirmer",
     "yes": "Oui",
     "no": "Non",
+    "logoutConfirmTitle": "Déconnexion ?",
+    "logoutConfirmMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
     "loading": "Chargement...",
     "error": "Erreur",
     "success": "Succès",

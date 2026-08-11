@@ -1,0 +1,48 @@
+<div class="confirm-backdrop" (click)="cancel()">
+  <div
+    class="confirm-dialog"
+    (click)="$event.stopPropagation()"
+    role="alertdialog"
+    aria-modal="true"
+  >
+    <div class="confirm-icon" [class.confirm-icon--danger]="danger">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M12 3L2.5 20h19L12 3zm0 6v5m0 3h.01"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </div>
+
+    <h2 class="confirm-title">{{ titleKey | translate }}</h2>
+    @if (messageKey) {
+      <p class="confirm-message">{{ messageKey | translate }}</p>
+    }
+
+    <div class="confirm-actions">
+      <button
+        type="button"
+        class="confirm-btn confirm-btn--cancel"
+        (click)="cancel()"
+        [disabled]="loading"
+      >
+        {{ cancelKey | translate }}
+      </button>
+      <button
+        type="button"
+        class="confirm-btn confirm-btn--ok"
+        [class.confirm-btn--danger]="danger"
+        (click)="confirm()"
+        [disabled]="loading"
+      >
+        @if (loading) {
+          <app-loading [size]="16" [light]="true" />
+        }
+        {{ confirmKey | translate }}
+      </button>
+    </div>
+  </div>
+</div>
