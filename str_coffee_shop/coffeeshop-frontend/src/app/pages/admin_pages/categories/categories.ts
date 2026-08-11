@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoryService, Category } from '../../../core/category.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, LoadingComponent],
   templateUrl: './categories.html',
   styleUrl: './categories.css'
 })

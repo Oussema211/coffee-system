@@ -14,7 +14,7 @@
     <p>{{ 'customer.searchPlaceholder' | translate }}</p>
   </header>
 
-  <section class="state" *ngIf="loading">{{ 'common.loading' | translate }}</section>
+  <section class="state" *ngIf="loading"><app-loading [label]="'common.loading' | translate" /></section>
   <section class="state state-error" *ngIf="!loading && error && !tableValid">{{ error }}</section>
 
   <section class="thank-you" *ngIf="orderSent">
@@ -62,7 +62,12 @@
 
 <aside class="cart-bar" *ngIf="tableValid && !orderSent && itemCount">
   <div><strong>{{ itemCount }} {{ 'customer.itemTotal' | translate }}</strong><span>{{ total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span></div>
-  <button (click)="confirmOrder()" [disabled]="submitting">{{ submitting ? ('customer.sending' | translate) : ('customer.placeOrder' | translate) }}</button>
+  <button (click)="confirmOrder()" [disabled]="submitting" class="flex items-center justify-center gap-2">
+    @if (submitting) {
+      <app-loading [size]="16" [light]="true" />
+    }
+    {{ submitting ? ('customer.sending' | translate) : ('customer.placeOrder' | translate) }}
+  </button>
 </aside>
 
 <p class="request-error" *ngIf="tableValid && error">{{ error }}</p>

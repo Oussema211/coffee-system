@@ -17,11 +17,12 @@ interface NavItem {
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-worker-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, CommonModule, TranslatePipe, LanguageSwitcherComponent],
+  imports: [RouterOutlet, RouterLink, CommonModule, TranslatePipe, LanguageSwitcherComponent, LoadingComponent],
   templateUrl: './worker-layout.html',
   styleUrl: './worker-layout.css'
 })

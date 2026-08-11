@@ -19,6 +19,9 @@
         (click)="toggleShift()"
       >
         {{ changingShift ? ('worker.header.checking' | translate) : (shift.checkedIn ? ('worker.header.checkOut' | translate) : ('worker.header.checkIn' | translate)) }}
+        @if (changingShift) {
+          <app-loading [size]="14" [light]="!shift.checkedIn" />
+        }
       </button>
       <div class="worker-chip">
         <span class="worker-avatar">{{ (username || 'W')[0].toUpperCase() }}</span>

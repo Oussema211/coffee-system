@@ -10,11 +10,12 @@ interface CartItem extends MenuItem { quantity: number; }
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-customer-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, LanguageSwitcherComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, LanguageSwitcherComponent, LoadingComponent],
   templateUrl: './customer-menu.html',
   styleUrl: './customer-menu.css'
 })

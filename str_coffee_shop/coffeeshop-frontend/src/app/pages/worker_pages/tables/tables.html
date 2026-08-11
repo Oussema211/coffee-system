@@ -19,10 +19,7 @@
   <!-- Loading state -->
   @if (tablesLoading) {
     <div class="flex items-center justify-center gap-3 py-20 text-espresso-light/50 text-sm">
-      <svg class="animate-spin w-5 h-5 text-caramel" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
-      </svg>
-      {{ 'common.loading' | translate }}
+      <app-loading [label]="'common.loading' | translate" />
     </div>
   }
 
@@ -92,7 +89,10 @@
             <button (click)="startOrder(table)" class="w-full text-sm font-bold text-cream bg-espresso hover:bg-espresso-light py-3 rounded-2xl active:scale-95 transition shadow-sm min-h-[48px] cursor-pointer flex items-center justify-center gap-2">
               🛒 {{ 'worker.tables.startNewOrder' | translate }}
             </button>
-            <button (click)="updateStatus(table, 'Occupied')" class="w-full text-xs font-semibold text-espresso-light/60 hover:text-espresso py-1 transition cursor-pointer">
+            <button (click)="updateStatus(table, 'Occupied')" [disabled]="updatingTableId !== null" class="w-full text-xs font-semibold text-espresso-light/60 hover:text-espresso py-1 transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50">
+              @if (updatingTableId === table.id) {
+                <app-loading [size]="14" />
+              }
               🪑 {{ 'worker.tables.seatGuests' | translate }}
             </button>
           }
@@ -109,19 +109,28 @@
             <button (click)="startOrder(table)" class="w-full text-sm font-bold text-espresso border-2 border-cream-dark hover:bg-cream-dark py-2.5 rounded-2xl active:scale-95 transition cursor-pointer flex items-center justify-center gap-1.5">
               ➕ {{ 'worker.tables.addToOrder' | translate }}
             </button>
-            <button (click)="updateStatus(table, 'Cleaning')" class="w-full text-xs font-semibold text-espresso-light/60 hover:text-espresso py-1 transition cursor-pointer">
+            <button (click)="updateStatus(table, 'Cleaning')" [disabled]="updatingTableId !== null" class="w-full text-xs font-semibold text-espresso-light/60 hover:text-espresso py-1 transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50">
+              @if (updatingTableId === table.id) {
+                <app-loading [size]="14" />
+              }
               🧹 {{ 'worker.tables.markAsCleaning' | translate }}
             </button>
           }
 
           @if (table.status === 'Cleaning') {
-            <button (click)="updateStatus(table, 'Available')" class="w-full text-sm font-bold text-sage-dark bg-sage/20 hover:bg-sage/30 py-3 rounded-2xl active:scale-95 transition min-h-[48px] cursor-pointer flex items-center justify-center gap-2">
+            <button (click)="updateStatus(table, 'Available')" [disabled]="updatingTableId !== null" class="w-full text-sm font-bold text-sage-dark bg-sage/20 hover:bg-sage/30 py-3 rounded-2xl active:scale-95 transition min-h-[48px] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60">
+              @if (updatingTableId === table.id) {
+                <app-loading [size]="16" />
+              }
               ✨ {{ 'worker.tables.markCleanAvailable' | translate }}
             </button>
           }
 
           @if (table.status === 'Reserved') {
-            <button (click)="updateStatus(table, 'Occupied')" class="w-full text-sm font-bold text-espresso bg-cream-dark hover:bg-espresso/10 py-3 rounded-2xl active:scale-95 transition min-h-[48px] cursor-pointer flex items-center justify-center gap-2">
+            <button (click)="updateStatus(table, 'Occupied')" [disabled]="updatingTableId !== null" class="w-full text-sm font-bold text-espresso bg-cream-dark hover:bg-espresso/10 py-3 rounded-2xl active:scale-95 transition min-h-[48px] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60">
+              @if (updatingTableId === table.id) {
+                <app-loading [size]="16" />
+              }
               🪑 {{ 'worker.tables.seatReservedGuests' | translate }}
             </button>
           }
@@ -312,17 +321,23 @@
       @if (paymentMode === 'full') {
         <button
           (click)="confirmFullPayment()"
-          [disabled]="!canConfirm"
+          [disabled]="!canConfirm || paying"
           class="confirm-btn"
         >
+          @if (paying) {
+            <app-loading [size]="18" [light]="true" />
+          }
           ✓ {{ 'worker.tables.confirmFullPayment' | translate }}
         </button>
       } @else {
         <button
           (click)="confirmSplitPayment()"
-          [disabled]="!canConfirm"
+          [disabled]="!canConfirm || paying"
           class="confirm-btn"
         >
+          @if (paying) {
+            <app-loading [size]="18" [light]="true" />
+          }
           ✓ {{ 'worker.tables.confirmPartialPayment' | translate }} ({{ selectedQuantity }} {{ 'common.quantity' | translate }})
         </button>
       }

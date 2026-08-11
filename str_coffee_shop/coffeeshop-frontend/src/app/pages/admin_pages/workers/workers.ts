@@ -3,17 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WorkerService, WorkerReport } from '../../../core/worker.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-workers',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, LoadingComponent],
   templateUrl: './workers.html'
 })
 export class Workers implements OnInit {
   workers: WorkerReport[] = [];
   loading = false;
   saving = false;
+  deletingId: number | null = null;
   errorMessage = '';
   showModal = false;
   form: FormGroup;
@@ -85,11 +87,14 @@ export class Workers implements OnInit {
       return;
     }
 
+    this.deletingId = worker.id;
     this.workerService.deleteWorker(worker.id).subscribe({
       next: () => {
         this.workers = this.workers.filter(w => w.id !== worker.id);
+        this.deletingId = null;
       },
       error: () => {
+        this.deletingId = null;
         alert('Failed to remove worker.');
       }
     });

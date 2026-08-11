@@ -18,10 +18,7 @@
 
   @if (loading) {
     <div class="bg-white rounded-3xl border-2 border-cream-dark p-12 text-center text-espresso-light/60 text-base font-medium flex items-center justify-center gap-3 mb-6">
-      <svg class="animate-spin w-5 h-5 text-caramel" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
-      </svg>
-      {{ 'common.loading' | translate }}
+      <app-loading [label]="'common.loading' | translate" />
     </div>
   } @else if (error) {
     <div class="bg-red-50 border border-red-200 text-red-700 text-base rounded-3xl p-6 text-center font-medium mb-6 flex justify-between items-center">
@@ -68,7 +65,10 @@
                 <button (click)="openCancelModal(order)" class="text-sm font-bold text-red-600 bg-red-50 border-2 border-red-200/80 hover:bg-red-100 hover:border-red-300 px-4 py-3.5 rounded-2xl active:scale-95 transition min-h-[52px] cursor-pointer flex items-center gap-1.5" title="Cancel order">
                   🚫 {{ 'worker.activeOrders.cancelOrder' | translate }}
                 </button>
-                <button (click)="advance(order)" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
+                <button (click)="advance(order)" [disabled]="advancingId === order.id" class="text-base font-bold text-cream bg-espresso px-6 py-3.5 rounded-2xl hover:bg-espresso-light active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2 disabled:opacity-60">
+                  @if (advancingId === order.id) {
+                    <app-loading [size]="16" [light]="true" />
+                  }
                   ✓ {{ 'worker.activeOrders.markReady' | translate }}
                 </button>
               </div>
@@ -127,7 +127,10 @@
                   🚫 {{ 'worker.activeOrders.cancelOrder' | translate }}
                 </button>
                 @if (order.status === 'Ready') {
-                  <button (click)="advance(order)" class="text-base font-bold text-caramel-dark bg-caramel/15 border-2 border-caramel/30 px-6 py-3.5 rounded-2xl hover:bg-caramel/25 active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2">
+                  <button (click)="advance(order)" [disabled]="advancingId === order.id" class="text-base font-bold text-caramel-dark bg-caramel/15 border-2 border-caramel/30 px-6 py-3.5 rounded-2xl hover:bg-caramel/25 active:scale-95 transition min-h-[52px] shadow-sm cursor-pointer flex items-center gap-2 disabled:opacity-60">
+                    @if (advancingId === order.id) {
+                      <app-loading [size]="16" />
+                    }
                     ✓ {{ 'worker.activeOrders.markCompleted' | translate }}
                   </button>
                 } @else if (order.status === 'Served') {
@@ -321,17 +324,23 @@
       @if (paymentMode === 'full') {
         <button
           (click)="confirmFullPayment()"
-          [disabled]="!canConfirm"
+          [disabled]="!canConfirm || paying"
           class="confirm-btn"
         >
+          @if (paying) {
+            <app-loading [size]="18" [light]="true" />
+          }
           ✓ {{ 'worker.tables.confirmFullPayment' | translate }}
         </button>
       } @else {
         <button
           (click)="confirmSplitPayment()"
-          [disabled]="!canConfirm"
+          [disabled]="!canConfirm || paying"
           class="confirm-btn"
         >
+          @if (paying) {
+            <app-loading [size]="18" [light]="true" />
+          }
           ✓ {{ 'worker.tables.confirmPartialPayment' | translate }} ({{ selectedQuantity }})
         </button>
       }
@@ -357,7 +366,10 @@
         <button (click)="closeCancelModal()" class="flex-1 py-3.5 px-4 rounded-2xl border-2 border-cream-dark text-espresso font-bold text-sm hover:bg-cream/60 transition cursor-pointer min-h-[48px]">
           {{ 'common.cancel' | translate }}
         </button>
-        <button (click)="confirmCancelOrder()" class="flex-1 py-3.5 px-4 rounded-2xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 active:scale-95 transition cursor-pointer shadow-md min-h-[48px]">
+        <button (click)="confirmCancelOrder()" [disabled]="cancelling" class="flex-1 py-3.5 px-4 rounded-2xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 active:scale-95 transition cursor-pointer shadow-md min-h-[48px] flex items-center justify-center gap-2 disabled:opacity-60">
+          @if (cancelling) {
+            <app-loading [size]="16" [light]="true" />
+          }
           {{ 'common.confirm' | translate }}
         </button>
       </div>

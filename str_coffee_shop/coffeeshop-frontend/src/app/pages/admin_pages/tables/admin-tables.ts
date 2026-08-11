@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableService, TableItem } from '../../../core/table.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-admin-tables',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, LoadingComponent],
   templateUrl: './admin-tables.html',
   styleUrl: './admin-tables.css'
 })
@@ -26,6 +27,7 @@ export class AdminTablesComponent implements OnInit {
 
   // Delete confirm
   confirmDeleteId: number | null = null;
+  deleting = false;
   qrTable: TableItem | null = null;
 
   constructor(private tableService: TableService) {}
@@ -83,14 +85,17 @@ export class AdminTablesComponent implements OnInit {
     if (this.confirmDeleteId == null) return;
     const id = this.confirmDeleteId;
     const t = this.tables.find(x => x.id === id);
+    this.deleting = true;
     this.tableService.deleteTable(id).subscribe({
       next: () => {
         this.tables = this.tables.filter(x => x.id !== id);
         this.confirmDeleteId = null;
+        this.deleting = false;
         this.flash(`Table ${t?.number ?? ''} removed.`);
       },
       error: () => {
         this.confirmDeleteId = null;
+        this.deleting = false;
         this.errorMsg = 'Failed to delete table.';
       }
     });

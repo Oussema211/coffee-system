@@ -1,0 +1,12 @@
+<span class="app-loading">
+  <span
+    class="app-loading__spinner"
+    [class.app-loading__spinner--light]="light"
+    [style.--spinner-size]="size + 'px'"
+    role="status"
+    aria-hidden="true"
+  ></span>
+  @if (label) {
+    <span class="app-loading__label">{{ label }}</span>
+  }
+</span>

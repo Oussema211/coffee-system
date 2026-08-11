@@ -7,9 +7,12 @@
     <button
       (click)="deleteOldShifts()"
       [disabled]="clearing"
-      class="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100 disabled:cursor-wait disabled:opacity-60"
+      class="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100 disabled:cursor-wait disabled:opacity-60 flex items-center gap-2"
     >
-      {{ clearing ? ('common.loading' | translate) : ('admin.orders.clearOld' | translate) }}
+      @if (clearing) {
+        <app-loading [size]="16" />
+      }
+      {{ 'admin.orders.clearOld' | translate }}
     </button>
   </div>
 
@@ -21,7 +24,9 @@
   }
 
   @if (loading) {
-    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">{{ 'common.loading' | translate }}</div>
+    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60 flex items-center justify-center gap-3">
+      <app-loading [label]="'common.loading' | translate" />
+    </div>
   } @else if (shifts.length === 0) {
     <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">{{ 'common.noData' | translate }}</div>
   } @else {

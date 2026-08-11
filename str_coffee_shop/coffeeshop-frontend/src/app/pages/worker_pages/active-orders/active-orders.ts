@@ -8,11 +8,12 @@ export type OrderItem = OrderItemDTO;
 export type ActiveOrder = OrderDTO;
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-active-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, LoadingComponent],
   templateUrl: './active-orders.html',
   styleUrl: './active-orders.css'
 })
@@ -20,6 +21,10 @@ export class ActiveOrdersComponent implements OnInit {
   orders: ActiveOrder[] = [];
   loading = true;
   error = '';
+
+  advancingId: number | null = null;
+  paying = false;
+  cancelling = false;
 
   // ── Payment modal state ──────────────────────────────────────────────────────
   paymentModalOpen = false;
@@ -84,11 +89,14 @@ export class ActiveOrdersComponent implements OnInit {
 
     if (!nextStatus) return;
 
+    this.advancingId = order.id;
     this.orderService.updateOrderStatus(order.id, nextStatus).subscribe({
       next: (updatedOrder) => {
         order.status = updatedOrder.status;
+        this.advancingId = null;
       },
       error: (err) => {
+        this.advancingId = null;
         alert('Failed to update status: ' + (err.error?.message || 'Server error'));
       }
     });
@@ -109,13 +117,16 @@ export class ActiveOrdersComponent implements OnInit {
   confirmCancelOrder(): void {
     if (!this.orderToCancel) return;
     const order = this.orderToCancel;
+    this.cancelling = true;
     this.orderService.cancelOrder(order.id).subscribe({
       next: () => {
         this.orders = this.orders.filter(o => o.id !== order.id);
         this.flashSuccess(`Order #${order.id} was successfully cancelled.`);
         this.closeCancelModal();
+        this.cancelling = false;
       },
       error: (err) => {
+        this.cancelling = false;
         alert('Failed to cancel order: ' + (err.error?.message || 'Server error'));
       }
     });
@@ -218,14 +229,17 @@ export class ActiveOrdersComponent implements OnInit {
     if (!this.canConfirm || !this.activePaymentOrder) return;
     const order = this.activePaymentOrder;
 
+    this.paying = true;
     this.orderService.payOrder(order.id, { paymentType: 'full' }).subscribe({
       next: () => {
+        this.paying = false;
         const changeAmt = this.change;
         this.flashSuccess(`Order #${order.id} fully paid. Change: ${changeAmt.toFixed(2)} TND`);
         this.closePayment();
         this.orders = this.orders.filter(o => o.id !== order.id);
       },
       error: (err) => {
+        this.paying = false;
         alert('Failed to process payment: ' + (err.error?.message || 'Server error'));
       }
     });
@@ -234,12 +248,14 @@ export class ActiveOrdersComponent implements OnInit {
   confirmSplitPayment(): void {
     if (!this.canConfirm || !this.activePaymentOrder) return;
     const order = this.activePaymentOrder;
+    this.paying = true;
     const selectedItems = order.orderItems
       .filter(i => !i.paid && i.id && (i.selectedQty ?? 0) > 0)
       .map(i => ({ itemId: i.id!, quantity: i.selectedQty! }));
 
     this.orderService.payOrder(order.id, { paymentType: 'split', items: selectedItems }).subscribe({
       next: (updatedOrder) => {
+        this.paying = false;
         const changeAmt = this.change;
         if (updatedOrder.status === 'Completed') {
           this.flashSuccess(`Order #${order.id} fully paid. Change: ${changeAmt.toFixed(2)} TND. Order completed!`);
@@ -255,6 +271,7 @@ export class ActiveOrdersComponent implements OnInit {
         }
       },
       error: (err) => {
+        this.paying = false;
         alert('Failed to process split payment: ' + (err.error?.message || 'Server error'));
       }
     });

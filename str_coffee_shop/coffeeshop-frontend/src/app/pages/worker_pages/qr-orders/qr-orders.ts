@@ -3,11 +3,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OrderDTO, OrderService } from '../../../core/order.service';
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-qr-orders',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, LoadingComponent],
   templateUrl: './qr-orders.html',
   styleUrl: './qr-orders.css'
 })

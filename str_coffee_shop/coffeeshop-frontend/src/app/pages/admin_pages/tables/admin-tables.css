@@ -178,26 +178,6 @@
   margin: 0.5rem 0 0;
 }
 
-/* ── Spinner ─────────────────────────────────────────────────────────── */
-.at-spinner {
-  width: 0.875rem;
-  height: 0.875rem;
-  border: 2px solid rgba(247, 239, 227, 0.35);
-  border-top-color: #F7EFE3;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  flex-shrink: 0;
-}
-
-.at-spinner-lg {
-  width: 1.5rem;
-  height: 1.5rem;
-  border: 2.5px solid rgba(201, 133, 43, 0.25);
-  border-top-color: #C9852B;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
 /* ── Loading state ───────────────────────────────────────────────────── */
 .at-loading {
   display: flex;
@@ -393,10 +373,6 @@
 .at-confirm-no:hover { background: #E0D2BA; }
 
 /* ── Animations ──────────────────────────────────────────────────────── */
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }

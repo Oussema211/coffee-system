@@ -28,11 +28,12 @@ interface TableInfo {
 }
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-tables',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, LoadingComponent],
   templateUrl: './tables.html',
   styleUrl: './tables.css'
 })
@@ -40,6 +41,9 @@ export class TablesComponent implements OnInit {
   tables: TableInfo[] = [];
   tablesLoading = true;
   tablesError = '';
+
+  paying = false;
+  updatingTableId: number | null = null;
 
   // ── Payment modal state ──────────────────────────────────────────────────────
   paymentModalOpen = false;
@@ -189,13 +193,16 @@ export class TablesComponent implements OnInit {
       return;
     }
 
+    this.paying = true;
     this.orderService.payOrder(table.activeOrderId, { paymentType: 'full' }).subscribe({
       next: () => {
+        this.paying = false;
         this.flashSuccess(`Table ${table.number} fully paid. Change: ${changeAmt.toFixed(2)} TND`);
         this.closePayment();
         this.loadTables();
       },
       error: (err) => {
+        this.paying = false;
         alert('Payment failed: ' + (err.error?.message || 'Server error'));
       }
     });
@@ -230,8 +237,10 @@ export class TablesComponent implements OnInit {
       return;
     }
 
+    this.paying = true;
     this.orderService.payOrder(table.activeOrderId, { paymentType: 'split', items: selectedItems }).subscribe({
       next: (updatedOrder) => {
+        this.paying = false;
         const allPaid = updatedOrder.status === 'Completed';
         if (allPaid) {
           this.flashSuccess(`All items paid. Change: ${changeAmt.toFixed(2)} TND. Table cleared!`);
@@ -243,6 +252,7 @@ export class TablesComponent implements OnInit {
         this.loadTables();
       },
       error: (err) => {
+        this.paying = false;
         alert('Split payment failed: ' + (err.error?.message || 'Server error'));
       }
     });
@@ -269,11 +279,14 @@ export class TablesComponent implements OnInit {
 
   // ── Table status actions ──────────────────────────────────────────────────────
   updateStatus(table: TableInfo, newStatus: TableInfo['status']): void {
+    this.updatingTableId = table.id;
     this.tableService.updateTableStatus(table.id, newStatus).subscribe({
       next: () => {
+        this.updatingTableId = null;
         this.loadTables();
       },
       error: (err) => {
+        this.updatingTableId = null;
         console.error('Failed to update table status', err);
       }
     });

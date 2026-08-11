@@ -6,11 +6,12 @@ import { AuthService } from '../../../core/auth.service';
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../../core/components/language-switcher/language-switcher';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, LanguageSwitcherComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, LanguageSwitcherComponent, LoadingComponent],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })

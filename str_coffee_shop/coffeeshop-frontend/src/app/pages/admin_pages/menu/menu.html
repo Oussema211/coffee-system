@@ -55,8 +55,7 @@
   <!-- Loading State -->
   @if (isLoading) {
     <div class="flex flex-col items-center justify-center py-16 gap-3">
-      <div class="w-8 h-8 border-3 border-caramel/20 border-t-caramel rounded-full animate-spin"></div>
-      <p class="text-espresso-light/60 text-sm font-medium">{{ 'common.loading' | translate }}</p>
+      <app-loading [size]="28" [label]="'common.loading' | translate" />
     </div>
   }
 
@@ -108,11 +107,16 @@
             </button>
             <button 
               (click)="deleteItem(item)" 
-              class="flex-1 text-xs font-medium text-red-500/80 hover:text-red-600 py-2 px-3 rounded-xl hover:bg-red-50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer"
+              [disabled]="deletingId !== null"
+              class="flex-1 text-xs font-medium text-red-500/80 hover:text-red-600 py-2 px-3 rounded-xl hover:bg-red-50 transition duration-150 flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-              </svg>
+              @if (deletingId === item.id) {
+                <app-loading [size]="14" />
+              } @else {
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              }
               {{ 'common.delete' | translate }}
             </button>
           </div>
@@ -261,7 +265,7 @@
             class="flex-1 text-sm font-medium text-cream bg-espresso py-2.5 rounded-xl hover:bg-espresso-light disabled:opacity-50 transition cursor-pointer flex items-center justify-center gap-2"
           >
             @if (isSaving) {
-              <span class="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin"></span>
+              <app-loading [size]="16" [light]="true" />
             }
             {{ editingItem ? ('common.save' | translate) : ('common.add' | translate) }}
           </button>

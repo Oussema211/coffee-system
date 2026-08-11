@@ -61,10 +61,13 @@
         (click)="addTable()"
         [disabled]="addLoading"
       >
-        <svg viewBox="0 0 20 20" fill="none" *ngIf="!addLoading">
-          <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span class="at-spinner" *ngIf="addLoading"></span>
+        @if (addLoading) {
+          <app-loading [size]="16" [light]="true" />
+        } @else {
+          <svg viewBox="0 0 20 20" fill="none">
+            <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        }
         {{ addLoading ? ('common.loading' | translate) : ('admin.tables.addTable' | translate) }}
       </button>
     </div>
@@ -73,8 +76,7 @@
 
   <!-- ── Loading ────────────────────────────────────────────────────────── -->
   <div class="at-loading" *ngIf="loading">
-    <span class="at-spinner-lg"></span>
-    <span>{{ 'common.loading' | translate }}</span>
+    <app-loading [label]="'common.loading' | translate" />
   </div>
 
   <!-- ── Empty state ────────────────────────────────────────────────────── -->
@@ -132,7 +134,13 @@
       <ng-container *ngIf="confirmDeleteId === t.id">
         <p class="at-confirm-text">Remove <strong>Table {{ t.number }}</strong>?</p>
         <div class="at-confirm-actions">
-          <button class="at-confirm-yes" [id]="'btn-confirm-delete-' + t.id" (click)="confirmDelete()">{{ 'common.delete' | translate }}</button>
+          <button class="at-confirm-yes" [id]="'btn-confirm-delete-' + t.id" (click)="confirmDelete()" [disabled]="deleting">
+            @if (deleting) {
+              <app-loading [size]="14" [light]="true" />
+            } @else {
+              {{ 'common.delete' | translate }}
+            }
+          </button>
           <button class="at-confirm-no"  [id]="'btn-cancel-delete-' + t.id"  (click)="cancelDelete()">{{ 'common.cancel' | translate }}</button>
         </div>
       </ng-container>

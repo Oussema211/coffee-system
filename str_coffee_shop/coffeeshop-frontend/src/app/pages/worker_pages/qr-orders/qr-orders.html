@@ -15,7 +15,9 @@
   </div>
 
   @if (loading) {
-    <div class="state-card">{{ 'common.loading' | translate }}</div>
+    <div class="state-card flex items-center justify-center gap-3">
+      <app-loading [label]="'common.loading' | translate" />
+    </div>
   } @else if (error) {
     <div class="state-card error-state">{{ error }} <button (click)="loadOrders()">Retry</button></div>
   } @else if (!pending.length) {
@@ -41,9 +43,17 @@
           <div class="flex items-center justify-between pt-3 border-t-2 border-cream-dark">
             <span class="text-caramel-dark font-extrabold text-2xl">{{ order.total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
             <div class="flex gap-3">
-              <button (click)="decline(order)" [disabled]="updatingId === order.id" class="text-base font-bold text-espresso-light/70 bg-cream-dark px-5 py-3 rounded-2xl disabled:opacity-50">{{ 'worker.qrOrders.reject' | translate }}</button>
-              <button (click)="accept(order)" [disabled]="updatingId === order.id" class="text-base font-bold text-cream bg-espresso px-6 py-3 rounded-2xl disabled:opacity-50">
-                {{ updatingId === order.id ? ('worker.header.checking' | translate) : ('worker.qrOrders.accept' | translate) }}
+              <button (click)="decline(order)" [disabled]="updatingId === order.id" class="text-base font-bold text-espresso-light/70 bg-cream-dark px-5 py-3 rounded-2xl disabled:opacity-50 flex items-center gap-2">
+                @if (updatingId === order.id) {
+                  <app-loading [size]="16" />
+                }
+                {{ 'worker.qrOrders.reject' | translate }}
+              </button>
+              <button (click)="accept(order)" [disabled]="updatingId === order.id" class="text-base font-bold text-cream bg-espresso px-6 py-3 rounded-2xl disabled:opacity-50 flex items-center gap-2">
+                @if (updatingId === order.id) {
+                  <app-loading [size]="16" [light]="true" />
+                }
+                {{ 'worker.qrOrders.accept' | translate }}
               </button>
             </div>
           </div>

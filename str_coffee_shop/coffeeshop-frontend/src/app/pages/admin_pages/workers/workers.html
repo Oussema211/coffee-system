@@ -10,8 +10,8 @@
   </div>
 
   @if (loading) {
-    <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/60 text-sm">
-      {{ 'common.loading' | translate }}
+    <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/60 text-sm flex items-center justify-center gap-3">
+      <app-loading [label]="'common.loading' | translate" />
     </div>
   } @else if (workers.length === 0) {
     <div class="bg-white rounded-2xl border border-cream-dark p-12 text-center text-espresso-light/60 text-sm">
@@ -57,7 +57,10 @@
               <td class="px-6 py-4 text-right text-espresso font-medium">{{ worker.ordersSold }}</td>
               <td class="px-6 py-4 text-right text-espresso font-medium whitespace-nowrap">{{ worker.salesTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}</td>
               <td class="px-6 py-4 text-right">
-                <button (click)="removeWorker(worker)" class="text-xs font-medium text-red-500/70 hover:text-red-600">
+                <button (click)="removeWorker(worker)" [disabled]="deletingId !== null" class="text-xs font-medium text-red-500/70 hover:text-red-600 flex items-center gap-1.5 ml-auto disabled:opacity-50">
+                  @if (deletingId === worker.id) {
+                    <app-loading [size]="14" />
+                  }
                   {{ 'common.delete' | translate }}
                 </button>
               </td>
@@ -103,8 +106,11 @@
           <button type="button" (click)="closeModal()" class="flex-1 text-sm font-medium text-espresso/70 py-3 rounded-xl border border-cream-dark hover:bg-cream transition">
             {{ 'common.cancel' | translate }}
           </button>
-          <button type="submit" [disabled]="saving" class="flex-1 text-sm font-medium text-cream bg-espresso py-3 rounded-xl hover:bg-espresso-light transition disabled:opacity-50">
-            {{ saving ? ('common.loading' | translate) : ('admin.workers.addWorker' | translate) }}
+          <button type="submit" [disabled]="saving" class="flex-1 text-sm font-medium text-cream bg-espresso py-3 rounded-xl hover:bg-espresso-light transition disabled:opacity-50 flex items-center justify-center gap-2">
+            @if (saving) {
+              <app-loading [size]="16" [light]="true" />
+            }
+            {{ 'admin.workers.addWorker' | translate }}
           </button>
         </div>
       </form>

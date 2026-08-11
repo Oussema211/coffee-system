@@ -141,7 +141,7 @@
                  flex items-center justify-center gap-2 text-base"
         >
           @if (loading) {
-            <span class="w-4 h-4 border-2 border-cream/40 border-t-cream rounded-full animate-spin"></span>
+            <app-loading [size]="16" [light]="true" />
             {{ 'auth.loggingIn' | translate }}
           } @else {
             {{ 'auth.loginButton' | translate }}

@@ -4,11 +4,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } 
 import { MenuService, MenuItem } from '../../../core/menu.service';
 import { CategoryService } from '../../../core/category.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
+import { LoadingComponent } from '../../../core/components/loading/loading';
 
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslatePipe, LoadingComponent],
   templateUrl: './menu.html',
   styleUrl: './menu.css'
 })
@@ -26,6 +27,7 @@ export class Menu implements OnInit {
   errorMessage: string = '';
   showModal: boolean = false;
   isSaving: boolean = false;
+  deletingId: number | null = null;
   editingItem: MenuItem | null = null;
   form: FormGroup;
 
@@ -228,11 +230,14 @@ export class Menu implements OnInit {
 
   deleteItem(item: MenuItem): void {
     if (confirm(`Are you sure you want to delete "${item.name}"?`)) {
+      this.deletingId = item.id;
       this.menuService.deleteMenuItem(item.id).subscribe({
         next: () => {
           this.items = this.items.filter(i => i.id !== item.id);
+          this.deletingId = null;
         },
         error: (err) => {
+          this.deletingId = null;
           console.error('Failed to delete menu item:', err);
           alert('Failed to delete menu item.');
         }

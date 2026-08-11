@@ -17,6 +17,12 @@
     </div>
   </div>
 
+  @if (loading) {
+    <div class="flex items-center justify-center py-20">
+      <app-loading [size]="28" [label]="'common.loading' | translate" />
+    </div>
+  }
+
   @if (errorMessage) {
     <p class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{{ errorMessage }}</p>
   }

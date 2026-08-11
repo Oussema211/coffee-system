@@ -43,7 +43,9 @@
   }
 
   @if (loading) {
-    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60">{{ 'common.loading' | translate }}</div>
+    <div class="rounded-2xl border border-cream-dark bg-white p-12 text-center text-sm text-espresso-light/60 flex items-center justify-center gap-3">
+      <app-loading [label]="'common.loading' | translate" />
+    </div>
   } @else {
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       @for (item of filteredItems; track item.id) {
@@ -60,9 +62,12 @@
               (click)="toggleAvailability(item)"
               [disabled]="changingId !== null"
               [class]="item.available ? 'bg-sage/15 text-sage hover:bg-sage/25' : 'bg-cream-dark text-espresso-light/70 hover:bg-cream'"
-              class="mt-3 rounded-xl px-3 py-2 text-xs font-bold transition disabled:cursor-wait disabled:opacity-60"
+              class="mt-3 rounded-xl px-3 py-2 text-xs font-bold transition disabled:cursor-wait disabled:opacity-60 flex items-center gap-2"
             >
-              {{ changingId === item.id ? ('common.loading' | translate) : (item.available ? ('admin.menu.available' | translate) : ('admin.menu.unavailable' | translate)) }}
+              @if (changingId === item.id) {
+                <app-loading [size]="14" />
+              }
+              {{ item.available ? ('admin.menu.available' | translate) : ('admin.menu.unavailable' | translate) }}
             </button>
           </div>
         </article>
