@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { OrderItemDTO } from './order.service';
+import { environment } from '../../environments/environment';
 
 export interface TableItem {
   id: number;
@@ -20,8 +21,8 @@ export interface CreateTablePayload {
 
 @Injectable({ providedIn: 'root' })
 export class TableService {
-  private readonly adminUrl = 'http://localhost:8080/api/admin/tables';
-  private readonly workerUrl = 'http://localhost:8080/api/worker/tables';
+  private readonly adminUrl = `${environment.apiUrl}/api/admin/tables`;
+  private readonly workerUrl = `${environment.apiUrl}/api/worker/tables`;
 
   constructor(private http: HttpClient) {}
 

@@ -56,7 +56,9 @@ public class SecurityConfig {
                 "http://127.0.0.1:*",
                 "http://192.168.*:*",
                 "http://10.*:*",
-                "http://172.16.*:*"
+                "http://172.16.*:*",
+                "https://*.pages.dev",
+                "https://*.onrender.com"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
@@ -72,7 +74,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/public/**", "/uploads/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/public/**", "/uploads/**", "/actuator/health").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/worker/**").hasAnyRole("WORKER", "ADMIN")
                         .anyRequest().authenticated()

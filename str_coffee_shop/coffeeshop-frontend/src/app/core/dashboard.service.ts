@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface AdminDashboardData {
   todaysRevenue: number;
@@ -41,7 +42,7 @@ export interface TopItem {
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
-  private readonly baseUrl = 'http://localhost:8080/api/admin/dashboard';
+  private readonly baseUrl = `${environment.apiUrl}/api/admin/dashboard`;
 
   constructor(private http: HttpClient) {}
 

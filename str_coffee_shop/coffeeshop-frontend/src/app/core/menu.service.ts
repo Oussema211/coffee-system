@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface MenuItem {
   id: number;
@@ -29,8 +30,8 @@ export interface UpdateMenuItemPayload {
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
-  private readonly baseUrl = 'http://localhost:8080/api/admin/menu';
-  private readonly workerUrl = 'http://localhost:8080/api/worker/menu';
+  private readonly baseUrl = `${environment.apiUrl}/api/admin/menu`;
+  private readonly workerUrl = `${environment.apiUrl}/api/worker/menu`;
 
   constructor(private http: HttpClient) {}
 

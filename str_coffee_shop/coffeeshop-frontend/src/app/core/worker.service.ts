@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface WorkerModel {
   id: number;
@@ -33,7 +34,7 @@ export interface CreateWorkerPayload {
 
 @Injectable({ providedIn: 'root' })
 export class WorkerService {
-  private readonly baseUrl = 'http://localhost:8080/api/admin/workers';
+  private readonly baseUrl = `${environment.apiUrl}/api/admin/workers`;
 
   constructor(private http: HttpClient) {}
 

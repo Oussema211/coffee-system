@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface ShiftStatus {
   checkedIn: boolean;
@@ -10,7 +11,7 @@ export interface ShiftStatus {
 
 @Injectable({ providedIn: 'root' })
 export class ShiftService {
-  private readonly baseUrl = 'http://localhost:8080/api/worker/shift';
+  private readonly baseUrl = `${environment.apiUrl}/api/worker/shift`;
   private readonly shiftSubject = new BehaviorSubject<ShiftStatus>({
     checkedIn: false,
     checkInAt: null,

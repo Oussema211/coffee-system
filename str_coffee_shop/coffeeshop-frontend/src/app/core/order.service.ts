@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface OrderItemDTO {
   id?: number;
@@ -62,8 +63,8 @@ export interface ReceiptDTO {
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
-  private readonly baseUrl = 'http://localhost:8080/api/worker/orders';
-  private readonly adminBaseUrl = 'http://localhost:8080/api/admin/orders';
+  private readonly baseUrl = `${environment.apiUrl}/api/worker/orders`;
+  private readonly adminBaseUrl = `${environment.apiUrl}/api/admin/orders`;
 
   constructor(private http: HttpClient) {}
 
