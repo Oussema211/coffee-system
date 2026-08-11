@@ -90,6 +90,17 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
+    if (this.shift.checkedIn) {
+      this.shiftService.checkOut().subscribe({
+        next: () => this.finishLogout(),
+        error: () => this.finishLogout()
+      });
+    } else {
+      this.finishLogout();
+    }
+  }
+
+  private finishLogout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);
   }
