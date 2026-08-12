@@ -56,7 +56,7 @@
         @for (item of topItems; track item.name) {
           <div class="flex items-center justify-between">
             <span class="text-sm text-espresso-light/80">{{ item.name }}</span>
-            <span class="text-sm font-medium text-espresso">{{ item.sold }} {{ 'admin.reports.soldCount' | translate:{count: item.sold} }}</span>
+            <span class="text-sm font-medium text-espresso">{{ 'admin.reports.soldCount' | translate:{count: item.sold} }}</span>
           </div>
         }
       </div>
