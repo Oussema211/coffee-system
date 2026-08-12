@@ -203,6 +203,7 @@ public class OrderService {
             return cancelOrder(orderId);
         }
 
+        assignWorkerIfNeeded(order);
         order.setStatus(newStatus);
         Order updated = orderRepository.save(order);
         return mapToDTO(updated);
@@ -213,6 +214,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + orderId));
 
+        assignWorkerIfNeeded(order);
         order.setStatus("Cancelled");
         Order cancelledOrder = orderRepository.save(order);
 
@@ -302,7 +304,14 @@ public class OrderService {
             }
         }
 
+        assignWorkerIfNeeded(targetOrder);
         return mapToDTO(targetOrder);
+    }
+
+    private void assignWorkerIfNeeded(Order order) {
+        if (order.getWorkerName() == null) {
+            order.setWorkerName(currentWorkerName());
+        }
     }
 
     private OrderDTO mapToDTO(Order order) {

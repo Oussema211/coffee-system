@@ -42,7 +42,7 @@
             <td class="px-6 py-4 text-espresso font-medium">#{{ order.id }}</td>
             <td class="px-6 py-4 text-espresso-light/70">{{ order.items.join(', ') }}</td>
             <td class="px-6 py-4 text-espresso-light/70">
-              {{ order.workerName || ('customer.welcome' | translate) }}
+              {{ order.workerName || '—' }}
             </td>
             <td class="px-6 py-4 text-espresso-light/70">
               {{ order.type }}@if (order.table !== null) { · {{ 'worker.qrOrders.table' | translate }} {{ order.table }} }
