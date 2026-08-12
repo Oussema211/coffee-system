@@ -395,7 +395,18 @@
 @media print {
   body * { visibility: hidden; }
   .qr-backdrop, .qr-backdrop * { visibility: visible; }
-  .qr-backdrop { position: absolute; background: #fff; padding: 0; }
-  .qr-dialog { box-shadow: none; }
+  .qr-backdrop {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    padding: 0;
+    display: flex;
+    place-items: center;
+  }
+  .qr-dialog {
+    box-shadow: none;
+    width: 100%;
+    max-width: 100%;
+  }
   .no-print { display: none !important; }
 }

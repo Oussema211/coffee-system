@@ -188,6 +188,7 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       seatCount_other: "{{count}} places",
       removeTableTitle: "Supprimer la table",
       viewQrTitle: "Voir et imprimer le code QR de la table",
+      printQr: "Imprimer le Code QR",
       deleteConfirm: "Supprimer la <strong>Table {{number}}</strong> ?",
       qrKicker: "Coffee Shop · Table {{number}}",
       qrAlt: "Code QR pour la Table {{number}}",

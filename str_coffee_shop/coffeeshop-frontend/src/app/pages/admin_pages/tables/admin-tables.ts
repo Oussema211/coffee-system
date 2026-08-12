@@ -124,5 +124,15 @@ export class AdminTablesComponent implements OnInit {
 
   openQr(table: TableItem): void { this.qrTable = table; }
   closeQr(): void { this.qrTable = null; }
-  printQr(): void { window.print(); }
+
+  async printQr(): Promise<void> {
+    const img = document.querySelector<HTMLImageElement>('.qr-dialog img');
+    if (img && !img.complete) {
+      await new Promise<void>((resolve) => {
+        img.addEventListener('load', () => resolve(), { once: true });
+        img.addEventListener('error', () => resolve(), { once: true });
+      });
+    }
+    window.print();
+  }
 }
