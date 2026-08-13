@@ -33,6 +33,7 @@ export class CustomerMenuComponent implements OnInit {
   orderSent = false;
   submitting = false;
   orderId: number | null = null;
+  cartOpen = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -81,6 +82,9 @@ export class CustomerMenuComponent implements OnInit {
   get itemCount(): number { return this.cartItems.reduce((sum, item) => sum + item.quantity, 0); }
   get total(): number { return this.cartItems.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0); }
 
+  toggleCart(): void { this.cartOpen = !this.cartOpen; }
+  closeCart(): void { this.cartOpen = false; }
+
   confirmOrder(): void {
     if (!this.cart.size || this.submitting) return;
     this.submitting = true;
@@ -89,7 +93,7 @@ export class CustomerMenuComponent implements OnInit {
       orderType: 'QR', tableNumber: this.tableNumber,
       items: this.cartItems.map(item => ({ menuItemId: item.id, quantity: item.quantity }))
     }).subscribe({
-      next: (order) => { this.orderId = order.id; this.orderSent = true; this.cart.clear(); this.submitting = false; },
+      next: (order) => { this.orderId = order.id; this.orderSent = true; this.cart.clear(); this.submitting = false; this.cartOpen = false; },
       error: (err) => { this.error = err?.error?.error ?? this.translate.translate('customer.orderError'); this.submitting = false; }
     });
   }

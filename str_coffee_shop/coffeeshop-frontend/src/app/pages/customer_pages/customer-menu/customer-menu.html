@@ -64,14 +64,56 @@
   </ng-container>
 </main>
 
-<aside class="cart-bar" *ngIf="tableValid && !orderSent && itemCount">
-  <div class="cart-summary"><strong>{{ itemCount }} {{ 'customer.itemTotal' | translate }}</strong><span>{{ total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span></div>
-  <button (click)="confirmOrder()" [disabled]="submitting" class="cart-cta">
-    @if (submitting) {
-      <app-loading [size]="16" [light]="true" />
-    }
-    {{ submitting ? ('customer.sending' | translate) : ('customer.placeOrder' | translate) }}
-  </button>
+<!-- Cart Bar -->
+<aside class="cart-bar" *ngIf="tableValid && !orderSent && itemCount" [class.cart-bar--open]="cartOpen">
+
+  <!-- Cart Drawer (order list) -->
+  <div class="cart-drawer" [class.cart-drawer--visible]="cartOpen">
+    <div class="cart-drawer-header">
+      <span class="cart-drawer-title">{{ 'customer.cartTitle' | translate }}</span>
+      <button class="cart-drawer-close" (click)="closeCart()" aria-label="Close cart">✕</button>
+    </div>
+    <div class="cart-drawer-items">
+      <div class="cart-line" *ngFor="let item of cartItems">
+        <div class="cart-line-info">
+          <span class="cart-line-name">{{ item.name }}</span>
+          <span class="cart-line-price">{{ (item.price * item.quantity) | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
+        </div>
+        <div class="cart-line-controls" (click)="$event.stopPropagation()">
+          <button (click)="remove(item)" aria-label="Remove">−</button>
+          <span>{{ item.quantity }}</span>
+          <button (click)="add(item)" aria-label="Add">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="cart-drawer-footer">
+      <div class="cart-drawer-total">
+        <span>{{ 'common.total' | translate }}</span>
+        <span class="cart-drawer-total-amount">{{ total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
+      </div>
+      <button (click)="confirmOrder()" [disabled]="submitting" class="cart-drawer-cta">
+        @if (submitting) {
+          <app-loading [size]="16" [light]="true" />
+        }
+        {{ submitting ? ('customer.sending' | translate) : ('customer.placeOrder' | translate) }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Collapsed bar (always visible when cart has items) -->
+  <div class="cart-bar-inner" (click)="toggleCart()">
+    <div class="cart-summary">
+      <div class="cart-summary-left">
+        <span class="cart-badge">{{ itemCount }}</span>
+        <strong>{{ 'customer.cartTitle' | translate }}</strong>
+      </div>
+      <span class="cart-total-pill">{{ total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
+    </div>
+    <span class="cart-chevron" [class.cart-chevron--up]="cartOpen">&#8963;</span>
+  </div>
 </aside>
+
+<!-- Backdrop -->
+<div class="cart-backdrop" *ngIf="cartOpen" (click)="closeCart()"></div>
 
 <p class="request-error" *ngIf="tableValid && error">{{ error }}</p>
