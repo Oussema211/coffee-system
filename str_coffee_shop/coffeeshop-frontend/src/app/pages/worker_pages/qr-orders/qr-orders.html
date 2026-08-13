@@ -36,7 +36,15 @@
 
           <div class="text-espresso text-base font-medium bg-cream/50 p-4 rounded-2xl border border-cream-dark">
             @for (item of order.orderItems; track item.id) {
-              <div class="flex justify-between gap-3 py-1"><span>{{ item.qty }}× {{ item.name }}</span><span>{{ item.price * item.qty | number:'1.2-2' }} {{ 'common.currency' | translate }}</span></div>
+              <div class="flex justify-between gap-3 py-1">
+                <span>
+                  {{ item.qty }}× {{ item.name }}
+                  @if (item.size || item.sugar) {
+                    <span class="text-xs opacity-60">({{ modsLabel(item) }})</span>
+                  }
+                </span>
+                <span>{{ item.price * item.qty | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
+              </div>
             }
           </div>
 

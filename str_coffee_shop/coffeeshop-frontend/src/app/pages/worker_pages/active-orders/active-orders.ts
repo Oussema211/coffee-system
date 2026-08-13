@@ -236,6 +236,13 @@ export class ActiveOrdersComponent implements OnInit, OnDestroy {
     item.selected = next > 0;
   }
 
+  modsLabel(item: OrderItem): string {
+    const parts: string[] = [];
+    if (item.size) parts.push(item.size);
+    if (item.sugar) parts.push(item.sugar);
+    return parts.join(' · ');
+  }
+
   get selectedQuantity(): number {
     return this.unpaidItems.reduce((total, item) => total + (item.selectedQty ?? 0), 0);
   }

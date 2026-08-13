@@ -11,7 +11,6 @@ interface CartItem extends MenuItem {
   quantity: number;
   size?: string;
   sugar?: string;
-  extraShots?: number;
   lineKey: string;
 }
 
@@ -45,7 +44,6 @@ export class CustomerMenuComponent implements OnInit {
   modalItem: MenuItem | null = null;
   modalSize = '';
   modalSugar = '';
-  modalExtraShots = 0;
   sugarOptions: { label: string }[] = [];
 
   constructor(
@@ -79,11 +77,11 @@ export class CustomerMenuComponent implements OnInit {
   }
 
   hasModifiers(item: MenuItem): boolean {
-    return !!(item.hasSizes || item.hasSugar || item.hasExtraShot);
+    return !!(item.hasSizes || item.hasSugar);
   }
 
-  lineKey(item: MenuItem, size: string, sugar: string, extraShots: number): string {
-    return `${item.id}|${size ?? ''}|${sugar ?? ''}|${extraShots ?? 0}`;
+  lineKey(item: MenuItem, size: string, sugar: string): string {
+    return `${item.id}|${size ?? ''}|${sugar ?? ''}`;
   }
 
   quantity(item: MenuItem): number {
@@ -106,12 +104,12 @@ export class CustomerMenuComponent implements OnInit {
     if (this.hasModifiers(item)) {
       this.openModifiers(item);
     } else {
-      this.addLine(this.lineKey(item, '', '', 0));
+      this.addLine(this.lineKey(item, '', ''));
     }
   }
 
   remove(item: MenuItem): void {
-    const key = this.lineKey(item, '', '', 0);
+    const key = this.lineKey(item, '', '');
     this.decrementLine(key);
   }
 
@@ -123,13 +121,12 @@ export class CustomerMenuComponent implements OnInit {
     } else {
       const source = this.menu.find(i => i.id === Number(key.split('|')[0]));
       if (!source) return;
-      const [, size, sugar, extraShots] = key.split('|');
+      const [, size, sugar] = key.split('|');
       this.cart.set(key, {
         ...source,
         quantity: 1,
         size: size || undefined,
         sugar: sugar || undefined,
-        extraShots: Number(extraShots) || 0,
         lineKey: key
       });
     }
@@ -145,11 +142,7 @@ export class CustomerMenuComponent implements OnInit {
   unitPrice(line: CartItem): number {
     let price = Number(line.price);
     const sizeDelta = line.sizes?.find(s => s.name === line.size)?.priceDelta ?? 0;
-    price += Number(sizeDelta);
-    if (line.extraShots) {
-      price += Number(line.extraShots) * Number(line.extraShotPrice ?? 0);
-    }
-    return price;
+    return price + Number(sizeDelta);
   }
 
   lineTotal(line: CartItem): number {
@@ -160,7 +153,6 @@ export class CustomerMenuComponent implements OnInit {
     const parts: string[] = [];
     if (line.size) parts.push(line.size);
     if (line.sugar) parts.push(line.sugar);
-    if (line.extraShots) parts.push('+' + line.extraShots + ' shot');
     return parts.join(' · ');
   }
 
@@ -175,7 +167,6 @@ export class CustomerMenuComponent implements OnInit {
     this.modalItem = item;
     this.modalSize = item.hasSizes ? (item.sizes?.[0]?.name ?? '') : '';
     this.modalSugar = item.hasSugar ? this.sugarOptions[2].label : '';
-    this.modalExtraShots = 0;
   }
 
   closeModifiers(): void {
@@ -184,7 +175,7 @@ export class CustomerMenuComponent implements OnInit {
 
   confirmModifiers(): void {
     if (!this.modalItem) return;
-    const key = this.lineKey(this.modalItem, this.modalSize, this.modalSugar, this.modalExtraShots);
+    const key = this.lineKey(this.modalItem, this.modalSize, this.modalSugar);
     this.addLine(key);
     this.closeModifiers();
   }
@@ -194,11 +185,7 @@ export class CustomerMenuComponent implements OnInit {
     if (!item) return 0;
     let price = Number(item.price);
     const sizeDelta = item.sizes?.find(s => s.name === this.modalSize)?.priceDelta ?? 0;
-    price += Number(sizeDelta);
-    if (item.hasExtraShot) {
-      price += this.modalExtraShots * Number(item.extraShotPrice ?? 0);
-    }
-    return price;
+    return price + Number(sizeDelta);
   }
 
   confirmOrder(): void {
@@ -211,8 +198,7 @@ export class CustomerMenuComponent implements OnInit {
         menuItemId: item.id,
         quantity: item.quantity,
         size: item.size || undefined,
-        sugar: item.sugar || undefined,
-        extraShots: item.extraShots || 0
+        sugar: item.sugar || undefined
       }))
     }).subscribe({
       next: (order) => { this.orderId = order.id; this.orderSent = true; this.cart.clear(); this.submitting = false; this.cartOpen = false; },

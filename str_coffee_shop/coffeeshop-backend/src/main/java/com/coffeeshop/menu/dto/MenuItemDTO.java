@@ -23,7 +23,5 @@ public class MenuItemDTO {
     private String imageUrl;
     private boolean hasSizes;
     private boolean hasSugar;
-    private boolean hasExtraShot;
-    private BigDecimal extraShotPrice;
     private List<SizeOptionDTO> sizes;
 }

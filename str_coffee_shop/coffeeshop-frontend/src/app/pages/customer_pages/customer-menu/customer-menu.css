@@ -233,7 +233,6 @@ button { border: 0; border-radius: .6rem; cursor: pointer; font: inherit; font-w
 .mods-options button em { font-style: normal; font-size: .72rem; color: var(--ink-soft); }
 .mods-options button.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
 .mods-options button.active em { color: var(--amber); }
-.mods-options--shots button { min-width: 3rem; justify-content: center; }
 
 .mods-modal-foot { padding: .9rem 1.25rem 1.25rem; border-top: 1px solid var(--line); }
 .mods-modal-foot .cart-drawer-cta { width: 100%; }

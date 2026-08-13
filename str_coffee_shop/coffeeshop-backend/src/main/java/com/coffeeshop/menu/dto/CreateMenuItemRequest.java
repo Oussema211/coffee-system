@@ -30,7 +30,5 @@ public class CreateMenuItemRequest {
     private String imageUrl;
     private Boolean hasSizes;
     private Boolean hasSugar;
-    private Boolean hasExtraShot;
-    private BigDecimal extraShotPrice;
     private List<SizeOptionDTO> sizes;
 }

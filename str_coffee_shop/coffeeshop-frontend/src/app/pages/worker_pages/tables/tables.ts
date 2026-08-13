@@ -16,6 +16,8 @@ export interface OrderItem {
   paid: boolean;
   selected: boolean; // used in split-bill mode
   selectedQty?: number;
+  size?: string;
+  sugar?: string;
 }
 
 interface TableInfo {
@@ -85,7 +87,9 @@ export class TablesComponent implements OnInit {
             qty: item.qty,
             paid: item.paid,
             selected: false,
-            selectedQty: 0
+            selectedQty: 0,
+            size: item.size,
+            sugar: item.sugar
           }))
         }));
         this.tablesLoading = false;
@@ -325,6 +329,13 @@ export class TablesComponent implements OnInit {
 
   tableTotal(table: TableInfo): number {
     return table.orderItems.filter(i => !i.paid).reduce((s, i) => s + i.price * i.qty, 0);
+  }
+
+  modsLabel(item: OrderItem): string {
+    const parts: string[] = [];
+    if (item.size) parts.push(item.size);
+    if (item.sugar) parts.push(item.sugar);
+    return parts.join(' · ');
   }
 
   private flashSuccess(message: string): void {

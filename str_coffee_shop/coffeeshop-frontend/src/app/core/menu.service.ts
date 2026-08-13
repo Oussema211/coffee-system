@@ -20,8 +20,6 @@ export interface MenuItem {
   imageUrl?: string;
   hasSizes?: boolean;
   hasSugar?: boolean;
-  hasExtraShot?: boolean;
-  extraShotPrice?: number;
   sizes?: MenuSize[];
 }
 
@@ -34,8 +32,6 @@ export interface CreateMenuItemPayload {
   imageUrl?: string;
   hasSizes?: boolean;
   hasSugar?: boolean;
-  hasExtraShot?: boolean;
-  extraShotPrice?: number;
   sizes?: MenuSize[];
 }
 
@@ -48,8 +44,6 @@ export interface UpdateMenuItemPayload {
   imageUrl?: string;
   hasSizes?: boolean;
   hasSugar?: boolean;
-  hasExtraShot?: boolean;
-  extraShotPrice?: number;
   sizes?: MenuSize[];
 }
 

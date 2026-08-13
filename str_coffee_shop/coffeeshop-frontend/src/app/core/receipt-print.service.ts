@@ -34,7 +34,6 @@ export class ReceiptPrintService {
     const parts: string[] = [];
     if (item.size) parts.push(item.size);
     if (item.sugar) parts.push(item.sugar);
-    if (item.extraShots) parts.push('+' + item.extraShots + ' shot');
     return parts.join(' · ');
   }
 

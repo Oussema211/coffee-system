@@ -317,25 +317,6 @@
             <span class="text-sm text-espresso font-medium">{{ 'admin.menu.hasSugar' | translate }}</span>
             <input type="checkbox" formControlName="hasSugar" class="w-5 h-5 accent-[#5b3a29] cursor-pointer" />
           </label>
-
-          <!-- Extra shot -->
-          <label class="flex items-center justify-between gap-3 cursor-pointer">
-            <span class="text-sm text-espresso font-medium">{{ 'admin.menu.hasExtraShot' | translate }}</span>
-            <input type="checkbox" formControlName="hasExtraShot" class="w-5 h-5 accent-[#5b3a29] cursor-pointer" />
-          </label>
-
-          @if (form.get('hasExtraShot')?.value) {
-            <div>
-              <label class="block text-[11px] font-semibold uppercase tracking-wider text-espresso-light/60 mb-1">{{ 'admin.menu.extraShotPrice' | translate }}</label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                formControlName="extraShotPrice"
-                class="w-full bg-cream/40 border border-cream-dark rounded-xl px-3.5 py-2 text-sm text-espresso outline-none focus:bg-white focus:border-caramel focus:ring-2 focus:ring-caramel/20 transition"
-              />
-            </div>
-          }
         </div>
 
         <!-- Buttons -->

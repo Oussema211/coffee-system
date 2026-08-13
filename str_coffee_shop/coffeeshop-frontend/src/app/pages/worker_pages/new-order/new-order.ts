@@ -14,7 +14,6 @@ interface CartLine {
   key: string;
   size?: string;
   sugar?: string;
-  extraShots?: number;
 }
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
@@ -50,7 +49,6 @@ export class NewOrderComponent implements OnInit {
   modalItem: MenuItem | null = null;
   modalSize = '';
   modalSugar = '';
-  modalExtraShots = 0;
   sugarOptions: { label: string }[] = [];
 
   constructor(
@@ -111,17 +109,13 @@ export class NewOrderComponent implements OnInit {
   }
 
   hasModifiers(item: MenuItem): boolean {
-    return !!(item.hasSizes || item.hasSugar || item.hasExtraShot);
+    return !!(item.hasSizes || item.hasSugar);
   }
 
   unitPrice(line: CartLine): number {
     let price = Number(line.item.price);
     const sizeDelta = line.item.sizes?.find(s => s.name === line.size)?.priceDelta ?? 0;
-    price += Number(sizeDelta);
-    if (line.extraShots) {
-      price += Number(line.extraShots) * Number(line.item.extraShotPrice ?? 0);
-    }
-    return price;
+    return price + Number(sizeDelta);
   }
 
   get cartTotal(): number {
@@ -138,8 +132,8 @@ export class NewOrderComponent implements OnInit {
     return true;
   }
 
-  lineKey(item: MenuItem, size: string, sugar: string, extraShots: number): string {
-    return `${item.id}|${size ?? ''}|${sugar ?? ''}|${extraShots ?? 0}`;
+  lineKey(item: MenuItem, size: string, sugar: string): string {
+    return `${item.id}|${size ?? ''}|${sugar ?? ''}`;
   }
 
   addToCart(item: MenuItem): void {
@@ -147,7 +141,7 @@ export class NewOrderComponent implements OnInit {
       this.openModifiers(item);
       return;
     }
-    this.addLine(this.lineKey(item, '', '', 0));
+    this.addLine(this.lineKey(item, '', ''));
   }
 
   addLine(key: string): void {
@@ -156,7 +150,7 @@ export class NewOrderComponent implements OnInit {
       line.qty++;
       return;
     }
-    const [, size, sugar, extraShots] = key.split('|');
+    const [, size, sugar] = key.split('|');
     const item = this.menuItems.find(i => i.id === Number(key.split('|')[0]));
     if (!item) return;
     this.cart.push({
@@ -164,8 +158,7 @@ export class NewOrderComponent implements OnInit {
       qty: 1,
       key,
       size: size || undefined,
-      sugar: sugar || undefined,
-      extraShots: Number(extraShots) || 0
+      sugar: sugar || undefined
     });
   }
 
@@ -187,7 +180,6 @@ export class NewOrderComponent implements OnInit {
     const parts: string[] = [];
     if (line.size) parts.push(line.size);
     if (line.sugar) parts.push(line.sugar);
-    if (line.extraShots) parts.push('+' + line.extraShots + ' shot');
     return parts.join(' · ');
   }
 
@@ -199,7 +191,6 @@ export class NewOrderComponent implements OnInit {
     this.modalItem = item;
     this.modalSize = item.hasSizes ? (item.sizes?.[0]?.name ?? '') : '';
     this.modalSugar = item.hasSugar ? this.sugarOptions[2].label : '';
-    this.modalExtraShots = 0;
   }
 
   closeModifiers(): void {
@@ -208,7 +199,7 @@ export class NewOrderComponent implements OnInit {
 
   confirmModifiers(): void {
     if (!this.modalItem) return;
-    this.addLine(this.lineKey(this.modalItem, this.modalSize, this.modalSugar, this.modalExtraShots));
+    this.addLine(this.lineKey(this.modalItem, this.modalSize, this.modalSugar));
     this.closeModifiers();
   }
 
@@ -217,11 +208,7 @@ export class NewOrderComponent implements OnInit {
     if (!item) return 0;
     let price = Number(item.price);
     const sizeDelta = item.sizes?.find(s => s.name === this.modalSize)?.priceDelta ?? 0;
-    price += Number(sizeDelta);
-    if (item.hasExtraShot) {
-      price += this.modalExtraShots * Number(item.extraShotPrice ?? 0);
-    }
-    return price;
+    return price + Number(sizeDelta);
   }
 
   placeOrder(): void {
@@ -235,8 +222,7 @@ export class NewOrderComponent implements OnInit {
         menuItemId: line.item.id,
         quantity: line.qty,
         size: line.size || undefined,
-        sugar: line.sugar || undefined,
-        extraShots: line.extraShots || 0
+        sugar: line.sugar || undefined
       }))
     };
 

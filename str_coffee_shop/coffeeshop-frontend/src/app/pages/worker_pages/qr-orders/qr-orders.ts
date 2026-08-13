@@ -56,6 +56,13 @@ export class QrOrdersComponent implements OnInit, OnDestroy {
     });
   }
 
+  modsLabel(item: { size?: string; sugar?: string }): string {
+    const parts: string[] = [];
+    if (item.size) parts.push(item.size);
+    if (item.sugar) parts.push(item.sugar);
+    return parts.join(' · ');
+  }
+
   accept(order: OrderDTO): void {
     this.pending = this.pending.filter(item => item.id !== order.id);
     this.orderService.notifyOrderStateChanged();

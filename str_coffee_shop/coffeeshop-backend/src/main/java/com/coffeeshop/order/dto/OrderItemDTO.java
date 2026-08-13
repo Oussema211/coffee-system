@@ -22,5 +22,4 @@ public class OrderItemDTO {
     private boolean selected;
     private String size;
     private String sugar;
-    private Integer extraShots;
 }

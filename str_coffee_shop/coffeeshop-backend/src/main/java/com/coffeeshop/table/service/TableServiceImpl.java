@@ -96,6 +96,8 @@ public class TableServiceImpl implements TableService {
                                 .qty(item.getQuantity())
                                 .paid(item.isPaid())
                                 .selected(false)
+                                .size(item.getSize())
+                                .sugar(item.getSugar())
                                 .build());
                     }
                 }

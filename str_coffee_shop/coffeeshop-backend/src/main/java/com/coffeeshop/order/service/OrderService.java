@@ -113,25 +113,12 @@ public class OrderService {
                 size = null;
             }
 
-            int extraShots = itemReq.getExtraShots() != null ? itemReq.getExtraShots() : 0;
-            if (extraShots < 0) {
-                throw new IllegalArgumentException("Extra shots cannot be negative");
-            }
-            BigDecimal extraShotUnitPrice = BigDecimal.ZERO;
-            if (menuItem.isHasExtraShot()) {
-                extraShotUnitPrice = menuItem.getExtraShotPrice() != null ? menuItem.getExtraShotPrice() : BigDecimal.ZERO;
-            } else if (extraShots > 0) {
-                throw new IllegalArgumentException("Extra shot not available for " + menuItem.getName());
-            }
-
             String sugar = menuItem.isHasSugar() ? itemReq.getSugar() : null;
             if (sugar != null && sugar.length() > 50) {
                 throw new IllegalArgumentException("Sugar level is too long");
             }
 
-            BigDecimal unitPrice = menuItem.getPrice()
-                    .add(sizeDelta)
-                    .add(extraShotUnitPrice.multiply(BigDecimal.valueOf(extraShots)));
+            BigDecimal unitPrice = menuItem.getPrice().add(sizeDelta);
             BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(itemReq.getQuantity()));
             additionalTotal = additionalTotal.add(lineTotal);
 
@@ -144,9 +131,7 @@ public class OrderService {
                     .quantity(itemReq.getQuantity())
                     .size(size)
                     .sugar(sugar)
-                    .extraShots(extraShots)
                     .sizeDelta(sizeDelta)
-                    .extraShotPrice(extraShotUnitPrice)
                     .paid(false)
                     .build();
 
@@ -360,9 +345,7 @@ public class OrderService {
                                     .quantity(quantityToPay)
                                     .size(item.getSize())
                                     .sugar(item.getSugar())
-                                    .extraShots(item.getExtraShots())
                                     .sizeDelta(item.getSizeDelta())
-                                    .extraShotPrice(item.getExtraShotPrice())
                                     .paid(true)
                                     .build();
                             item.setQuantity(item.getQuantity() - quantityToPay);
@@ -453,13 +436,12 @@ public class OrderService {
                 .selected(false)
                 .size(item.getSize())
                 .sugar(item.getSugar())
-                .extraShots(item.getExtraShots())
                 .build();
     }
 
     /**
      * Human readable label for an order item including its selected modifiers,
-     * e.g. "Cappuccino (Large, No sugar, +1 shot)".
+     * e.g. "Cappuccino (Large, No sugar)".
      */
     private String itemLabel(OrderItem item) {
         List<String> parts = new ArrayList<>();
@@ -468,9 +450,6 @@ public class OrderService {
         }
         if (item.getSugar() != null && !item.getSugar().isBlank()) {
             parts.add(item.getSugar());
-        }
-        if (item.getExtraShots() != null && item.getExtraShots() > 0) {
-            parts.add("+" + item.getExtraShots() + " shot");
         }
         if (parts.isEmpty()) {
             return item.getName();

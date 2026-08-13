@@ -15,5 +15,4 @@ public class CreateOrderItemRequest {
 
     private String size;
     private String sugar;
-    private Integer extraShots;
 }

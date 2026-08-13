@@ -50,8 +50,6 @@ export class Menu implements OnInit {
       imageUrl: [''],
       hasSizes: [false],
       hasSugar: [false],
-      hasExtraShot: [false],
-      extraShotPrice: [0.5],
       sizes: this.fb.array([])
     });
   }
@@ -171,8 +169,6 @@ export class Menu implements OnInit {
       imageUrl: '',
       hasSizes: false,
       hasSugar: false,
-      hasExtraShot: false,
-      extraShotPrice: 0.5,
       sizes: []
     });
     this.showModal = true;
@@ -191,8 +187,6 @@ export class Menu implements OnInit {
       imageUrl: item.imageUrl || '',
       hasSizes: !!item.hasSizes,
       hasSugar: !!item.hasSugar,
-      hasExtraShot: !!item.hasExtraShot,
-      extraShotPrice: item.extraShotPrice ?? 0.5,
       sizes: []
     });
     (item.sizes ?? []).forEach(size => this.addSizeRow(size.name, size.priceDelta));

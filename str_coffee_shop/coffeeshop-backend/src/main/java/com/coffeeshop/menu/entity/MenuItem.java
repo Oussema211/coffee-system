@@ -54,14 +54,6 @@ public class MenuItem {
     private boolean hasSugar = false;
 
     @Builder.Default
-    @Column(name = "has_extra_shot", nullable = false)
-    private boolean hasExtraShot = false;
-
-    @Builder.Default
-    @Column(name = "extra_shot_price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal extraShotPrice = new BigDecimal("0.50");
-
-    @Builder.Default
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC")
     private List<SizeOption> sizeOptions = new ArrayList<>();

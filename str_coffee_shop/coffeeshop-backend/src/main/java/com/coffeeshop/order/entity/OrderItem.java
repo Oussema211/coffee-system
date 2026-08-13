@@ -48,16 +48,8 @@ public class OrderItem {
     private String sugar;
 
     @Builder.Default
-    @Column(name = "extra_shots", nullable = false)
-    private Integer extraShots = 0;
-
-    @Builder.Default
     @Column(name = "size_delta", nullable = false, precision = 10, scale = 2)
     private BigDecimal sizeDelta = BigDecimal.ZERO;
-
-    @Builder.Default
-    @Column(name = "extra_shot_price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal extraShotPrice = BigDecimal.ZERO;
 
     @Builder.Default
     @Column(nullable = false)

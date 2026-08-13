@@ -80,7 +80,7 @@
       <div class="cart-line" *ngFor="let item of cartItems">
         <div class="cart-line-info">
           <span class="cart-line-name">{{ item.name }}</span>
-          <span class="cart-line-mods" *ngIf="item.size || item.sugar || item.extraShots">{{ modsLabel(item) }}</span>
+          <span class="cart-line-mods" *ngIf="item.size || item.sugar">{{ modsLabel(item) }}</span>
           <span class="cart-line-price">{{ (unitPrice(item) * item.quantity) | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
         </div>
         <div class="cart-line-controls" (click)="$event.stopPropagation()">
@@ -149,15 +149,6 @@
       <div class="mods-options">
         <button *ngFor="let opt of sugarOptions" (click)="modalSugar = opt.label" [class.active]="modalSugar === opt.label">
           {{ opt.label }}
-        </button>
-      </div>
-    </div>
-
-    <div class="mods-group" *ngIf="modalItem.hasExtraShot">
-      <span class="mods-label">{{ 'customer.extraShot' | translate }}</span>
-      <div class="mods-options mods-options--shots">
-        <button *ngFor="let n of [0, 1, 2, 3]" (click)="modalExtraShots = n" [class.active]="modalExtraShots === n">
-          {{ n }} <em *ngIf="n > 0">+{{ (n * (modalItem.extraShotPrice ?? 0)) | number:'1.2-2' }} {{ 'common.currency' | translate }}</em>
         </button>
       </div>
     </div>

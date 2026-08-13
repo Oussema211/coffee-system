@@ -59,8 +59,6 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .imageUrl(request.getImageUrl())
                 .hasSizes(Boolean.TRUE.equals(request.getHasSizes()))
                 .hasSugar(Boolean.TRUE.equals(request.getHasSugar()))
-                .hasExtraShot(Boolean.TRUE.equals(request.getHasExtraShot()))
-                .extraShotPrice(request.getExtraShotPrice() != null ? request.getExtraShotPrice() : new java.math.BigDecimal("0.50"))
                 .build();
         syncSizes(item, request.getSizes());
 
@@ -85,10 +83,6 @@ public class MenuItemServiceImpl implements MenuItemService {
         item.setImageUrl(request.getImageUrl());
         item.setHasSizes(Boolean.TRUE.equals(request.getHasSizes()));
         item.setHasSugar(Boolean.TRUE.equals(request.getHasSugar()));
-        item.setHasExtraShot(Boolean.TRUE.equals(request.getHasExtraShot()));
-        if (request.getExtraShotPrice() != null) {
-            item.setExtraShotPrice(request.getExtraShotPrice());
-        }
         syncSizes(item, request.getSizes());
 
         MenuItem updated = menuItemRepository.save(item);
@@ -164,8 +158,6 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .imageUrl(com.coffeeshop.util.ImageUtils.resolveImageUrl(item.getImageUrl()))
                 .hasSizes(item.isHasSizes())
                 .hasSugar(item.isHasSugar())
-                .hasExtraShot(item.isHasExtraShot())
-                .extraShotPrice(item.getExtraShotPrice())
                 .sizes(sizeDTOs)
                 .build();
     }

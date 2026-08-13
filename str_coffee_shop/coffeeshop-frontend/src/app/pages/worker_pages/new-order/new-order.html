@@ -156,7 +156,7 @@
           <div class="flex items-center justify-between gap-3 bg-cream/50 p-3.5 rounded-2xl border border-cream-dark">
             <div class="min-w-0 flex-1">
               <p class="text-base text-espresso font-bold truncate">{{ line.item.name }}</p>
-              @if (line.size || line.sugar || line.extraShots) {
+              @if (line.size || line.sugar) {
                 <p class="text-xs text-caramel font-semibold truncate">{{ modsLabel(line) }}</p>
               }
               <p class="text-xs text-caramel font-semibold">{{ unitPrice(line) | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
@@ -256,28 +256,6 @@
                 class="border-2 rounded-2xl px-4 py-2.5 text-sm font-bold active:scale-95 transition cursor-pointer"
               >
                 {{ opt.label }}
-              </button>
-            }
-          </div>
-        </div>
-      }
-
-      @if (modalItem.hasExtraShot) {
-        <div class="mb-5">
-          <span class="block text-xs font-bold uppercase tracking-wider text-espresso-light/70 mb-2">{{ 'customer.extraShot' | translate }}</span>
-          <div class="flex flex-wrap gap-2">
-            @for (n of [0, 1, 2, 3]; track n) {
-              <button
-                (click)="modalExtraShots = n"
-                [class]="modalExtraShots === n
-                  ? 'bg-espresso text-cream border-espresso'
-                  : 'bg-white text-espresso border-cream-dark hover:bg-cream'"
-                class="border-2 rounded-2xl px-4 py-2.5 text-sm font-bold active:scale-95 transition cursor-pointer"
-              >
-                {{ n }}
-                @if (n > 0) {
-                  <span class="text-xs font-semibold opacity-70"> +{{ (n * (modalItem.extraShotPrice ?? 0)) | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
-                }
               </button>
             }
           </div>

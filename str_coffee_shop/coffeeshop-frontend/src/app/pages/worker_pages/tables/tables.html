@@ -71,7 +71,12 @@
               @for (item of table.orderItems; track item.id) {
                 @if (!item.paid) {
                   <div class="flex justify-between items-center text-sm font-medium text-espresso py-0.5">
-                    <span class="truncate">{{ item.qty }}× {{ item.name }}</span>
+                    <span class="truncate">
+                      {{ item.qty }}× {{ item.name }}
+                      @if (item.size || item.sugar) {
+                        <span class="text-caramel-dark/80 text-xs">{{ modsLabel(item) }}</span>
+                      }
+                    </span>
                     <span class="text-caramel-dark font-bold ml-2 shrink-0">{{ (item.price * item.qty) | number:'1.2-2' }}</span>
                   </div>
                 }
@@ -214,6 +219,9 @@
 
               <div class="flex-1 min-w-0">
                 <p class="text-base font-bold text-espresso truncate">{{ item.name }}</p>
+                @if (item.size || item.sugar) {
+                  <p class="text-xs text-caramel-dark/80 font-semibold">{{ modsLabel(item) }}</p>
+                }
                 @if (item.seatLabel) {
                   <p class="text-xs text-espresso-light/50 font-medium">{{ item.seatLabel }} · {{ item.qty }}×</p>
                 } @else {

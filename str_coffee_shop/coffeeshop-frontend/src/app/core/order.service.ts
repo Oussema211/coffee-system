@@ -16,7 +16,6 @@ export interface OrderItemDTO {
   selectedQty?: number;
   size?: string;
   sugar?: string;
-  extraShots?: number;
 }
 
 export interface VatBreakdownLine {
@@ -44,7 +43,6 @@ export interface CreateOrderItemRequest {
   quantity: number;
   size?: string;
   sugar?: string;
-  extraShots?: number;
 }
 
 export interface CreateOrderRequest {

@@ -222,6 +222,9 @@
 
               <div class="flex-1 min-w-0">
                 <p class="text-base font-bold text-espresso truncate">{{ item.name }}</p>
+                @if (item.size || item.sugar) {
+                  <p class="text-xs text-caramel-dark/80 font-semibold">{{ modsLabel(item) }}</p>
+                }
                 <p class="text-xs text-espresso-light/50 font-medium">{{ 'common.quantity' | translate }}: {{ item.qty }}</p>
               </div>
               @if (paymentMode === 'split') {
