@@ -1,9 +1,10 @@
+<!-- customer-menu.html -->
 <main class="menu-page">
   <header class="menu-header">
-    <div class="flex items-center justify-between w-full mb-3">
+    <div class="header-top">
       <div class="brand">
         <img src="logo_one.jpg" alt="Black Bear Coffee Shop logo" />
-        <div>
+        <div class="brand-text">
           <span class="eyebrow">{{ 'common.tagline' | translate }}</span>
           <strong>{{ 'common.appName' | translate }}</strong>
         </div>
@@ -20,13 +21,14 @@
   <section class="thank-you" *ngIf="orderSent">
     <span class="check">✓</span>
     <h2>{{ 'customer.orderConfirmedTitle' | translate }}</h2>
-    <p>{{ 'customer.orderConfirmedMsg' | translate }} ({{ 'customer.orderNumber' | translate }} #{{ orderId }})</p>
+    <p>{{ 'customer.orderConfirmedMsg' | translate }}</p>
+    <p class="order-id">{{ 'customer.orderNumber' | translate }} #{{ orderId }}</p>
     <button (click)="orderSent = false">{{ 'customer.orderAnother' | translate }}</button>
   </section>
 
   <ng-container *ngIf="tableValid && !orderSent">
     <div class="search-wrap">
-      <span>⌕</span>
+      <span class="search-icon">⌕</span>
       <input [(ngModel)]="searchQuery" type="search" [placeholder]="'customer.searchPlaceholder' | translate" [attr.aria-label]="'customer.searchPlaceholder' | translate" />
       <button *ngIf="searchQuery" (click)="searchQuery = ''" [attr.aria-label]="'customer.clearSearch' | translate">✕</button>
     </div>
@@ -39,7 +41,9 @@
 
     <section class="menu-grid">
       <button class="menu-item" *ngFor="let item of filteredMenu" (click)="add(item)">
-        <img *ngIf="item.imageUrl" [src]="item.imageUrl" (error)="item.imageUrl = ''" [alt]="item.name" />
+        <span class="item-media">
+          <img *ngIf="item.imageUrl" [src]="item.imageUrl" (error)="item.imageUrl = ''" [alt]="item.name" />
+        </span>
         <div class="item-content">
           <p class="category">{{ item.category }}</p>
           <h2>{{ item.name }}</h2>
@@ -61,8 +65,8 @@
 </main>
 
 <aside class="cart-bar" *ngIf="tableValid && !orderSent && itemCount">
-  <div><strong>{{ itemCount }} {{ 'customer.itemTotal' | translate }}</strong><span>{{ total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span></div>
-  <button (click)="confirmOrder()" [disabled]="submitting" class="flex items-center justify-center gap-2">
+  <div class="cart-summary"><strong>{{ itemCount }} {{ 'customer.itemTotal' | translate }}</strong><span>{{ total | number:'1.2-2' }} {{ 'common.currency' | translate }}</span></div>
+  <button (click)="confirmOrder()" [disabled]="submitting" class="cart-cta">
     @if (submitting) {
       <app-loading [size]="16" [light]="true" />
     }
