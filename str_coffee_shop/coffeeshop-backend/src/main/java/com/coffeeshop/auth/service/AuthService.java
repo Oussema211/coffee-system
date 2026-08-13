@@ -5,8 +5,10 @@ import com.coffeeshop.auth.dto.AuthRequest;
 import com.coffeeshop.auth.dto.AuthResponse;
 import com.coffeeshop.auth.entity.Role;
 import com.coffeeshop.auth.entity.User;
+import com.coffeeshop.auth.exception.BusinessException;
 import com.coffeeshop.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +22,20 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
+    @Value("${app.admin-setup-key:}")
+    private String adminSetupKey;
+
+    /**
+     * Admin accounts can only be created when the caller presents the
+     * configured ADMIN_SETUP_KEY. When no key is configured, the endpoint
+     * is effectively disabled.
+     */
+    public boolean verifyAdminSetupKey(String providedKey) {
+        return adminSetupKey != null
+                && !adminSetupKey.isBlank()
+                && adminSetupKey.equals(providedKey);
+    }
 
     public AuthResponse authenticate(AuthRequest request) {
         authenticationManager.authenticate(
@@ -39,7 +55,7 @@ public class AuthService {
 
     public AuthResponse register(AuthRequest request, String role) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new BusinessException("Username already exists");
         }
 
         User user = new User();

@@ -5,6 +5,7 @@ import com.coffeeshop.auth.dto.AuthResponse;
 import com.coffeeshop.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,12 @@ public class AuthController {
     }
 
     @PostMapping("/register/admin")
-    public ResponseEntity<AuthResponse> registerAdmin(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<?> registerAdmin(
+            @RequestHeader(value = "X-Admin-Setup-Key", required = false) String setupKey,
+            @Valid @RequestBody AuthRequest request) {
+        if (!authService.verifyAdminSetupKey(setupKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.ok(authService.register(request, "ADMIN"));
     }
 

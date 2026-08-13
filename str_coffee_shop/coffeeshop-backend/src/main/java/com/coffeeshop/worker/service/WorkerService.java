@@ -2,6 +2,7 @@ package com.coffeeshop.worker.service;
 
 import com.coffeeshop.auth.entity.Role;
 import com.coffeeshop.auth.entity.User;
+import com.coffeeshop.auth.exception.BusinessException;
 import com.coffeeshop.auth.repository.UserRepository;
 import com.coffeeshop.order.entity.Order;
 import com.coffeeshop.order.repository.OrderRepository;
@@ -40,7 +41,7 @@ public class WorkerService {
 
     public WorkerDTO createWorker(CreateWorkerRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new BusinessException("Username already exists");
         }
 
         User user = new User();
@@ -57,9 +58,9 @@ public class WorkerService {
 
     public void deleteWorker(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Worker not found"));
+                .orElseThrow(() -> new BusinessException("Worker not found"));
         if (user.getRole() != Role.WORKER) {
-            throw new RuntimeException("Cannot delete non-worker user");
+            throw new BusinessException("Cannot delete non-worker user");
         }
         workerShiftRepository.deleteByWorkerId(id);
         userRepository.deleteById(id);
@@ -157,7 +158,7 @@ public class WorkerService {
     private User getWorker(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Worker not found"));
-        if (user.getRole() != Role.WORKER) throw new RuntimeException("Only workers can use shifts");
+        if (user.getRole() != Role.WORKER) throw new BusinessException("Only workers can use shifts");
         return user;
     }
 

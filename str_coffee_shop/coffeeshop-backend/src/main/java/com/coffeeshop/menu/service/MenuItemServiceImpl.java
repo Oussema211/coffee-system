@@ -6,12 +6,18 @@ import com.coffeeshop.menu.dto.UpdateMenuItemRequest;
 import com.coffeeshop.menu.entity.MenuItem;
 import com.coffeeshop.menu.repository.MenuItemRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -79,10 +85,42 @@ public class MenuItemServiceImpl implements MenuItemService {
 
     @Override
     public void deleteMenuItem(Long id) {
-        if (!menuItemRepository.existsById(id)) {
-            throw new IllegalArgumentException("Menu item not found with id: " + id);
+        MenuItem item = menuItemRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Menu item not found with id: " + id));
+        menuItemRepository.delete(item);
+        deleteStoredImage(item.getImageUrl());
+    }
+
+    /**
+     * Removes the locally stored image file (if any) when a menu item is deleted.
+     * External URLs (http/https) and any path outside the uploads directory are ignored.
+     */
+    private void deleteStoredImage(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return;
         }
-        menuItemRepository.deleteById(id);
+
+        String path = imageUrl.trim();
+        int index = path.indexOf("/uploads/");
+        if (index < 0) {
+            return;
+        }
+
+        String relative = path.substring(index + "/uploads/".length());
+        if (relative.isBlank() || relative.contains("..")) {
+            return;
+        }
+
+        try {
+            Path base = Paths.get("uploads").toAbsolutePath().normalize();
+            Path file = base.resolve(relative).normalize();
+            if (!file.startsWith(base)) {
+                return;
+            }
+            Files.deleteIfExists(file);
+        } catch (IOException e) {
+            log.warn("Failed to delete stored image {} for menu item {}", relative, imageUrl, e);
+        }
     }
 
     private MenuItemDTO mapToDTO(MenuItem item) {
