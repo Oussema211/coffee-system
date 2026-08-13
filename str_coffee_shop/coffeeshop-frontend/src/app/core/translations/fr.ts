@@ -115,7 +115,9 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       deleteConfirmNamed: "Voulez-vous vraiment supprimer « {{name}} » ?",
       placeholderName: "ex. Latte Noisette",
       placeholderImageUrl: "Coller l'URL de l'image (ou télécharger ci-dessous)",
-      placeholderPrice: "0.00"
+      placeholderPrice: "0.00",
+      vat: "TVA %",
+      vatHint: "Le prix affiché est TVA incluse."
     },
     orders: {
       title: "Historique des Commandes",
@@ -166,7 +168,7 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       createError: "Échec de la création de la catégorie.",
       deleteSuccess: "« {{name}} » supprimé avec succès.",
       deleteError: "Échec de la suppression de la catégorie.",
-      deleteConfirmNamed: "Supprimer la catégorie « {{name}} » ? Cela ne supprimera pas les articles existants utilisant cette catégorie.",
+      deleteConfirmNamed: "Supprimer la catégorie « {{name}} » ? Les catégories qui contiennent encore des articles ne peuvent pas être supprimées.",
       nameRule: "Le nom doit contenir au moins 2 caractères.",
       placeholderName: "ex. Boissons Froides",
       placeholderDescription: "Décrivez ce que cette catégorie contient..."
@@ -206,7 +208,17 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       bestSeller: "Meilleure vente",
       weekSalesEmpty: "Aucune vente enregistrée cette semaine.",
       soldCount: "{{count}} vendus",
-      noItemsSold: "Aucun article vendu cette semaine."
+      noItemsSold: "Aucun article vendu cette semaine.",
+      zReportTitle: "Rapport Z de fin de journée",
+      zReportDate: "Récapitulatif fiscal du {{date}}",
+      zOrders: "{{count}} commandes payées",
+      zExclVat: "CA hors TVA",
+      zTotalVat: "Total TVA",
+      zRate: "Taux TVA",
+      zBase: "Base (HT)",
+      zVat: "TVA",
+      zInclVat: "Total (TTC)",
+      zNoSales: "Aucune vente aujourd'hui."
     },
     shiftReports: {
       title: "Rapports de Service",

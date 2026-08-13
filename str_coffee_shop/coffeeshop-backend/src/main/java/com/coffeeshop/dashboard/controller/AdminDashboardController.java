@@ -4,9 +4,13 @@ import com.coffeeshop.auth.entity.Role;
 import com.coffeeshop.auth.repository.UserRepository;
 import com.coffeeshop.dashboard.dto.AdminDashboardDTO;
 import com.coffeeshop.dashboard.dto.AdminReportsDTO;
+import com.coffeeshop.dashboard.dto.ZReportDTO;
 import com.coffeeshop.menu.repository.MenuItemRepository;
+import com.coffeeshop.order.dto.VatBreakdownDTO;
 import com.coffeeshop.order.entity.Order;
+import com.coffeeshop.order.entity.OrderItem;
 import com.coffeeshop.order.repository.OrderRepository;
+import com.coffeeshop.util.VatUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -138,6 +142,50 @@ public class AdminDashboardController {
                 topItems.isEmpty() ? "No sales yet" : topItems.getFirst().name(),
                 weekSales,
                 topItems
+        ));
+    }
+
+    /**
+     * End-of-day fiscal summary (Z-report) for today: total revenue plus a
+     * TVA breakdown grouped by rate.
+     */
+    @GetMapping("/z-report")
+    @Transactional(readOnly = true)
+    public ResponseEntity<ZReportDTO> getZReport() {
+        LocalDateTime startOfToday = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime endOfToday = startOfToday.plusDays(1);
+
+        List<Order> todaysOrders = orderRepository.findAllByOrderByCreatedAtDesc().stream()
+                .filter(order -> order.getCreatedAt() != null)
+                .filter(order -> !order.getCreatedAt().isBefore(startOfToday)
+                        && order.getCreatedAt().isBefore(endOfToday))
+                .filter(order -> !"Cancelled".equalsIgnoreCase(order.getStatus()))
+                .toList();
+
+        BigDecimal revenue = todaysOrders.stream()
+                .map(Order::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<OrderItem> allItems = todaysOrders.stream()
+                .flatMap(order -> order.getItems().stream())
+                .toList();
+        List<VatBreakdownDTO> breakdown = VatUtils.buildBreakdown(allItems);
+        BigDecimal totalVat = breakdown.stream()
+                .map(VatBreakdownDTO::vat)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal revenueExclVat = revenue.subtract(totalVat);
+
+        List<ZReportDTO.VatLine> vatLines = breakdown.stream()
+                .map(line -> new ZReportDTO.VatLine(line.rate(), line.base(), line.vat(), line.total()))
+                .toList();
+
+        return ResponseEntity.ok(new ZReportDTO(
+                LocalDate.now().toString(),
+                todaysOrders.size(),
+                revenue,
+                revenueExclVat,
+                totalVat,
+                vatLines
         ));
     }
 }

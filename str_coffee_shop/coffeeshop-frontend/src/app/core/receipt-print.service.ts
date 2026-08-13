@@ -41,6 +41,19 @@ export class ReceiptPrintService {
       </tr>`).join('');
     const location = receipt.tableNumber ? `Table ${receipt.tableNumber}` : esc(receipt.orderType);
 
+    const fiscalInfo = [
+      receipt.shopMatricule ? `Matricule fiscale: ${esc(receipt.shopMatricule)}` : '',
+      receipt.shopAddress ? esc(receipt.shopAddress) : '',
+      receipt.shopPhone ? `Tel: ${esc(receipt.shopPhone)}` : ''
+    ].filter(Boolean).map(line => `<div class="muted">${line}</div>`).join('');
+
+    const vatRows = (receipt.vatBreakdown ?? []).map(line => `
+      <tr>
+        <td>TVA ${Number(line.rate).toFixed(0)}%</td>
+        <td class="amount">HT ${money(line.base)}</td>
+        <td class="amount">TVA ${money(line.vat)}</td>
+      </tr>`).join('');
+
     receiptWindow.document.open();
     receiptWindow.document.write(`<!doctype html>
       <html><head><title>${esc(receipt.receiptNumber)}</title>
@@ -54,12 +67,17 @@ export class ReceiptPrintService {
         .amount { text-align: right; white-space: nowrap; } .total { font-size: 16px; font-weight: 700; }
         @media screen { body { padding: 12px; } }
       </style></head><body>
-        <div class="center"><img class="logo" src="${window.location.origin}/logo_one.jpg" alt="${esc(receipt.shopName)} logo"><h1>${esc(receipt.shopName)}</h1><div class="muted">${esc(receipt.receiptNumber)}</div></div>
+        <div class="center"><img class="logo" src="${window.location.origin}/logo_one.jpg" alt="${esc(receipt.shopName)} logo"><h1>${esc(receipt.shopName)}</h1><div class="muted">${esc(receipt.receiptNumber)}</div>${fiscalInfo}</div>
         <div class="line"></div>
         <div>${esc(location)} · ${esc(receipt.orderTime)}</div>
         ${receipt.workerName ? `<div>Server: ${esc(receipt.workerName)}</div>` : ''}
         <div class="line"></div><table>${rows}</table><div class="line"></div>
-        <table><tr class="total"><td>TOTAL</td><td class="amount">${money(receipt.total)} TND</td></tr></table>
+        ${vatRows ? `<table>${vatRows}</table><div class="line"></div>` : ''}
+        <table>
+          <tr><td>Subtotal HT</td><td class="amount">${money(receipt.totalExclVat ?? receipt.total)} TND</td></tr>
+          ${vatRows ? `<tr><td>TVA totale</td><td class="amount">${money(receipt.totalVat ?? 0)} TND</td></tr>` : ''}
+          <tr class="total"><td>TOTAL TTC</td><td class="amount">${money(receipt.total)} TND</td></tr>
+        </table>
         <div class="line"></div><div class="center">${receipt.status === 'Completed' ? 'PAID' : 'BILL TO PAY'}<br><br>Thank you — Merci</div>
       </body></html>`);
     receiptWindow.document.close();

@@ -14,6 +14,9 @@ import java.util.List;
 @Builder
 public class ReceiptDTO {
     private String shopName;
+    private String shopMatricule;
+    private String shopAddress;
+    private String shopPhone;
     private String receiptNumber;
     private Long orderId;
     private Integer tableNumber;
@@ -24,4 +27,7 @@ public class ReceiptDTO {
     private String status;
     private List<OrderItemDTO> items;
     private BigDecimal total;
+    private BigDecimal totalExclVat;
+    private BigDecimal totalVat;
+    private List<VatBreakdownDTO> vatBreakdown;
 }

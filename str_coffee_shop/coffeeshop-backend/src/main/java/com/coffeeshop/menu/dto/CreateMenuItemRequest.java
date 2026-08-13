@@ -24,6 +24,7 @@ public class CreateMenuItemRequest {
     @DecimalMin(value = "0.01", message = "Price must be greater than 0")
     private BigDecimal price;
 
+    private BigDecimal vatRate;
     private Boolean available;
     private String imageUrl;
 }

@@ -8,6 +8,7 @@ import com.coffeeshop.order.entity.Order;
 import com.coffeeshop.order.entity.OrderItem;
 import com.coffeeshop.order.repository.OrderRepository;
 import com.coffeeshop.table.repository.RestaurantTableRepository;
+import com.coffeeshop.util.VatUtils;
 import com.coffeeshop.websocket.OrderWebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,12 @@ public class OrderService {
     private final OrderWebSocketHandler webSocketHandler;
     @Value("${coffee.shop.name:Coffee Shop}")
     private String shopName;
+    @Value("${coffee.shop.matricule:}")
+    private String shopMatricule;
+    @Value("${coffee.shop.address:}")
+    private String shopAddress;
+    @Value("${coffee.shop.phone:}")
+    private String shopPhone;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
     private static final DateTimeFormatter RECEIPT_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final List<String> INACTIVE_STATUSES = List.of("Completed", "Cancelled");
@@ -95,6 +102,7 @@ public class OrderService {
                     .menuItemId(menuItem.getId())
                     .name(menuItem.getName())
                     .unitPrice(menuItem.getPrice())
+                    .vatRate(menuItem.getVatRate() != null ? menuItem.getVatRate() : VatUtils.DEFAULT_RATE)
                     .quantity(itemReq.getQuantity())
                     .paid(false)
                     .build();
@@ -105,6 +113,9 @@ public class OrderService {
         order.setTotalAmount(order.getTotalAmount().add(additionalTotal));
         if (order.getWorkerName() == null) {
             order.setWorkerName(currentWorkerName());
+        }
+        if (order.getWorkerId() == null) {
+            order.setWorkerId(currentWorkerId());
         }
         if (isExisting && "Served".equalsIgnoreCase(order.getStatus())) {
             order.setStatus("Preparing");
@@ -171,21 +182,28 @@ public class OrderService {
             receiptOrders = List.of(targetOrder);
         }
 
-        List<OrderItemDTO> unpaidItems = receiptOrders.stream()
+        List<OrderItem> unpaidItems = receiptOrders.stream()
                 .flatMap(order -> order.getItems().stream())
                 .filter(item -> !item.isPaid())
-                .map(this::mapOrderItemToDTO)
                 .toList();
         // A completed order can be reprinted even though all its items are paid.
-        List<OrderItemDTO> items = unpaidItems.isEmpty()
-                ? targetOrder.getItems().stream().map(this::mapOrderItemToDTO).toList()
-                : unpaidItems;
+        List<OrderItem> receiptItems = unpaidItems.isEmpty() ? targetOrder.getItems() : unpaidItems;
+        List<OrderItemDTO> items = receiptItems.stream().map(this::mapOrderItemToDTO).toList();
         BigDecimal total = items.stream()
                 .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQty())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        List<VatBreakdownDTO> vatBreakdown = VatUtils.buildBreakdown(receiptItems);
+        BigDecimal totalVat = vatBreakdown.stream()
+                .map(VatBreakdownDTO::vat)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalExclVat = total.subtract(totalVat);
+
         return ReceiptDTO.builder()
                 .shopName(shopName)
+                .shopMatricule(shopMatricule)
+                .shopAddress(shopAddress)
+                .shopPhone(shopPhone)
                 .receiptNumber("BILL-" + targetOrder.getId())
                 .orderId(targetOrder.getId())
                 .tableNumber(targetOrder.getTableNumber())
@@ -196,6 +214,9 @@ public class OrderService {
                 .status(targetOrder.getStatus())
                 .items(items)
                 .total(total)
+                .totalExclVat(totalExclVat)
+                .totalVat(totalVat)
+                .vatBreakdown(vatBreakdown)
                 .build();
     }
 
@@ -292,6 +313,7 @@ public class OrderService {
                                     .menuItemId(item.getMenuItemId())
                                     .name(item.getName())
                                     .unitPrice(item.getUnitPrice())
+                                    .vatRate(item.getVatRate())
                                     .quantity(quantityToPay)
                                     .paid(true)
                                     .build();
@@ -341,6 +363,9 @@ public class OrderService {
         if (order.getWorkerName() == null) {
             order.setWorkerName(currentWorkerName());
         }
+        if (order.getWorkerId() == null) {
+            order.setWorkerId(currentWorkerId());
+        }
     }
 
     private OrderDTO mapToDTO(Order order) {
@@ -363,6 +388,7 @@ public class OrderService {
                 .total(order.getTotalAmount())
                 .time(formattedTime)
                 .workerName(order.getWorkerName())
+                .workerId(order.getWorkerId())
                 .status(order.getStatus())
                 .build();
     }
@@ -373,6 +399,7 @@ public class OrderService {
                 .menuItemId(item.getMenuItemId())
                 .name(item.getName())
                 .price(item.getUnitPrice())
+                .vatRate(item.getVatRate())
                 .qty(item.getQuantity())
                 .paid(item.isPaid())
                 .selected(false)
@@ -390,5 +417,16 @@ public class OrderService {
         }
 
         return authentication.getName();
+    }
+
+    private Long currentWorkerId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() instanceof String) {
+            return null;
+        }
+        if (authentication.getPrincipal() instanceof User user) {
+            return user.getId();
+        }
+        return null;
     }
 }

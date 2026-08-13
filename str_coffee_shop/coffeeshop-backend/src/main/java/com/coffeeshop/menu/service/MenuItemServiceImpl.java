@@ -1,10 +1,13 @@
 package com.coffeeshop.menu.service;
 
+import com.coffeeshop.category.entity.Category;
+import com.coffeeshop.category.repository.CategoryRepository;
 import com.coffeeshop.menu.dto.CreateMenuItemRequest;
 import com.coffeeshop.menu.dto.MenuItemDTO;
 import com.coffeeshop.menu.dto.UpdateMenuItemRequest;
 import com.coffeeshop.menu.entity.MenuItem;
 import com.coffeeshop.menu.repository.MenuItemRepository;
+import com.coffeeshop.util.VatUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,11 +27,12 @@ import java.util.stream.Collectors;
 public class MenuItemServiceImpl implements MenuItemService {
 
     private final MenuItemRepository menuItemRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional(readOnly = true)
     public List<MenuItemDTO> getAllMenuItems() {
-        return menuItemRepository.findAllByOrderByCategoryAscNameAsc()
+        return menuItemRepository.findAllByOrderByCategory_NameAscNameAsc()
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
@@ -46,8 +50,9 @@ public class MenuItemServiceImpl implements MenuItemService {
     public MenuItemDTO createMenuItem(CreateMenuItemRequest request) {
         MenuItem item = MenuItem.builder()
                 .name(request.getName().trim())
-                .category(request.getCategory().trim())
+                .category(resolveCategory(request.getCategory()))
                 .price(request.getPrice())
+                .vatRate(request.getVatRate() != null ? request.getVatRate() : VatUtils.DEFAULT_RATE)
                 .available(request.getAvailable() != null ? request.getAvailable() : true)
                 .imageUrl(request.getImageUrl())
                 .build();
@@ -62,8 +67,11 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .orElseThrow(() -> new IllegalArgumentException("Menu item not found with id: " + id));
 
         item.setName(request.getName().trim());
-        item.setCategory(request.getCategory().trim());
+        item.setCategory(resolveCategory(request.getCategory()));
         item.setPrice(request.getPrice());
+        if (request.getVatRate() != null) {
+            item.setVatRate(request.getVatRate());
+        }
         if (request.getAvailable() != null) {
             item.setAvailable(request.getAvailable());
         }
@@ -127,10 +135,23 @@ public class MenuItemServiceImpl implements MenuItemService {
         return MenuItemDTO.builder()
                 .id(item.getId())
                 .name(item.getName())
-                .category(item.getCategory())
+                .category(item.getCategory() != null ? item.getCategory().getName() : null)
+                .categoryId(item.getCategory() != null ? item.getCategory().getId() : null)
                 .price(item.getPrice())
+                .vatRate(item.getVatRate())
                 .available(item.isAvailable())
                 .imageUrl(com.coffeeshop.util.ImageUtils.resolveImageUrl(item.getImageUrl()))
                 .build();
+    }
+
+    /**
+     * Finds a category by name (case-insensitive) or creates it if it does not
+     * exist yet. Keeps menu item creation friendly while the FK stays intact.
+     */
+    private Category resolveCategory(String categoryName) {
+        String trimmed = categoryName.trim();
+        return categoryRepository.findByNameIgnoreCase(trimmed)
+                .orElseGet(() -> categoryRepository.save(
+                        Category.builder().name(trimmed).build()));
     }
 }

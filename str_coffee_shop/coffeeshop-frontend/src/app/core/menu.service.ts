@@ -8,7 +8,9 @@ export interface MenuItem {
   id: number;
   name: string;
   category: string;
+  categoryId?: number;
   price: number;
+  vatRate?: number;
   available: boolean;
   imageUrl?: string;
 }
@@ -17,6 +19,7 @@ export interface CreateMenuItemPayload {
   name: string;
   category: string;
   price: number;
+  vatRate?: number;
   available?: boolean;
   imageUrl?: string;
 }
@@ -25,6 +28,7 @@ export interface UpdateMenuItemPayload {
   name: string;
   category: string;
   price: number;
+  vatRate?: number;
   available?: boolean;
   imageUrl?: string;
 }

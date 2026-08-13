@@ -91,7 +91,7 @@ public class WorkerService {
     public ShiftStatusDTO checkOut(String username) {
         User worker = getWorker(username);
         WorkerShift shift = workerShiftRepository.findFirstByWorkerIdAndCheckOutAtIsNullOrderByCheckInAtDesc(worker.getId())
-                .orElseThrow(() -> new RuntimeException("You are not checked in"));
+                .orElseThrow(() -> new BusinessException("You are not checked in"));
         shift.setCheckOutAt(LocalDateTime.now());
         workerShiftRepository.save(shift);
         return new ShiftStatusDTO(false, shift.getCheckInAt(), shift.getCheckOutAt());
@@ -103,7 +103,7 @@ public class WorkerService {
                 .map(worker -> {
                     String name = displayName(worker);
                     List<Order> workerOrders = orders.stream()
-                            .filter(order -> name.equals(order.getWorkerName()))
+                            .filter(order -> belongsToWorker(order, worker.getId(), name))
                             .filter(order -> !"Cancelled".equalsIgnoreCase(order.getStatus()))
                             .toList();
                     BigDecimal salesTotal = workerOrders.stream()
@@ -120,6 +120,17 @@ public class WorkerService {
                     );
                 })
                 .toList();
+    }
+
+    /**
+     * Prefers the FK {@code workerId} (unique, stable). Falls back to matching
+     * the display name for legacy orders created before workerId was tracked.
+     */
+    private boolean belongsToWorker(Order order, Long workerId, String displayName) {
+        if (order.getWorkerId() != null) {
+            return order.getWorkerId().equals(workerId);
+        }
+        return order.getWorkerName() != null && order.getWorkerName().equals(displayName);
     }
 
     @Transactional(readOnly = true)
@@ -157,7 +168,7 @@ public class WorkerService {
 
     private User getWorker(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Worker not found"));
+                .orElseThrow(() -> new BusinessException("Worker not found"));
         if (user.getRole() != Role.WORKER) throw new BusinessException("Only workers can use shifts");
         return user;
     }

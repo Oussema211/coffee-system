@@ -21,5 +21,6 @@ public class OrderDTO {
     private BigDecimal total;
     private String time;
     private String workerName;
+    private Long workerId;
     private String status;
 }

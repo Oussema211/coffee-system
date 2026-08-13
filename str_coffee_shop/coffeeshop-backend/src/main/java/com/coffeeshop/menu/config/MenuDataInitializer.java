@@ -1,5 +1,7 @@
 package com.coffeeshop.menu.config;
 
+import com.coffeeshop.category.entity.Category;
+import com.coffeeshop.category.repository.CategoryRepository;
 import com.coffeeshop.menu.entity.MenuItem;
 import com.coffeeshop.menu.repository.MenuItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,22 +16,34 @@ import java.util.List;
 public class MenuDataInitializer implements CommandLineRunner {
 
     private final MenuItemRepository menuItemRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public void run(String... args) {
         if (menuItemRepository.count() == 0) {
             List<MenuItem> defaultItems = List.of(
-                    MenuItem.builder().name("Espresso").category("Coffee").price(new BigDecimal("2.50")).available(true).build(),
-                    MenuItem.builder().name("Cappuccino").category("Coffee").price(new BigDecimal("3.50")).available(true).build(),
-                    MenuItem.builder().name("Latte").category("Coffee").price(new BigDecimal("3.80")).available(true).build(),
-                    MenuItem.builder().name("Iced Americano").category("Coffee").price(new BigDecimal("3.00")).available(false).build(),
-                    MenuItem.builder().name("Croissant").category("Pastry").price(new BigDecimal("2.20")).available(true).build(),
-                    MenuItem.builder().name("Blueberry Muffin").category("Pastry").price(new BigDecimal("2.80")).available(true).build(),
-                    MenuItem.builder().name("Iced Matcha Latte").category("Cold Drinks").price(new BigDecimal("4.20")).available(true).build(),
-                    MenuItem.builder().name("Earl Grey Tea").category("Tea").price(new BigDecimal("2.60")).available(true).build()
+                    buildItem("Espresso", "Coffee", new BigDecimal("2.50"), true),
+                    buildItem("Cappuccino", "Coffee", new BigDecimal("3.50"), true),
+                    buildItem("Latte", "Coffee", new BigDecimal("3.80"), true),
+                    buildItem("Iced Americano", "Coffee", new BigDecimal("3.00"), false),
+                    buildItem("Croissant", "Pastry", new BigDecimal("2.20"), true),
+                    buildItem("Blueberry Muffin", "Pastry", new BigDecimal("2.80"), true),
+                    buildItem("Iced Matcha Latte", "Cold Drinks", new BigDecimal("4.20"), true),
+                    buildItem("Earl Grey Tea", "Tea", new BigDecimal("2.60"), true)
             );
 
             menuItemRepository.saveAll(defaultItems);
         }
+    }
+
+    private MenuItem buildItem(String name, String categoryName, BigDecimal price, boolean available) {
+        Category category = categoryRepository.findByNameIgnoreCase(categoryName)
+                .orElseGet(() -> categoryRepository.save(Category.builder().name(categoryName).build()));
+        return MenuItem.builder()
+                .name(name)
+                .category(category)
+                .price(price)
+                .available(available)
+                .build();
     }
 }

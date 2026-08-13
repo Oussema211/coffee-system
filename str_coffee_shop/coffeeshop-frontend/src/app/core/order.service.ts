@@ -9,10 +9,18 @@ export interface OrderItemDTO {
   menuItemId: number;
   name: string;
   price: number;
+  vatRate?: number;
   qty: number;
   paid: boolean;
   selected?: boolean;
   selectedQty?: number;
+}
+
+export interface VatBreakdownLine {
+  rate: number;
+  base: number;
+  vat: number;
+  total: number;
 }
 
 export interface OrderDTO {
@@ -24,6 +32,7 @@ export interface OrderDTO {
   total: number;
   time: string;
   workerName: string | null;
+  workerId?: number | null;
   status: 'Pending' | 'Preparing' | 'Ready' | 'Served' | 'Completed' | 'Cancelled';
 }
 
@@ -50,6 +59,9 @@ export interface PaymentItemRequest {
 
 export interface ReceiptDTO {
   shopName: string;
+  shopMatricule?: string;
+  shopAddress?: string;
+  shopPhone?: string;
   receiptNumber: string;
   orderId: number;
   tableNumber: number | null;
@@ -60,6 +72,9 @@ export interface ReceiptDTO {
   status: string;
   items: OrderItemDTO[];
   total: number;
+  totalExclVat?: number;
+  totalVat?: number;
+  vatBreakdown?: VatBreakdownLine[];
 }
 
 @Injectable({ providedIn: 'root' })

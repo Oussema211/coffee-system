@@ -250,6 +250,20 @@
           }
         </div>
 
+        <!-- TVA (VAT) -->
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-espresso-light/70 mb-1.5">{{ 'admin.menu.vat' | translate }}</label>
+          <select 
+            formControlName="vatRate"
+            class="w-full bg-cream/40 border border-cream-dark rounded-xl px-4 py-2.5 text-sm text-espresso outline-none focus:bg-white focus:border-caramel focus:ring-2 focus:ring-caramel/20 transition cursor-pointer"
+          >
+            <option [value]="7">7 %</option>
+            <option [value]="19">19 %</option>
+            <option [value]="0">0 %</option>
+          </select>
+          <p class="text-[11px] text-espresso-light/60 mt-1">{{ 'admin.menu.vatHint' | translate }}</p>
+        </div>
+
         <!-- Buttons -->
         <div class="flex items-center gap-3 pt-4 border-t border-cream-dark">
           <button 

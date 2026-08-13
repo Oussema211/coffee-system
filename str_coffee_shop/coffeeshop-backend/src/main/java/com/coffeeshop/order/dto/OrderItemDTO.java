@@ -16,6 +16,7 @@ public class OrderItemDTO {
     private Long menuItemId;
     private String name;
     private BigDecimal price;
+    private BigDecimal vatRate;
     private Integer qty;
     private boolean paid;
     private boolean selected;

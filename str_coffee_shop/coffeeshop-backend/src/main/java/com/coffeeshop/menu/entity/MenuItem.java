@@ -1,5 +1,6 @@
 package com.coffeeshop.menu.entity;
 
+import com.coffeeshop.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,11 +25,16 @@ public class MenuItem {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String category;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    @Builder.Default
+    @Column(name = "vat_rate", nullable = false, precision = 5, scale = 2)
+    private BigDecimal vatRate = new BigDecimal("19.00");
 
     @Builder.Default
     @Column(nullable = false)

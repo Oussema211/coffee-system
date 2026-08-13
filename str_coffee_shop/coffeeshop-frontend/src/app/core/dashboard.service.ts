@@ -40,6 +40,22 @@ export interface TopItem {
   sold: number;
 }
 
+export interface ZReportData {
+  date: string;
+  orderCount: number;
+  revenue: number;
+  revenueExclVat: number;
+  totalVat: number;
+  vatBreakdown: VatLine[];
+}
+
+export interface VatLine {
+  rate: number;
+  base: number;
+  vat: number;
+  total: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
   private readonly baseUrl = `${environment.apiUrl}/api/admin/dashboard`;
@@ -52,5 +68,9 @@ export class DashboardService {
 
   getReports(): Observable<AdminReportsData> {
     return this.http.get<AdminReportsData>(`${this.baseUrl}/reports`);
+  }
+
+  getZReport(): Observable<ZReportData> {
+    return this.http.get<ZReportData>(`${this.baseUrl}/z-report`);
   }
 }

@@ -41,6 +41,9 @@ public class Order {
     @Column(name = "worker_name")
     private String workerName;
 
+    @Column(name = "worker_id")
+    private Long workerId;
+
     @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();

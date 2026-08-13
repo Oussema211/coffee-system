@@ -46,6 +46,7 @@ export class Menu implements OnInit {
       name: ['', Validators.required],
       category: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0.01)]],
+      vatRate: [19],
       imageUrl: ['']
     });
   }
@@ -141,6 +142,7 @@ export class Menu implements OnInit {
       name: '',
       category: this.formCategories[0] || '',
       price: 0,
+      vatRate: 19,
       imageUrl: ''
     });
     this.showModal = true;
@@ -154,6 +156,7 @@ export class Menu implements OnInit {
       name: item.name,
       category: item.category,
       price: item.price,
+      vatRate: item.vatRate ?? 19,
       imageUrl: item.imageUrl || ''
     });
     this.showModal = true;

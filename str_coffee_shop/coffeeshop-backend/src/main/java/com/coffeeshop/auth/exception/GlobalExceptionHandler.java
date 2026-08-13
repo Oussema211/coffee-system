@@ -33,13 +33,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<String> handleBusinessException(BusinessException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    public ResponseEntity<Map<String, String>> handleBusinessException(BusinessException ex) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "error", ex.getMessage(),
+                "message", ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "error", ex.getMessage(),
+                "message", ex.getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)

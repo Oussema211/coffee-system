@@ -5,6 +5,7 @@ import com.coffeeshop.category.dto.CreateCategoryRequest;
 import com.coffeeshop.category.dto.UpdateCategoryRequest;
 import com.coffeeshop.category.entity.Category;
 import com.coffeeshop.category.repository.CategoryRepository;
+import com.coffeeshop.auth.exception.BusinessException;
 import com.coffeeshop.menu.repository.MenuItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -75,18 +76,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Long id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new IllegalArgumentException("Category not found with id: " + id);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+
+        long itemCount = menuItemRepository.countByCategoryId(id);
+        if (itemCount > 0) {
+            throw new BusinessException(
+                    "Category '" + category.getName() + "' has " + itemCount
+                            + " menu item(s) and cannot be deleted. Move or delete its items first.");
         }
         categoryRepository.deleteById(id);
     }
 
     private CategoryDTO mapToDTO(Category category) {
-        // Count how many menu items use this category
-        long itemCount = menuItemRepository.findAllByOrderByCategoryAscNameAsc()
-                .stream()
-                .filter(item -> item.getCategory().equalsIgnoreCase(category.getName()))
-                .count();
+        long itemCount = menuItemRepository.countByCategoryId(category.getId());
 
         return CategoryDTO.builder()
                 .id(category.getId())

@@ -115,7 +115,9 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       deleteConfirmNamed: "Are you sure you want to delete \"{{name}}\"?",
       placeholderName: "e.g. Hazelnut Latte",
       placeholderImageUrl: "Paste Image URL (or upload below)",
-      placeholderPrice: "0.00"
+      placeholderPrice: "0.00",
+      vat: "TVA (VAT) %",
+      vatHint: "The price shown is TVA-inclusive."
     },
     orders: {
       title: "Orders History",
@@ -166,7 +168,7 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       createError: "Failed to create category.",
       deleteSuccess: "\"{{name}}\" deleted successfully.",
       deleteError: "Failed to delete category.",
-      deleteConfirmNamed: "Delete category \"{{name}}\"? This will not delete existing menu items using this category.",
+      deleteConfirmNamed: "Delete category \"{{name}}\"? Categories that still have menu items cannot be deleted.",
       nameRule: "Name must be at least 2 characters.",
       placeholderName: "e.g. Cold Drinks",
       placeholderDescription: "Describe what this category includes..."
@@ -206,7 +208,17 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       bestSeller: "Best seller",
       weekSalesEmpty: "No sales recorded this week.",
       soldCount: "{{count}} sold",
-      noItemsSold: "No items sold this week."
+      noItemsSold: "No items sold this week.",
+      zReportTitle: "End-of-day Z report",
+      zReportDate: "Fiscal summary for {{date}}",
+      zOrders: "{{count}} paid orders",
+      zExclVat: "Revenue excl. TVA",
+      zTotalVat: "Total TVA",
+      zRate: "TVA rate",
+      zBase: "Base (HT)",
+      zVat: "TVA",
+      zInclVat: "Total (TTC)",
+      zNoSales: "No sales today yet."
     },
     shiftReports: {
       title: "Shift Reports",

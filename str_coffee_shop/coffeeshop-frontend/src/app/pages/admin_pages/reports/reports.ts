@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DashboardService, DailySales, TopItem } from '../../../core/dashboard.service';
+import { DashboardService, DailySales, TopItem, ZReportData } from '../../../core/dashboard.service';
 import { TranslationService } from '../../../core/translation.service';
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
@@ -19,6 +19,8 @@ export class Reports implements OnInit {
   bestSeller = '—';
   loading = true;
   errorMessage = '';
+
+  zReport: ZReportData | null = null;
 
   constructor(
     private dashboardService: DashboardService,
@@ -39,6 +41,11 @@ export class Reports implements OnInit {
         this.errorMessage = this.translate.translate('admin.reports.loadError');
         this.loading = false;
       }
+    });
+
+    this.dashboardService.getZReport().subscribe({
+      next: (data) => { this.zReport = data; },
+      error: () => { this.zReport = null; }
     });
   }
 
