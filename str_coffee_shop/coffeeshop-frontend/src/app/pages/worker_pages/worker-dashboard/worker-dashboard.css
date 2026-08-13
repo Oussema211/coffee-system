@@ -1,4 +1,8 @@
-/* ── Worker Dashboard — operational command center ───────────────── */
+/* ─────────────────────────────────────────────────────────────────
+   Worker Dashboard — "order ticket" command center
+   Palette (unchanged): espresso #2B1B14 · cream #F7EFE3 ·
+   caramel #C9852B · parchment #EDE1CC · sage #6B7A5E
+   ─────────────────────────────────────────────────────────────── */
 
 .dash {
   padding: 1.25rem;
@@ -6,28 +10,51 @@
   margin: 0 auto;
 }
 
-/* ── Hero section ─────────────────────────────────────────────────── */
+/* ── Hero — digital punch-clock ticket ───────────────────────────── */
 .dash-hero {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: #2B1B14;
-  border-radius: 1.25rem;
-  padding: 1.25rem 1.5rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(201, 133, 43, 0.14), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.1)),
+    #2B1B14;
+  border-radius: 1rem;
+  padding: 1.35rem 1.5rem;
   margin-bottom: 1.25rem;
   color: #F7EFE3;
+  overflow: hidden;
+  box-shadow: 0 12px 28px -16px rgba(43, 27, 20, 0.55);
+}
+
+/* punched holes along the left edge, like a ticket stub */
+.dash-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0.9rem;
+  background-image: radial-gradient(circle, #F7EFE3 0.14rem, transparent 0.15rem);
+  background-size: 100% 1.1rem;
+  background-position: center;
+  opacity: 0.9;
 }
 
 .hero-left {
   min-width: 0;
+  padding-left: 0.5rem;
 }
 
 .hero-date {
-  font-size: 0.8125rem;
-  color: rgba(247, 239, 227, 0.5);
-  font-weight: 500;
-  margin-bottom: 0.15rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #C9852B;
+  margin-bottom: 0.3rem;
 }
 
 .hero-clock {
@@ -41,75 +68,13 @@
 }
 
 .hero-greeting {
-  font-size: 0.875rem;
-  color: rgba(247, 239, 227, 0.6);
-  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  color: rgba(247, 239, 227, 0.55);
+  margin-top: 0.4rem;
   font-weight: 500;
 }
 
-/* Shift toggle button */
-.shift-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.2rem;
-  min-width: 6.5rem;
-  min-height: 4.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: transform 0.1s, background 0.15s;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  flex-shrink: 0;
-}
-
-.shift-btn:active {
-  transform: scale(0.95);
-}
-
-.shift-on {
-  background: rgba(201, 133, 43, 0.2);
-  border-color: rgba(201, 133, 43, 0.4);
-  color: #C9852B;
-}
-
-.shift-off {
-  background: rgba(247, 239, 227, 0.08);
-  border-color: rgba(247, 239, 227, 0.15);
-  color: rgba(247, 239, 227, 0.7);
-}
-
-.shift-dot {
-  width: 0.625rem;
-  height: 0.625rem;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.shift-on .shift-dot {
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-.shift-label {
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
-.shift-since {
-  font-size: 0.6875rem;
-  opacity: 0.7;
-  font-weight: 500;
-}
-
-/* ── Alerts ───────────────────────────────────────────────────────── */
+/* ── Alerts — receipt stubs ───────────────────────────────────────── */
 .dash-alerts {
   display: flex;
   flex-direction: column;
@@ -122,15 +87,17 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.25rem;
-  border-radius: 1rem;
+  padding: 0.9rem 1.15rem;
+  border-radius: 0.7rem;
   text-decoration: none;
   background: #FFFFFF;
-  border: 2px solid #EDE1CC;
+  border: 1px solid #EDE1CC;
+  border-left: 3px solid #EDE1CC;
   color: #2B1B14;
-  transition: transform 0.1s, border-color 0.15s;
+  transition: transform 0.1s, border-color 0.15s, box-shadow 0.15s;
   -webkit-tap-highlight-color: transparent;
-  min-height: 3.5rem;
+  min-height: 3.25rem;
+  box-shadow: 0 1px 2px rgba(43, 27, 20, 0.04);
 }
 
 .alert-card:active {
@@ -138,19 +105,21 @@
 }
 
 .alert-warning {
-  border-color: #C9852B;
-  background: linear-gradient(135deg, #FFF9F0 0%, #FFFFFF 100%);
+  border-left-color: #C9852B;
+  background: linear-gradient(90deg, rgba(201, 133, 43, 0.06), #FFFFFF 18%);
 }
 
 .alert-msg {
-  font-size: 0.9375rem;
+  font-size: 0.9rem;
   font-weight: 600;
   flex: 1;
 }
 
 .alert-action {
-  font-size: 0.8125rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: #C9852B;
   white-space: nowrap;
   flex-shrink: 0;
@@ -162,39 +131,42 @@
 }
 
 .quick-pos-btn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.875rem;
   width: 100%;
-  min-height: 4.5rem;
+  min-height: 4.25rem;
   padding: 1rem 1.5rem;
   background: #C9852B;
   color: #2B1B14;
-  border-radius: 1.25rem;
+  border-radius: 0.9rem;
   text-decoration: none;
-  font-size: 1.25rem;
+  font-size: 1.0625rem;
   font-weight: 800;
   letter-spacing: 0.01em;
-  box-shadow: 0 4px 16px rgba(201, 133, 43, 0.35);
+  text-transform: uppercase;
+  box-shadow: 0 10px 22px -10px rgba(201, 133, 43, 0.55);
   transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  overflow: hidden;
 }
 
 .quick-pos-btn svg {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
   flex-shrink: 0;
 }
 
 .quick-pos-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
   background: #A8691E;
-  box-shadow: 0 2px 8px rgba(201, 133, 43, 0.25);
+  box-shadow: 0 4px 10px -4px rgba(201, 133, 43, 0.4);
 }
 
-/* ── Stats grid ───────────────────────────────────────────────────── */
+/* ── Stats grid — ticket stubs with torn corner ──────────────────── */
 .section-label {
   font-size: 0.6875rem;
   font-weight: 700;
@@ -212,52 +184,90 @@
 }
 
 .stat-tile {
+  position: relative;
   display: flex;
   flex-direction: column;
-  padding: 1.125rem 1.25rem;
-  border-radius: 1.125rem;
+  padding: 1rem 1.15rem;
+  border-radius: 0.85rem;
   text-decoration: none;
-  background: #FFFFFF;
-  border: 2px solid #EDE1CC;
-  min-height: 6.5rem;
+  background:
+    linear-gradient(180deg, rgba(43, 27, 20, 0.015), transparent 30%),
+    #FFFFFF;
+  border: 1px solid #EDE1CC;
+  min-height: 6.25rem;
   transition: transform 0.1s, border-color 0.15s, box-shadow 0.15s;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  position: relative;
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(43, 27, 20, 0.04);
 }
 
 .stat-tile:active {
   transform: scale(0.97);
 }
 
-.stat-tile.stat-alert {
-  border-color: #C9852B;
-}
-
-.stat-tile.stat-alert::after {
+/* perforation along the top edge, like a torn order ticket */
+.stat-tile::before {
   content: '';
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  width: 0.5rem;
-  height: 0.5rem;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.6rem;
+  background-image: radial-gradient(circle, #F7EFE3 0.1rem, transparent 0.11rem);
+  background-size: 0.85rem 100%;
+  background-position: 0.4rem center;
+  opacity: 0.85;
+}
+
+/* folded corner accent */
+.stat-tile::after {
+  content: '';
+  position: absolute;
+  top: -0.1rem;
+  right: -0.1rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  background: #F7EFE3;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  opacity: 0.9;
+}
+
+.stat-tile.stat-alert {
+  border-color: rgba(201, 133, 43, 0.55);
+  box-shadow: 0 0 0 1px rgba(201, 133, 43, 0.18), 0 4px 12px -6px rgba(201, 133, 43, 0.3);
+}
+
+.stat-tile.stat-alert .stat-value::after {
+  content: '';
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-left: 0.4rem;
+  margin-bottom: 0.3rem;
   border-radius: 50%;
   background: #C9852B;
-  animation: pulse-dot 2s ease-in-out infinite;
+  animation: stat-pulse 2s ease-in-out infinite;
+}
+
+@keyframes stat-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }
 
 .stat-value {
   font-family: var(--font-display, serif);
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
   color: #2B1B14;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.4rem;
+  margin-top: 0.35rem;
 }
 
 .stat-label {
-  font-size: 0.8125rem;
+  font-size: 0.78125rem;
   font-weight: 700;
   color: #4A3428;
   margin-bottom: 0.15rem;
@@ -270,10 +280,10 @@
 }
 
 /* Accent left borders */
-.accent-caramel { border-left: 4px solid #C9852B; }
-.accent-espresso { border-left: 4px solid #2B1B14; }
-.accent-sage { border-left: 4px solid #6B7A5E; }
-.accent-cream { border-left: 4px solid #EDE1CC; }
+.accent-caramel { border-left: 3px solid #C9852B; }
+.accent-espresso { border-left: 3px solid #2B1B14; }
+.accent-sage { border-left: 3px solid #6B7A5E; }
+.accent-cream { border-left: 3px solid #EDE1CC; }
 
 /* ── Responsive ───────────────────────────────────────────────────── */
 @media (min-width: 640px) {
@@ -304,5 +314,11 @@
   .alert-card {
     flex: 1;
     min-width: 14rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-tile.stat-alert .stat-value::after {
+    animation: none;
   }
 }

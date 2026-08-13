@@ -1,25 +1,35 @@
-/* ── Worker POS shell ─────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────
+   Worker POS shell — "order ticket / register" system
+   Palette (unchanged): espresso #2B1B14 · cream #F7EFE3 ·
+   caramel #C9852B · parchment #EDE1CC · sage #6B7A5E
+   ─────────────────────────────────────────────────────────────── */
+
 .worker-shell {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
-  background: #F7EFE3;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(43, 27, 20, 0.05) 1px, transparent 0) 0 0/16px 16px,
+    #F7EFE3;
 }
 
-/* ── Top bar ──────────────────────────────────────────────────────── */
+/* ── Top bar — register strip ────────────────────────────────────── */
 .worker-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 3.75rem;
   padding: 0 1.25rem;
-  background: #2B1B14;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.08)),
+    #2B1B14;
   color: #F7EFE3;
   position: sticky;
   top: 0;
   z-index: 50;
-  border-bottom: 2px solid rgba(201, 133, 43, 0.25);
+  border-bottom: 1px solid rgba(201, 133, 43, 0.3);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25), 0 8px 24px -12px rgba(43, 27, 20, 0.6);
   flex-shrink: 0;
 }
 
@@ -31,11 +41,12 @@
 }
 
 .brand-logo {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  width: 2.375rem;
+  height: 2.375rem;
+  border-radius: 0.65rem;
   object-fit: cover;
-  border: 2px solid rgba(201, 133, 43, 0.5);
+  border: 1px solid rgba(201, 133, 43, 0.45);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
   flex-shrink: 0;
 }
 
@@ -47,19 +58,22 @@
 
 .page-title {
   font-family: var(--font-display, serif);
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   font-weight: 700;
   color: #F7EFE3;
   line-height: 1.2;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .page-time {
-  font-size: 0.75rem;
-  color: rgba(247, 239, 227, 0.45);
-  font-weight: 500;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #C9852B;
   font-variant-numeric: tabular-nums;
 }
 
@@ -70,27 +84,81 @@
   flex-shrink: 0;
 }
 
+/* Shift toggle — reads as a status switch, not a plain button */
+.shift-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(247, 239, 227, 0.22);
+  border-radius: 999px;
+  background: rgba(247, 239, 227, 0.05);
+  color: #F7EFE3;
+  padding: 0.45rem 0.85rem 0.45rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shift-btn::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: rgba(247, 239, 227, 0.4);
+  flex-shrink: 0;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.shift-btn:active {
+  transform: scale(0.96);
+}
+
+.shift-btn.shift-active {
+  background: rgba(201, 133, 43, 0.16);
+  border-color: rgba(201, 133, 43, 0.55);
+  color: #C9852B;
+}
+
+.shift-btn.shift-active::before {
+  background: #C9852B;
+  box-shadow: 0 0 0 3px rgba(201, 133, 43, 0.22);
+  animation: shift-pulse 2s ease-in-out infinite;
+}
+
+@keyframes shift-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.shift-btn:disabled { opacity: 0.6; cursor: wait; }
+
 .worker-chip {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.3rem 0.75rem 0.3rem 0.3rem;
-  background: rgba(247, 239, 227, 0.08);
-  border-radius: 2rem;
-  border: 1px solid rgba(247, 239, 227, 0.1);
+  padding: 0.28rem 0.75rem 0.28rem 0.28rem;
+  background: rgba(247, 239, 227, 0.06);
+  border-radius: 999px;
+  border: 1px solid rgba(247, 239, 227, 0.12);
 }
 
 .worker-avatar {
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
-  background: rgba(201, 133, 43, 0.25);
+  background: rgba(201, 133, 43, 0.22);
   color: #C9852B;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgba(201, 133, 43, 0.3);
 }
 
 .worker-name {
@@ -107,58 +175,38 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.75rem;
-  border: none;
-  background: rgba(247, 239, 227, 0.06);
-  color: rgba(247, 239, 227, 0.5);
+  width: 2.625rem;
+  height: 2.625rem;
+  border-radius: 0.7rem;
+  border: 1px solid transparent;
+  background: rgba(247, 239, 227, 0.05);
+  color: rgba(247, 239, 227, 0.55);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, transform 0.1s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
   -webkit-tap-highlight-color: transparent;
 }
 
 .logout-btn svg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .logout-btn:active {
   transform: scale(0.92);
-  background: rgba(247, 239, 227, 0.14);
-  color: #F7EFE3;
+  background: rgba(201, 133, 43, 0.14);
+  border-color: rgba(201, 133, 43, 0.3);
+  color: #C9852B;
 }
 
-/* ── Main content — room for bottom nav ─────────────────────────── */
+/* ── Main content ─────────────────────────────────────────────────── */
 .worker-main {
   flex: 1;
   min-width: 0;
   overflow-y: auto;
-  /* Keep the final content (and its actions) clear of the fixed navigation. */
   padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
 }
 
-.shift-btn {
-  border: 1px solid rgba(247, 239, 227, 0.25);
-  border-radius: 0.7rem;
-  background: transparent;
-  color: #F7EFE3;
-  padding: 0.5rem 0.65rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.shift-btn.shift-active {
-  background: #C9852B;
-  border-color: #C9852B;
-  color: #2B1B14;
-}
-
-.shift-btn:disabled { opacity: 0.65; cursor: wait; }
-
-/* ── Bottom navigation ────────────────────────────────────────────── */
+/* ── Bottom navigation — order rail ──────────────────────────────── */
 .worker-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -169,9 +217,11 @@
   align-items: stretch;
   height: calc(3.5rem + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: #2B1B14;
-  border-top: 2px solid rgba(201, 133, 43, 0.3);
-  box-shadow: 0 -4px 24px rgba(43, 27, 20, 0.35);
+  background:
+    linear-gradient(0deg, rgba(255, 255, 255, 0.03), transparent 40%),
+    #2B1B14;
+  border-top: 1px solid rgba(201, 133, 43, 0.28);
+  box-shadow: 0 -6px 24px -8px rgba(43, 27, 20, 0.5);
 }
 
 .nav-tab {
@@ -182,7 +232,7 @@
   justify-content: center;
   gap: 0.2rem;
   text-decoration: none;
-  color: rgba(247, 239, 227, 0.45);
+  color: rgba(247, 239, 227, 0.42);
   transition: color 0.15s, background 0.15s;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -194,7 +244,7 @@
 }
 
 .nav-tab:active {
-  background: rgba(201, 133, 43, 0.12);
+  background: rgba(201, 133, 43, 0.1);
 }
 
 .nav-tab.nav-active {
@@ -205,11 +255,13 @@
   content: '';
   position: absolute;
   top: 0;
-  left: 20%;
-  right: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1.5rem;
   height: 3px;
   background: #C9852B;
   border-radius: 0 0 3px 3px;
+  box-shadow: 0 0 8px rgba(201, 133, 43, 0.6);
 }
 
 .nav-icon-wrap {
@@ -220,6 +272,11 @@
   width: 1.875rem;
   height: 1.875rem;
   flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.nav-tab.nav-active .nav-icon-wrap {
+  transform: translateY(-1px);
 }
 
 .nav-icon-wrap svg {
@@ -230,7 +287,7 @@
 .nav-label {
   font-size: 0.625rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   text-align: center;
   line-height: 1.1;
@@ -247,44 +304,48 @@
   position: absolute;
   top: -2px;
   right: -4px;
-  min-width: 1.25rem;
-  height: 1.25rem;
+  min-width: 1.2rem;
+  height: 1.2rem;
   padding: 0 0.3rem;
   background: #C9852B;
   color: #2B1B14;
-  font-size: 0.625rem;
+  font-size: 0.6rem;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
   border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 2px #2B1B14, 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* POS tab gets extra emphasis */
+/* POS tab gets extra emphasis — the primary register action */
 .nav-tab:nth-child(2) .nav-icon-wrap {
   background: rgba(201, 133, 43, 0.15);
-  border-radius: 0.875rem;
+  border: 1px solid rgba(201, 133, 43, 0.25);
+  border-radius: 0.7rem;
   width: 2.125rem;
   height: 2.125rem;
 }
 
 .nav-tab:nth-child(2).nav-active .nav-icon-wrap {
-  background: rgba(201, 133, 43, 0.3);
+  background: rgba(201, 133, 43, 0.28);
+  border-color: rgba(201, 133, 43, 0.5);
 }
 
-/* ── Check-in lock ────────────────────────────────────────────────── */
+/* ── Check-in lock banner ─────────────────────────────────────────── */
 .check-in-banner {
   margin: 0.75rem 1rem 0;
   padding: 0.75rem 1rem;
-  border-radius: 0.875rem;
-  background: rgba(201, 133, 43, 0.14);
-  border: 1px solid rgba(201, 133, 43, 0.35);
+  border-radius: 0.75rem;
+  background: rgba(201, 133, 43, 0.13);
+  border: 1px dashed rgba(201, 133, 43, 0.45);
   color: #6B4226;
   font-size: 0.8125rem;
   font-weight: 700;
   text-align: center;
+  letter-spacing: 0.01em;
 }
 
 .worker-shell.worker-locked .worker-main ::ng-deep :is(button, a, input, select, textarea) {
@@ -309,7 +370,7 @@
 
 .worker-bottom-nav .nav-tab.nav-disabled {
   pointer-events: none;
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
@@ -347,8 +408,14 @@
     max-width: 48rem;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 1.25rem 1.25rem 0 0;
-    border-left: 2px solid rgba(201, 133, 43, 0.2);
-    border-right: 2px solid rgba(201, 133, 43, 0.2);
+    border-radius: 1.1rem 1.1rem 0 0;
+    border-left: 1px solid rgba(201, 133, 43, 0.2);
+    border-right: 1px solid rgba(201, 133, 43, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shift-btn.shift-active::before {
+    animation: none;
   }
 }
