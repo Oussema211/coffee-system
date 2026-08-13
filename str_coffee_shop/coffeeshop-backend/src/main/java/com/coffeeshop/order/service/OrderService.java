@@ -8,6 +8,7 @@ import com.coffeeshop.order.entity.Order;
 import com.coffeeshop.order.entity.OrderItem;
 import com.coffeeshop.order.repository.OrderRepository;
 import com.coffeeshop.table.repository.RestaurantTableRepository;
+import com.coffeeshop.websocket.OrderWebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
     private final RestaurantTableRepository tableRepository;
+    private final OrderWebSocketHandler webSocketHandler;
     @Value("${coffee.shop.name:Coffee Shop}")
     private String shopName;
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mm a");
@@ -117,7 +119,13 @@ public class OrderService {
             });
         }
 
-        return mapToDTO(savedOrder);
+        OrderDTO dto = mapToDTO(savedOrder);
+        if ("QR".equalsIgnoreCase(savedOrder.getOrderType())) {
+            webSocketHandler.broadcast("NEW_QR_ORDER", dto);
+        } else {
+            webSocketHandler.broadcast("ORDER_CREATED", dto);
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)
@@ -206,7 +214,9 @@ public class OrderService {
         assignWorkerIfNeeded(order);
         order.setStatus(newStatus);
         Order updated = orderRepository.save(order);
-        return mapToDTO(updated);
+        OrderDTO dto = mapToDTO(updated);
+        webSocketHandler.broadcast("ORDER_UPDATED", dto);
+        return dto;
     }
 
     @Transactional
@@ -228,7 +238,9 @@ public class OrderService {
             }
         }
 
-        return mapToDTO(cancelledOrder);
+        OrderDTO dto = mapToDTO(cancelledOrder);
+        webSocketHandler.broadcast("ORDER_CANCELLED", dto);
+        return dto;
     }
 
     @Transactional
@@ -305,7 +317,9 @@ public class OrderService {
         }
 
         assignWorkerIfNeeded(targetOrder);
-        return mapToDTO(targetOrder);
+        OrderDTO dto = mapToDTO(targetOrder);
+        webSocketHandler.broadcast("ORDER_PAID", dto);
+        return dto;
     }
 
     private void assignWorkerIfNeeded(Order order) {

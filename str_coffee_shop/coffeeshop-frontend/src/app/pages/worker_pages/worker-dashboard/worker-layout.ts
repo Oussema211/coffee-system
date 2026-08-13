@@ -7,6 +7,7 @@ import { OrderService } from '../../../core/order.service';
 import { TableService } from '../../../core/table.service';
 import { ShiftService, ShiftStatus } from '../../../core/shift.service';
 import { TranslationService } from '../../../core/translation.service';
+import { WebSocketService } from '../../../core/websocket.service';
 
 interface NavItem {
   route: string;
@@ -64,7 +65,8 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     private orderService: OrderService,
     private tableService: TableService,
     private shiftService: ShiftService,
-    private translate: TranslationService
+    private translate: TranslationService,
+    private wsService: WebSocketService
   ) {
     this.username = this.auth.getUsername();
   }
@@ -78,10 +80,11 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     );
 
     this.tickClock();
-    this.clockInterval = setInterval(() => this.tickClock(), 30_000);
+    this.clockInterval = setInterval(() => this.tickClock(), 1000);
     this.refreshBadges();
     this.refreshShift();
     this.subs.add(interval(20_000).subscribe(() => this.refreshBadges()));
+    this.subs.add(this.wsService.orderEvents$.subscribe(() => this.refreshBadges()));
   }
 
   ngOnDestroy(): void {
@@ -141,7 +144,8 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
   private tickClock(): void {
     this.currentTime = new Date().toLocaleTimeString([], {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      second: '2-digit'
     });
   }
 

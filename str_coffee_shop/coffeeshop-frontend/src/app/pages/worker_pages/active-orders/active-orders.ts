@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { OrderService, OrderDTO, OrderItemDTO } from '../../../core/order.service';
 import { ReceiptPrintService } from '../../../core/receipt-print.service';
 import { TranslationService } from '../../../core/translation.service';
+import { WebSocketService } from '../../../core/websocket.service';
 
 export type OrderItem = OrderItemDTO;
 export type ActiveOrder = OrderDTO;
@@ -18,7 +20,7 @@ import { LoadingComponent } from '../../../core/components/loading/loading';
   templateUrl: './active-orders.html',
   styleUrl: './active-orders.css'
 })
-export class ActiveOrdersComponent implements OnInit {
+export class ActiveOrdersComponent implements OnInit, OnDestroy {
   orders: ActiveOrder[] = [];
   loading = true;
   error = '';
@@ -40,19 +42,30 @@ export class ActiveOrdersComponent implements OnInit {
   // Payment/Action success flash
   paymentSuccess = false;
   paymentSuccessMessage = '';
+  private wsSubscription?: Subscription;
 
   constructor(
     private orderService: OrderService,
     private receiptPrintService: ReceiptPrintService,
-    private translate: TranslationService
+    private translate: TranslationService,
+    private wsService: WebSocketService
   ) {}
 
   ngOnInit(): void {
     this.loadActiveOrders();
+    this.wsSubscription = this.wsService.orderEvents$.subscribe(() => {
+      if (!this.paymentModalOpen && !this.cancelModalOpen) {
+        this.loadActiveOrders(false);
+      }
+    });
   }
 
-  loadActiveOrders(): void {
-    this.loading = true;
+  ngOnDestroy(): void {
+    if (this.wsSubscription) this.wsSubscription.unsubscribe();
+  }
+
+  loadActiveOrders(showLoading = true): void {
+    if (showLoading) this.loading = true;
     this.orderService.getActiveOrders().subscribe({
       next: (data) => {
         this.orders = data;
@@ -97,10 +110,10 @@ export class ActiveOrdersComponent implements OnInit {
         order.status = updatedOrder.status;
         this.advancingId = null;
       },
-        error: (err) => {
-          this.advancingId = null;
-          alert(this.translate.translate('worker.activeOrders.updateError') + ': ' + (err.error?.message || 'Server error'));
-        }
+      error: (err) => {
+        this.advancingId = null;
+        alert(this.translate.translate('worker.activeOrders.updateError') + ': ' + (err.error?.message || 'Server error'));
+      }
     });
   }
 
@@ -127,10 +140,10 @@ export class ActiveOrdersComponent implements OnInit {
         this.closeCancelModal();
         this.cancelling = false;
       },
-        error: (err) => {
-          this.cancelling = false;
-          alert(this.translate.translate('worker.activeOrders.cancelError') + ': ' + (err.error?.message || 'Server error'));
-        }
+      error: (err) => {
+        this.cancelling = false;
+        alert(this.translate.translate('worker.activeOrders.cancelError') + ': ' + (err.error?.message || 'Server error'));
+      }
     });
   }
 
@@ -240,10 +253,10 @@ export class ActiveOrdersComponent implements OnInit {
         this.closePayment();
         this.orders = this.orders.filter(o => o.id !== order.id);
       },
-        error: (err) => {
-          this.paying = false;
-          alert(this.translate.translate('worker.activeOrders.paymentError') + ': ' + (err.error?.message || 'Server error'));
-        }
+      error: (err) => {
+        this.paying = false;
+        alert(this.translate.translate('worker.activeOrders.paymentError') + ': ' + (err.error?.message || 'Server error'));
+      }
     });
   }
 
@@ -272,10 +285,10 @@ export class ActiveOrdersComponent implements OnInit {
           this.amountGiven = null;
         }
       },
-        error: (err) => {
-          this.paying = false;
-          alert(this.translate.translate('worker.activeOrders.splitPaymentError') + ': ' + (err.error?.message || 'Server error'));
-        }
+      error: (err) => {
+        this.paying = false;
+        alert(this.translate.translate('worker.activeOrders.splitPaymentError') + ': ' + (err.error?.message || 'Server error'));
+      }
     });
   }
 

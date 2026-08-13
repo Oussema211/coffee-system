@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { OrderDTO, OrderService } from '../../../core/order.service';
 import { TranslationService } from '../../../core/translation.service';
+import { WebSocketService } from '../../../core/websocket.service';
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 import { LoadingComponent } from '../../../core/components/loading/loading';
@@ -19,19 +21,25 @@ export class QrOrdersComponent implements OnInit, OnDestroy {
   error = '';
   updatingId: number | null = null;
   private refreshTimer?: ReturnType<typeof setInterval>;
+  private wsSubscription?: Subscription;
 
   constructor(
     private orderService: OrderService,
-    private translate: TranslationService
+    private translate: TranslationService,
+    private wsService: WebSocketService
   ) {}
 
   ngOnInit(): void {
     this.loadOrders();
     this.refreshTimer = setInterval(() => this.loadOrders(false), 15000);
+    this.wsSubscription = this.wsService.orderEvents$.subscribe(() => {
+      this.loadOrders(false);
+    });
   }
 
   ngOnDestroy(): void {
     if (this.refreshTimer) clearInterval(this.refreshTimer);
+    if (this.wsSubscription) this.wsSubscription.unsubscribe();
   }
 
   loadOrders(showLoading = true): void {
