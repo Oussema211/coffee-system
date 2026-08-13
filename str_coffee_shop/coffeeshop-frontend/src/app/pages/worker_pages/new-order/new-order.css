@@ -2,16 +2,9 @@
   display: block;
 }
 
-/* The cart is fixed on wide POS screens. Now that bottom-navigation is compact
-   and constrained to the main area on desktop, give the Order Summary card maximum vertical space. */
+/* The cart is fixed on wide POS screens. Reserve the bottom-navigation area
+   so its order total and submit button can always be reached. */
 .pos-cart {
-  bottom: calc(2.65rem + env(safe-area-inset-bottom, 0px) + 0.5rem);
-  max-height: calc(100dvh - 5rem - 2.65rem - env(safe-area-inset-bottom, 0px) - 0.5rem);
-}
-
-@media (min-width: 1024px) {
-  .pos-cart {
-    bottom: 1rem;
-    max-height: calc(100dvh - 5.75rem);
-  }
+  bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem);
+  max-height: calc(100dvh - 5rem - 3.5rem - env(safe-area-inset-bottom, 0px) - 0.75rem);
 }
