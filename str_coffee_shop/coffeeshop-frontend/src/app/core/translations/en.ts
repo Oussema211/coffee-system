@@ -117,7 +117,15 @@ export const EN_TRANSLATIONS: Record<string, any> = {
       placeholderImageUrl: "Paste Image URL (or upload below)",
       placeholderPrice: "0.00",
       vat: "TVA (VAT) %",
-      vatHint: "The price shown is TVA-inclusive."
+      vatHint: "The price shown is TVA-inclusive.",
+      modifiers: "Options (size, sugar, extra shot)",
+      hasSizes: "Sizes (S / M / L)",
+      hasSugar: "Sugar level",
+      hasExtraShot: "Extra shot",
+      extraShotPrice: "Extra shot price (TND)",
+      sizeName: "Size name",
+      sizeDelta: "Price +",
+      addSize: "Add size"
     },
     orders: {
       title: "Orders History",
@@ -400,7 +408,17 @@ export const EN_TRANSLATIONS: Record<string, any> = {
     orderError: "We could not send your order. Please try again.",
     clearSearch: "Clear search",
     removeItem: "Remove {{name}}",
-    addItem: "Add {{name}}"
+    addItem: "Add {{name}}",
+    optionsBadge: "Options",
+    chooseOptions: "Options +",
+    size: "Size",
+    sugar: "Sugar",
+    extraShot: "Extra shot",
+    sugarNone: "No sugar",
+    sugarLow: "Low",
+    sugarNormal: "Normal",
+    sugarExtra: "Extra",
+    addToCart: "Add to cart"
   },
   login: {
     stayConnected: "Stay connected",

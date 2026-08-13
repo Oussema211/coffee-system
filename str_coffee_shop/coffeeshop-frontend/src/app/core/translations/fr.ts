@@ -117,7 +117,15 @@ export const FR_TRANSLATIONS: Record<string, any> = {
       placeholderImageUrl: "Coller l'URL de l'image (ou télécharger ci-dessous)",
       placeholderPrice: "0.00",
       vat: "TVA %",
-      vatHint: "Le prix affiché est TVA incluse."
+      vatHint: "Le prix affiché est TVA incluse.",
+      modifiers: "Options (taille, sucre, shot supplémentaire)",
+      hasSizes: "Tailles (S / M / L)",
+      hasSugar: "Niveau de sucre",
+      hasExtraShot: "Shot supplémentaire",
+      extraShotPrice: "Prix du shot supplémentaire (TND)",
+      sizeName: "Nom de la taille",
+      sizeDelta: "Prix +",
+      addSize: "Ajouter une taille"
     },
     orders: {
       title: "Historique des Commandes",
@@ -400,7 +408,17 @@ export const FR_TRANSLATIONS: Record<string, any> = {
     orderError: "Nous n'avons pas pu envoyer votre commande. Veuillez réessayer.",
     clearSearch: "Effacer la recherche",
     removeItem: "Retirer {{name}}",
-    addItem: "Ajouter {{name}}"
+    addItem: "Ajouter {{name}}",
+    optionsBadge: "Options",
+    chooseOptions: "Options +",
+    size: "Taille",
+    sugar: "Sucre",
+    extraShot: "Shot supplémentaire",
+    sugarNone: "Sans sucre",
+    sugarLow: "Peu sucré",
+    sugarNormal: "Normal",
+    sugarExtra: "Très sucré",
+    addToCart: "Ajouter au panier"
   },
   login: {
     stayConnected: "Rester connecté",

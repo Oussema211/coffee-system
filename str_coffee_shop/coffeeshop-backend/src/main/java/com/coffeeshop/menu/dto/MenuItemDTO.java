@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +21,9 @@ public class MenuItemDTO {
     private BigDecimal vatRate;
     private boolean available;
     private String imageUrl;
+    private boolean hasSizes;
+    private boolean hasSugar;
+    private boolean hasExtraShot;
+    private BigDecimal extraShotPrice;
+    private List<SizeOptionDTO> sizes;
 }

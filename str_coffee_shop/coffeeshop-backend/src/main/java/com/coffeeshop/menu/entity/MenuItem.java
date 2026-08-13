@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "menu_items")
@@ -42,6 +44,27 @@ public class MenuItem {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    @Builder.Default
+    @Column(name = "has_sizes", nullable = false)
+    private boolean hasSizes = false;
+
+    @Builder.Default
+    @Column(name = "has_sugar", nullable = false)
+    private boolean hasSugar = false;
+
+    @Builder.Default
+    @Column(name = "has_extra_shot", nullable = false)
+    private boolean hasExtraShot = false;
+
+    @Builder.Default
+    @Column(name = "extra_shot_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal extraShotPrice = new BigDecimal("0.50");
+
+    @Builder.Default
+    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
+    private List<SizeOption> sizeOptions = new ArrayList<>();
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

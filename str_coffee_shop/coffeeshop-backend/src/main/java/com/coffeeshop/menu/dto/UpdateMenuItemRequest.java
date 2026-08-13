@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -27,4 +28,9 @@ public class UpdateMenuItemRequest {
     private BigDecimal vatRate;
     private Boolean available;
     private String imageUrl;
+    private Boolean hasSizes;
+    private Boolean hasSugar;
+    private Boolean hasExtraShot;
+    private BigDecimal extraShotPrice;
+    private List<SizeOptionDTO> sizes;
 }

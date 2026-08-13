@@ -4,8 +4,10 @@ import com.coffeeshop.category.entity.Category;
 import com.coffeeshop.category.repository.CategoryRepository;
 import com.coffeeshop.menu.dto.CreateMenuItemRequest;
 import com.coffeeshop.menu.dto.MenuItemDTO;
+import com.coffeeshop.menu.dto.SizeOptionDTO;
 import com.coffeeshop.menu.dto.UpdateMenuItemRequest;
 import com.coffeeshop.menu.entity.MenuItem;
+import com.coffeeshop.menu.entity.SizeOption;
 import com.coffeeshop.menu.repository.MenuItemRepository;
 import com.coffeeshop.util.VatUtils;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +57,12 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .vatRate(request.getVatRate() != null ? request.getVatRate() : VatUtils.DEFAULT_RATE)
                 .available(request.getAvailable() != null ? request.getAvailable() : true)
                 .imageUrl(request.getImageUrl())
+                .hasSizes(Boolean.TRUE.equals(request.getHasSizes()))
+                .hasSugar(Boolean.TRUE.equals(request.getHasSugar()))
+                .hasExtraShot(Boolean.TRUE.equals(request.getHasExtraShot()))
+                .extraShotPrice(request.getExtraShotPrice() != null ? request.getExtraShotPrice() : new java.math.BigDecimal("0.50"))
                 .build();
+        syncSizes(item, request.getSizes());
 
         MenuItem saved = menuItemRepository.save(item);
         return mapToDTO(saved);
@@ -76,6 +83,13 @@ public class MenuItemServiceImpl implements MenuItemService {
             item.setAvailable(request.getAvailable());
         }
         item.setImageUrl(request.getImageUrl());
+        item.setHasSizes(Boolean.TRUE.equals(request.getHasSizes()));
+        item.setHasSugar(Boolean.TRUE.equals(request.getHasSugar()));
+        item.setHasExtraShot(Boolean.TRUE.equals(request.getHasExtraShot()));
+        if (request.getExtraShotPrice() != null) {
+            item.setExtraShotPrice(request.getExtraShotPrice());
+        }
+        syncSizes(item, request.getSizes());
 
         MenuItem updated = menuItemRepository.save(item);
         return mapToDTO(updated);
@@ -132,6 +146,13 @@ public class MenuItemServiceImpl implements MenuItemService {
     }
 
     private MenuItemDTO mapToDTO(MenuItem item) {
+        List<SizeOptionDTO> sizeDTOs = item.getSizeOptions().stream()
+                .map(size -> SizeOptionDTO.builder()
+                        .name(size.getName())
+                        .priceDelta(size.getPriceDelta())
+                        .build())
+                .collect(Collectors.toList());
+
         return MenuItemDTO.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -141,7 +162,34 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .vatRate(item.getVatRate())
                 .available(item.isAvailable())
                 .imageUrl(com.coffeeshop.util.ImageUtils.resolveImageUrl(item.getImageUrl()))
+                .hasSizes(item.isHasSizes())
+                .hasSugar(item.isHasSugar())
+                .hasExtraShot(item.isHasExtraShot())
+                .extraShotPrice(item.getExtraShotPrice())
+                .sizes(sizeDTOs)
                 .build();
+    }
+
+    /**
+     * Replaces the persisted size options with the ones from the request.
+     * Empty or null lists clear the existing options.
+     */
+    private void syncSizes(MenuItem item, List<SizeOptionDTO> sizes) {
+        item.getSizeOptions().clear();
+        if (sizes != null) {
+            int sortOrder = 0;
+            for (SizeOptionDTO dto : sizes) {
+                if (dto.getName() == null || dto.getName().isBlank()) {
+                    continue;
+                }
+                item.getSizeOptions().add(SizeOption.builder()
+                        .menuItem(item)
+                        .name(dto.getName().trim())
+                        .priceDelta(dto.getPriceDelta() != null ? dto.getPriceDelta() : java.math.BigDecimal.ZERO)
+                        .sortOrder(sortOrder++)
+                        .build());
+            }
+        }
     }
 
     /**

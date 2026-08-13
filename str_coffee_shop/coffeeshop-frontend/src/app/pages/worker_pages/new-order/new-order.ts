@@ -11,6 +11,10 @@ import { TranslationService } from '../../../core/translation.service';
 interface CartLine {
   item: MenuItem;
   qty: number;
+  key: string;
+  size?: string;
+  sugar?: string;
+  extraShots?: number;
 }
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';
@@ -42,6 +46,13 @@ export class NewOrderComponent implements OnInit {
   placing = false;
   placedMessage = '';
 
+  // Modifier selection modal state
+  modalItem: MenuItem | null = null;
+  modalSize = '';
+  modalSugar = '';
+  modalExtraShots = 0;
+  sugarOptions: { label: string }[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private tableService: TableService,
@@ -58,6 +69,12 @@ export class NewOrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.sugarOptions = [
+      { label: this.translate.translate('customer.sugarNone') },
+      { label: this.translate.translate('customer.sugarLow') },
+      { label: this.translate.translate('customer.sugarNormal') },
+      { label: this.translate.translate('customer.sugarExtra') }
+    ];
     this.tableService.getWorkerTables().subscribe({
       next: (data) => {
         this.tables = data;
@@ -93,8 +110,22 @@ export class NewOrderComponent implements OnInit {
     });
   }
 
+  hasModifiers(item: MenuItem): boolean {
+    return !!(item.hasSizes || item.hasSugar || item.hasExtraShot);
+  }
+
+  unitPrice(line: CartLine): number {
+    let price = Number(line.item.price);
+    const sizeDelta = line.item.sizes?.find(s => s.name === line.size)?.priceDelta ?? 0;
+    price += Number(sizeDelta);
+    if (line.extraShots) {
+      price += Number(line.extraShots) * Number(line.item.extraShotPrice ?? 0);
+    }
+    return price;
+  }
+
   get cartTotal(): number {
-    return this.cart.reduce((sum, line) => sum + line.item.price * line.qty, 0);
+    return this.cart.reduce((sum, line) => sum + this.unitPrice(line) * line.qty, 0);
   }
 
   get cartCount(): number {
@@ -107,28 +138,90 @@ export class NewOrderComponent implements OnInit {
     return true;
   }
 
+  lineKey(item: MenuItem, size: string, sugar: string, extraShots: number): string {
+    return `${item.id}|${size ?? ''}|${sugar ?? ''}|${extraShots ?? 0}`;
+  }
+
   addToCart(item: MenuItem): void {
-    const line = this.cart.find(l => l.item.id === item.id);
+    if (this.hasModifiers(item)) {
+      this.openModifiers(item);
+      return;
+    }
+    this.addLine(this.lineKey(item, '', '', 0));
+  }
+
+  addLine(key: string): void {
+    const line = this.cart.find(l => l.key === key);
     if (line) {
       line.qty++;
-    } else {
-      this.cart.push({ item, qty: 1 });
+      return;
     }
+    const [, size, sugar, extraShots] = key.split('|');
+    const item = this.menuItems.find(i => i.id === Number(key.split('|')[0]));
+    if (!item) return;
+    this.cart.push({
+      item,
+      qty: 1,
+      key,
+      size: size || undefined,
+      sugar: sugar || undefined,
+      extraShots: Number(extraShots) || 0
+    });
   }
 
-  increment(line: CartLine): void {
-    line.qty++;
+  increment(key: string): void {
+    const line = this.cart.find(l => l.key === key);
+    if (line) line.qty++;
   }
 
-  decrement(line: CartLine): void {
+  decrement(key: string): void {
+    const line = this.cart.find(l => l.key === key);
+    if (!line) return;
     line.qty--;
     if (line.qty <= 0) {
       this.cart = this.cart.filter(l => l !== line);
     }
   }
 
+  modsLabel(line: CartLine): string {
+    const parts: string[] = [];
+    if (line.size) parts.push(line.size);
+    if (line.sugar) parts.push(line.sugar);
+    if (line.extraShots) parts.push('+' + line.extraShots + ' shot');
+    return parts.join(' · ');
+  }
+
   clearCart(): void {
     this.cart = [];
+  }
+
+  openModifiers(item: MenuItem): void {
+    this.modalItem = item;
+    this.modalSize = item.hasSizes ? (item.sizes?.[0]?.name ?? '') : '';
+    this.modalSugar = item.hasSugar ? this.sugarOptions[2].label : '';
+    this.modalExtraShots = 0;
+  }
+
+  closeModifiers(): void {
+    this.modalItem = null;
+  }
+
+  confirmModifiers(): void {
+    if (!this.modalItem) return;
+    this.addLine(this.lineKey(this.modalItem, this.modalSize, this.modalSugar, this.modalExtraShots));
+    this.closeModifiers();
+  }
+
+  get modalTotal(): number {
+    const item = this.modalItem;
+    if (!item) return 0;
+    let price = Number(item.price);
+    const sizeDelta = item.sizes?.find(s => s.name === this.modalSize)?.priceDelta ?? 0;
+    price += Number(sizeDelta);
+    if (item.hasExtraShot) {
+      price += this.modalExtraShots * Number(item.extraShotPrice ?? 0);
+    }
+    return price;
   }
 
   placeOrder(): void {
@@ -140,7 +233,10 @@ export class NewOrderComponent implements OnInit {
       tableNumber: this.orderType === 'Dine-in' ? this.selectedTable : null,
       items: this.cart.map(line => ({
         menuItemId: line.item.id,
-        quantity: line.qty
+        quantity: line.qty,
+        size: line.size || undefined,
+        sugar: line.sugar || undefined,
+        extraShots: line.extraShots || 0
       }))
     };
 

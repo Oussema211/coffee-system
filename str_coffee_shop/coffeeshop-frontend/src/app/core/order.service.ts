@@ -14,6 +14,9 @@ export interface OrderItemDTO {
   paid: boolean;
   selected?: boolean;
   selectedQty?: number;
+  size?: string;
+  sugar?: string;
+  extraShots?: number;
 }
 
 export interface VatBreakdownLine {
@@ -39,6 +42,9 @@ export interface OrderDTO {
 export interface CreateOrderItemRequest {
   menuItemId: number;
   quantity: number;
+  size?: string;
+  sugar?: string;
+  extraShots?: number;
 }
 
 export interface CreateOrderRequest {

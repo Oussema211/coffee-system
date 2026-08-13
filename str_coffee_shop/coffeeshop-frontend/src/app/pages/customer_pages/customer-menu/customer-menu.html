@@ -43,17 +43,20 @@
       <button class="menu-item" *ngFor="let item of filteredMenu" (click)="add(item)">
         <span class="item-media">
           <img *ngIf="item.imageUrl" [src]="item.imageUrl" (error)="item.imageUrl = ''" [alt]="item.name" />
+          <span class="mods-badge" *ngIf="hasModifiers(item)">✦ {{ 'customer.optionsBadge' | translate }}</span>
         </span>
         <div class="item-content">
           <p class="category">{{ item.category }}</p>
           <h2>{{ item.name }}</h2>
           <p class="price">{{ item.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
-          <div class="quantity-controls" *ngIf="quantity(item)" (click)="$event.stopPropagation()">
+          <div class="quantity-controls" *ngIf="quantity(item) && !hasModifiers(item)" (click)="$event.stopPropagation()">
              <button (click)="remove(item)" [attr.aria-label]="'customer.removeItem' | translate:{name: item.name}">−</button>
              <span>{{ quantity(item) }}</span>
              <button (click)="add(item)" [attr.aria-label]="'customer.addItem' | translate:{name: item.name}">+</button>
           </div>
-          <span class="tap-to-add" *ngIf="!quantity(item)">+ {{ 'common.add' | translate }}</span>
+          <span class="tap-to-add" *ngIf="!quantity(item) || hasModifiers(item)">
+            {{ hasModifiers(item) ? ('customer.chooseOptions' | translate) : ('common.add' | translate) }}
+          </span>
         </div>
       </button>
     </section>
@@ -77,12 +80,13 @@
       <div class="cart-line" *ngFor="let item of cartItems">
         <div class="cart-line-info">
           <span class="cart-line-name">{{ item.name }}</span>
-          <span class="cart-line-price">{{ (item.price * item.quantity) | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
+          <span class="cart-line-mods" *ngIf="item.size || item.sugar || item.extraShots">{{ modsLabel(item) }}</span>
+          <span class="cart-line-price">{{ (unitPrice(item) * item.quantity) | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
         </div>
         <div class="cart-line-controls" (click)="$event.stopPropagation()">
-          <button (click)="remove(item)" aria-label="Remove">−</button>
+          <button (click)="decrementLine(item.lineKey)" aria-label="Remove">−</button>
           <span>{{ item.quantity }}</span>
-          <button (click)="add(item)" aria-label="Add">+</button>
+          <button (click)="addLine(item.lineKey)" aria-label="Add">+</button>
         </div>
       </div>
     </div>
@@ -115,5 +119,55 @@
 
 <!-- Backdrop -->
 <div class="cart-backdrop" *ngIf="cartOpen" (click)="closeCart()"></div>
+
+<!-- Modifier selection modal -->
+<div class="mods-backdrop" *ngIf="modalItem" (click)="closeModifiers()"></div>
+<div class="mods-modal" *ngIf="modalItem">
+  <div class="mods-modal-head">
+    <h2>{{ modalItem.name }}</h2>
+    <p class="mods-modal-price">{{ modalItem.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
+    <button class="cart-drawer-close" (click)="closeModifiers()" aria-label="Close">✕</button>
+  </div>
+
+  <div class="mods-modal-body">
+    <div class="mods-group" *ngIf="modalItem.hasSizes && modalItem.sizes?.length">
+      <span class="mods-label">{{ 'customer.size' | translate }}</span>
+      <div class="mods-options">
+        <button
+          *ngFor="let size of modalItem.sizes"
+          (click)="modalSize = size.name"
+          [class.active]="modalSize === size.name"
+        >
+          {{ size.name }}
+          <em *ngIf="size.priceDelta > 0">+{{ size.priceDelta | number:'1.2-2' }} {{ 'common.currency' | translate }}</em>
+        </button>
+      </div>
+    </div>
+
+    <div class="mods-group" *ngIf="modalItem.hasSugar">
+      <span class="mods-label">{{ 'customer.sugar' | translate }}</span>
+      <div class="mods-options">
+        <button *ngFor="let opt of sugarOptions" (click)="modalSugar = opt.label" [class.active]="modalSugar === opt.label">
+          {{ opt.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="mods-group" *ngIf="modalItem.hasExtraShot">
+      <span class="mods-label">{{ 'customer.extraShot' | translate }}</span>
+      <div class="mods-options mods-options--shots">
+        <button *ngFor="let n of [0, 1, 2, 3]" (click)="modalExtraShots = n" [class.active]="modalExtraShots === n">
+          {{ n }} <em *ngIf="n > 0">+{{ (n * (modalItem.extraShotPrice ?? 0)) | number:'1.2-2' }} {{ 'common.currency' | translate }}</em>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mods-modal-foot">
+    <button class="cart-drawer-cta" (click)="confirmModifiers()">
+      {{ 'customer.addToCart' | translate }} · {{ modalTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}
+    </button>
+  </div>
+</div>
 
 <p class="request-error" *ngIf="tableValid && error">{{ error }}</p>

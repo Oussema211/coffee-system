@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { OrderService, ReceiptDTO } from './order.service';
+import { OrderService, ReceiptDTO, OrderItemDTO } from './order.service';
 
 @Injectable({ providedIn: 'root' })
 export class ReceiptPrintService {
@@ -30,15 +30,27 @@ export class ReceiptPrintService {
     return this.printedBillIds.has(orderId);
   }
 
+  private modifierLabel(item: OrderItemDTO): string {
+    const parts: string[] = [];
+    if (item.size) parts.push(item.size);
+    if (item.sugar) parts.push(item.sugar);
+    if (item.extraShots) parts.push('+' + item.extraShots + ' shot');
+    return parts.join(' · ');
+  }
+
   private render(receiptWindow: Window, receipt: ReceiptDTO): void {
     const esc = (value: string | number | null | undefined): string => String(value ?? '')
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     const money = (value: number): string => Number(value).toFixed(2);
-    const rows = receipt.items.map(item => `
+    const rows = receipt.items.map(item => {
+      const mods = this.modifierLabel(item);
+      return `
       <tr>
         <td>${esc(item.qty)} × ${esc(item.name)}</td>
         <td class="amount">${money(item.price * item.qty)}</td>
-      </tr>`).join('');
+      </tr>
+      ${mods ? `<tr><td class="mods">${esc(mods)}</td></tr>` : ''}`;
+    }).join('');
     const location = receipt.tableNumber ? `Table ${receipt.tableNumber}` : esc(receipt.orderType);
 
     const fiscalInfo = [
@@ -65,6 +77,7 @@ export class ReceiptPrintService {
         .muted { color: #444; font-size: 11px; } .line { border-top: 1px dashed #222; margin: 10px 0; }
         table { width: 100%; border-collapse: collapse; } td { padding: 3px 0; vertical-align: top; }
         .amount { text-align: right; white-space: nowrap; } .total { font-size: 16px; font-weight: 700; }
+        .mods { color: #555; font-size: 10px; padding-top: 0; }
         @media screen { body { padding: 12px; } }
       </style></head><body>
         <div class="center"><img class="logo" src="${window.location.origin}/logo_one.jpg" alt="${esc(receipt.shopName)} logo"><h1>${esc(receipt.shopName)}</h1><div class="muted">${esc(receipt.receiptNumber)}</div>${fiscalInfo}</div>

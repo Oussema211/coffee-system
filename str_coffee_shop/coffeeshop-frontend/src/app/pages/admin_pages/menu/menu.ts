@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { MenuService, MenuItem } from '../../../core/menu.service';
 import { CategoryService } from '../../../core/category.service';
 import { TranslationService } from '../../../core/translation.service';
@@ -47,8 +47,32 @@ export class Menu implements OnInit {
       category: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0.01)]],
       vatRate: [19],
-      imageUrl: ['']
+      imageUrl: [''],
+      hasSizes: [false],
+      hasSugar: [false],
+      hasExtraShot: [false],
+      extraShotPrice: [0.5],
+      sizes: this.fb.array([])
     });
+  }
+
+  get sizesForm(): FormArray {
+    return this.form.get('sizes') as FormArray;
+  }
+
+  sizeFormGroup(index: number): FormGroup {
+    return this.sizesForm.at(index) as FormGroup;
+  }
+
+  addSizeRow(name: string = '', priceDelta: number = 0): void {
+    this.sizesForm.push(this.fb.group({
+      name: [name, Validators.required],
+      priceDelta: [priceDelta, [Validators.min(0)]]
+    }));
+  }
+
+  removeSizeRow(index: number): void {
+    this.sizesForm.removeAt(index);
   }
 
   ngOnInit(): void {
@@ -138,12 +162,18 @@ export class Menu implements OnInit {
     this.editingItem = null;
     this.selectedFile = null;
     this.imagePreviewUrl = null;
+    this.sizesForm.clear();
     this.form.reset({
       name: '',
       category: this.formCategories[0] || '',
       price: 0,
       vatRate: 19,
-      imageUrl: ''
+      imageUrl: '',
+      hasSizes: false,
+      hasSugar: false,
+      hasExtraShot: false,
+      extraShotPrice: 0.5,
+      sizes: []
     });
     this.showModal = true;
   }
@@ -152,13 +182,20 @@ export class Menu implements OnInit {
     this.editingItem = item;
     this.selectedFile = null;
     this.imagePreviewUrl = item.imageUrl || null;
+    this.sizesForm.clear();
     this.form.reset({
       name: item.name,
       category: item.category,
       price: item.price,
       vatRate: item.vatRate ?? 19,
-      imageUrl: item.imageUrl || ''
+      imageUrl: item.imageUrl || '',
+      hasSizes: !!item.hasSizes,
+      hasSugar: !!item.hasSugar,
+      hasExtraShot: !!item.hasExtraShot,
+      extraShotPrice: item.extraShotPrice ?? 0.5,
+      sizes: []
     });
+    (item.sizes ?? []).forEach(size => this.addSizeRow(size.name, size.priceDelta));
     this.showModal = true;
   }
 
@@ -196,9 +233,15 @@ export class Menu implements OnInit {
   }
 
   private executeSave(imageUrl: string): void {
+    const formValue = this.form.value;
+    const sizes = formValue.hasSizes
+      ? (formValue.sizes ?? []).filter((s: any) => s?.name?.trim()).map((s: any) => ({ name: s.name.trim(), priceDelta: Number(s.priceDelta) || 0 }))
+      : [];
+
     const value = {
-      ...this.form.value,
-      imageUrl: imageUrl || ''
+      ...formValue,
+      imageUrl: imageUrl || '',
+      sizes
     };
 
     if (this.editingItem) {

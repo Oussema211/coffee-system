@@ -4,6 +4,11 @@ import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { resolveImageUrl } from './utils/image-url.util';
 
+export interface MenuSize {
+  name: string;
+  priceDelta: number;
+}
+
 export interface MenuItem {
   id: number;
   name: string;
@@ -13,6 +18,11 @@ export interface MenuItem {
   vatRate?: number;
   available: boolean;
   imageUrl?: string;
+  hasSizes?: boolean;
+  hasSugar?: boolean;
+  hasExtraShot?: boolean;
+  extraShotPrice?: number;
+  sizes?: MenuSize[];
 }
 
 export interface CreateMenuItemPayload {
@@ -22,6 +32,11 @@ export interface CreateMenuItemPayload {
   vatRate?: number;
   available?: boolean;
   imageUrl?: string;
+  hasSizes?: boolean;
+  hasSugar?: boolean;
+  hasExtraShot?: boolean;
+  extraShotPrice?: number;
+  sizes?: MenuSize[];
 }
 
 export interface UpdateMenuItemPayload {
@@ -31,6 +46,11 @@ export interface UpdateMenuItemPayload {
   vatRate?: number;
   available?: boolean;
   imageUrl?: string;
+  hasSizes?: boolean;
+  hasSugar?: boolean;
+  hasExtraShot?: boolean;
+  extraShotPrice?: number;
+  sizes?: MenuSize[];
 }
 
 @Injectable({ providedIn: 'root' })

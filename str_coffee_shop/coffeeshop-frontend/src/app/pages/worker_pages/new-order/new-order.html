@@ -77,7 +77,14 @@
 
             <div>
               <h3 class="font-display text-lg md:text-xl font-bold text-espresso group-hover:text-caramel-dark transition-colors truncate">{{ item.name }}</h3>
-              <p class="text-caramel-dark font-extrabold text-base md:text-lg mt-1">{{ item.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
+              <div class="flex items-center gap-2 mt-1 flex-wrap">
+                <p class="text-caramel-dark font-extrabold text-base md:text-lg">{{ item.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
+                @if (hasModifiers(item)) {
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-caramel-dark bg-caramel/12 px-2 py-1 rounded-lg whitespace-nowrap">
+                    ✦ {{ 'customer.optionsBadge' | translate }}
+                  </span>
+                }
+              </div>
             </div>
           </button>
         }
@@ -145,16 +152,19 @@
 
       <!-- Cart lines list -->
       <div class="flex flex-col gap-4 pr-1">
-        @for (line of cart; track line.item.id) {
+        @for (line of cart; track line.key) {
           <div class="flex items-center justify-between gap-3 bg-cream/50 p-3.5 rounded-2xl border border-cream-dark">
             <div class="min-w-0 flex-1">
               <p class="text-base text-espresso font-bold truncate">{{ line.item.name }}</p>
-              <p class="text-xs text-caramel font-semibold">{{ line.item.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
+              @if (line.size || line.sugar || line.extraShots) {
+                <p class="text-xs text-caramel font-semibold truncate">{{ modsLabel(line) }}</p>
+              }
+              <p class="text-xs text-caramel font-semibold">{{ unitPrice(line) | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
             </div>
             <div class="flex items-center gap-3 shrink-0">
-              <button (click)="decrement(line)" class="w-10 h-10 rounded-xl bg-white border-2 border-cream-dark text-espresso hover:bg-cream-dark text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer">−</button>
+              <button (click)="decrement(line.key)" class="w-10 h-10 rounded-xl bg-white border-2 border-cream-dark text-espresso hover:bg-cream-dark text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer">−</button>
               <span class="text-base font-bold text-espresso w-6 text-center">{{ line.qty }}</span>
-              <button (click)="increment(line)" class="w-10 h-10 rounded-xl bg-espresso text-cream text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer hover:bg-espresso-light">+</button>
+              <button (click)="increment(line.key)" class="w-10 h-10 rounded-xl bg-espresso text-cream text-lg font-bold flex items-center justify-center active:scale-90 transition shadow-xs cursor-pointer hover:bg-espresso-light">+</button>
             </div>
           </div>
         }
@@ -198,3 +208,96 @@
   </div>
 
 </div>
+
+<!-- Modifier selection modal -->
+@if (modalItem) {
+  <div class="fixed inset-0 z-50 bg-espresso/60 backdrop-blur-sm flex items-center justify-center p-4" (click)="closeModifiers()">
+    <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-xl border border-cream-dark max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+      <div class="flex items-start justify-between border-b-2 border-cream-dark pb-4 mb-5">
+        <div>
+          <h2 class="font-display text-2xl font-bold text-espresso">{{ modalItem.name }}</h2>
+          <p class="text-caramel-dark font-extrabold mt-0.5">{{ modalItem.price | number:'1.2-2' }} {{ 'common.currency' | translate }}</p>
+        </div>
+        <button (click)="closeModifiers()" class="text-espresso/40 hover:text-espresso p-1 rounded-lg hover:bg-cream transition cursor-pointer text-xl leading-none" [attr.aria-label]="'common.close' | translate">✕</button>
+      </div>
+
+      @if (modalItem.hasSizes && modalItem.sizes?.length) {
+        <div class="mb-5">
+          <span class="block text-xs font-bold uppercase tracking-wider text-espresso-light/70 mb-2">{{ 'customer.size' | translate }}</span>
+          <div class="flex flex-wrap gap-2">
+            @for (size of modalItem.sizes; track size.name) {
+              <button
+                (click)="modalSize = size.name"
+                [class]="modalSize === size.name
+                  ? 'bg-espresso text-cream border-espresso'
+                  : 'bg-white text-espresso border-cream-dark hover:bg-cream'"
+                class="border-2 rounded-2xl px-4 py-2.5 text-sm font-bold active:scale-95 transition cursor-pointer"
+              >
+                {{ size.name }}
+                @if (size.priceDelta > 0) {
+                  <span class="text-xs font-semibold opacity-70"> +{{ size.priceDelta | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (modalItem.hasSugar) {
+        <div class="mb-5">
+          <span class="block text-xs font-bold uppercase tracking-wider text-espresso-light/70 mb-2">{{ 'customer.sugar' | translate }}</span>
+          <div class="flex flex-wrap gap-2">
+            @for (opt of sugarOptions; track opt.label) {
+              <button
+                (click)="modalSugar = opt.label"
+                [class]="modalSugar === opt.label
+                  ? 'bg-espresso text-cream border-espresso'
+                  : 'bg-white text-espresso border-cream-dark hover:bg-cream'"
+                class="border-2 rounded-2xl px-4 py-2.5 text-sm font-bold active:scale-95 transition cursor-pointer"
+              >
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (modalItem.hasExtraShot) {
+        <div class="mb-5">
+          <span class="block text-xs font-bold uppercase tracking-wider text-espresso-light/70 mb-2">{{ 'customer.extraShot' | translate }}</span>
+          <div class="flex flex-wrap gap-2">
+            @for (n of [0, 1, 2, 3]; track n) {
+              <button
+                (click)="modalExtraShots = n"
+                [class]="modalExtraShots === n
+                  ? 'bg-espresso text-cream border-espresso'
+                  : 'bg-white text-espresso border-cream-dark hover:bg-cream'"
+                class="border-2 rounded-2xl px-4 py-2.5 text-sm font-bold active:scale-95 transition cursor-pointer"
+              >
+                {{ n }}
+                @if (n > 0) {
+                  <span class="text-xs font-semibold opacity-70"> +{{ (n * (modalItem.extraShotPrice ?? 0)) | number:'1.2-2' }} {{ 'common.currency' | translate }}</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="border-t-2 border-cream-dark pt-4 flex items-center justify-between gap-4">
+        <button
+          (click)="closeModifiers()"
+          class="text-sm font-bold text-espresso-light/70 py-2.5 px-4 rounded-xl border-2 border-cream-dark hover:bg-cream transition cursor-pointer"
+        >
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button
+          (click)="confirmModifiers()"
+          class="flex-1 text-sm font-bold text-cream bg-espresso py-3 rounded-xl hover:bg-espresso-light active:scale-95 transition cursor-pointer"
+        >
+          {{ 'customer.addToCart' | translate }} · {{ modalTotal | number:'1.2-2' }} {{ 'common.currency' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
