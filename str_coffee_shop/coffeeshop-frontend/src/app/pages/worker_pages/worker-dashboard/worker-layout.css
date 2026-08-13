@@ -203,10 +203,10 @@
   flex: 1;
   min-width: 0;
   overflow-y: auto;
-  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(3.2rem + env(safe-area-inset-bottom, 0px));
 }
 
-/* ── Bottom navigation — order rail ──────────────────────────────── */
+/* ── Bottom navigation — compact order rail ──────────────────────────────── */
 .worker-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -215,13 +215,14 @@
   z-index: 60;
   display: flex;
   align-items: stretch;
-  height: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  height: calc(2.65rem + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   background:
     linear-gradient(0deg, rgba(255, 255, 255, 0.03), transparent 40%),
     #2B1B14;
   border-top: 1px solid rgba(201, 133, 43, 0.28);
-  box-shadow: 0 -6px 24px -8px rgba(43, 27, 20, 0.5);
+  box-shadow: 0 -4px 18px -6px rgba(43, 27, 20, 0.5);
+  transition: left 0.2s ease, max-width 0.2s ease;
 }
 
 .nav-tab {
@@ -230,15 +231,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.2rem;
+  gap: 0.1rem;
   text-decoration: none;
   color: rgba(247, 239, 227, 0.42);
   transition: color 0.15s, background 0.15s;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  min-height: 3.5rem;
+  min-height: 2.65rem;
   position: relative;
-  padding: 0.25rem 0.15rem;
+  padding: 0.15rem 0.1rem;
   text-align: center;
   overflow: hidden;
 }
@@ -257,11 +258,11 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 1.5rem;
-  height: 3px;
+  width: 1.25rem;
+  height: 2.5px;
   background: #C9852B;
-  border-radius: 0 0 3px 3px;
-  box-shadow: 0 0 8px rgba(201, 133, 43, 0.6);
+  border-radius: 0 0 2px 2px;
+  box-shadow: 0 0 6px rgba(201, 133, 43, 0.6);
 }
 
 .nav-icon-wrap {
@@ -269,8 +270,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.875rem;
-  height: 1.875rem;
+  width: 1.4rem;
+  height: 1.4rem;
   flex-shrink: 0;
   transition: transform 0.15s;
 }
@@ -280,17 +281,17 @@
 }
 
 .nav-icon-wrap svg {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.05rem;
+  height: 1.05rem;
 }
 
 .nav-label {
-  font-size: 0.625rem;
+  font-size: 0.575rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   text-align: center;
-  line-height: 1.1;
+  line-height: 1;
   width: 100%;
   max-width: 100%;
   display: block;
@@ -302,14 +303,14 @@
 
 .nav-badge {
   position: absolute;
-  top: -2px;
-  right: -4px;
-  min-width: 1.2rem;
-  height: 1.2rem;
-  padding: 0 0.3rem;
+  top: -3px;
+  right: -5px;
+  min-width: 1.05rem;
+  height: 1.05rem;
+  padding: 0 0.2rem;
   background: #C9852B;
   color: #2B1B14;
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   border-radius: 999px;
@@ -317,16 +318,16 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
-  box-shadow: 0 0 0 2px #2B1B14, 0 1px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 1.5px #2B1B14, 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* POS tab gets extra emphasis — the primary register action */
 .nav-tab:nth-child(2) .nav-icon-wrap {
   background: rgba(201, 133, 43, 0.15);
   border: 1px solid rgba(201, 133, 43, 0.25);
-  border-radius: 0.7rem;
-  width: 2.125rem;
-  height: 2.125rem;
+  border-radius: 0.5rem;
+  width: 1.6rem;
+  height: 1.6rem;
 }
 
 .nav-tab:nth-child(2).nav-active .nav-icon-wrap {
@@ -390,12 +391,12 @@
   }
 
   .nav-label {
-    font-size: 0.75rem;
+    font-size: 0.625rem;
   }
 
   .nav-icon-wrap svg {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.15rem;
+    height: 1.15rem;
   }
 }
 
@@ -405,12 +406,14 @@
 
 @media (min-width: 1024px) {
   .worker-bottom-nav {
-    max-width: 48rem;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 1.1rem 1.1rem 0 0;
-    border-left: 1px solid rgba(201, 133, 43, 0.2);
-    border-right: 1px solid rgba(201, 133, 43, 0.2);
+    left: 2rem;
+    right: auto;
+    transform: none;
+    max-width: 36rem;
+    width: calc(100vw - 30rem);
+    border-radius: 0.85rem 0.85rem 0 0;
+    border-left: 1px solid rgba(201, 133, 43, 0.28);
+    border-right: 1px solid rgba(201, 133, 43, 0.28);
   }
 }
 
