@@ -32,7 +32,13 @@ export class QrOrdersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadOrders();
     this.refreshTimer = setInterval(() => this.loadOrders(false), 15000);
-    this.wsSubscription = this.wsService.orderEvents$.subscribe(() => {
+    this.wsSubscription = this.wsService.orderEvents$.subscribe((event) => {
+      if (event?.type === 'NEW_QR_ORDER' && event.data?.id) {
+        const exists = this.pending.some(o => o.id === event.data.id);
+        if (!exists) {
+          this.pending = [event.data, ...this.pending];
+        }
+      }
       this.loadOrders(false);
     });
   }
@@ -51,14 +57,18 @@ export class QrOrdersComponent implements OnInit, OnDestroy {
   }
 
   accept(order: OrderDTO): void {
+    this.pending = this.pending.filter(item => item.id !== order.id);
+    this.orderService.notifyOrderStateChanged();
     this.update(order, 'Preparing');
   }
 
   decline(order: OrderDTO): void {
+    this.pending = this.pending.filter(item => item.id !== order.id);
+    this.orderService.notifyOrderStateChanged();
     this.updatingId = order.id;
     this.orderService.cancelOrder(order.id).subscribe({
-      next: () => { this.pending = this.pending.filter(item => item.id !== order.id); this.updatingId = null; },
-      error: () => { this.error = this.translate.translate('worker.qrOrders.declineError'); this.updatingId = null; }
+      next: () => { this.updatingId = null; },
+      error: () => { this.error = this.translate.translate('worker.qrOrders.declineError'); this.updatingId = null; this.loadOrders(false); }
     });
   }
 

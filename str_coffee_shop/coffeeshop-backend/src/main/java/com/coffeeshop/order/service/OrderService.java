@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -121,9 +123,9 @@ public class OrderService {
 
         OrderDTO dto = mapToDTO(savedOrder);
         if ("QR".equalsIgnoreCase(savedOrder.getOrderType())) {
-            webSocketHandler.broadcast("NEW_QR_ORDER", dto);
+            broadcastAfterCommit("NEW_QR_ORDER", dto);
         } else {
-            webSocketHandler.broadcast("ORDER_CREATED", dto);
+            broadcastAfterCommit("ORDER_CREATED", dto);
         }
         return dto;
     }
@@ -215,7 +217,7 @@ public class OrderService {
         order.setStatus(newStatus);
         Order updated = orderRepository.save(order);
         OrderDTO dto = mapToDTO(updated);
-        webSocketHandler.broadcast("ORDER_UPDATED", dto);
+        broadcastAfterCommit("ORDER_UPDATED", dto);
         return dto;
     }
 
@@ -239,7 +241,7 @@ public class OrderService {
         }
 
         OrderDTO dto = mapToDTO(cancelledOrder);
-        webSocketHandler.broadcast("ORDER_CANCELLED", dto);
+        broadcastAfterCommit("ORDER_CANCELLED", dto);
         return dto;
     }
 
@@ -318,8 +320,21 @@ public class OrderService {
 
         assignWorkerIfNeeded(targetOrder);
         OrderDTO dto = mapToDTO(targetOrder);
-        webSocketHandler.broadcast("ORDER_PAID", dto);
+        broadcastAfterCommit("ORDER_PAID", dto);
         return dto;
+    }
+
+    private void broadcastAfterCommit(String eventType, Object payload) {
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    webSocketHandler.broadcast(eventType, payload);
+                }
+            });
+        } else {
+            webSocketHandler.broadcast(eventType, payload);
+        }
     }
 
     private void assignWorkerIfNeeded(Order order) {

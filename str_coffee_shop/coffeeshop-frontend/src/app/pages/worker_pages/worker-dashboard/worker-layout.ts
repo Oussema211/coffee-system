@@ -84,7 +84,13 @@ export class WorkerLayoutComponent implements OnInit, OnDestroy {
     this.refreshBadges();
     this.refreshShift();
     this.subs.add(interval(20_000).subscribe(() => this.refreshBadges()));
-    this.subs.add(this.wsService.orderEvents$.subscribe(() => this.refreshBadges()));
+    this.subs.add(this.orderService.orderStateChanged$.subscribe(() => this.refreshBadges()));
+    this.subs.add(this.wsService.orderEvents$.subscribe((event) => {
+      if (event?.type === 'NEW_QR_ORDER') {
+        this.badges.qrPending++;
+      }
+      this.refreshBadges();
+    }));
   }
 
   ngOnDestroy(): void {

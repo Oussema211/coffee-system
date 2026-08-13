@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface OrderItemDTO {
@@ -65,11 +66,19 @@ export interface ReceiptDTO {
 export class OrderService {
   private readonly baseUrl = `${environment.apiUrl}/api/worker/orders`;
   private readonly adminBaseUrl = `${environment.apiUrl}/api/admin/orders`;
+  private orderStateChangedSubject = new Subject<void>();
+  public orderStateChanged$ = this.orderStateChangedSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
+  notifyOrderStateChanged(): void {
+    this.orderStateChangedSubject.next();
+  }
+
   createOrder(payload: CreateOrderRequest): Observable<OrderDTO> {
-    return this.http.post<OrderDTO>(this.baseUrl, payload);
+    return this.http.post<OrderDTO>(this.baseUrl, payload).pipe(
+      tap(() => this.notifyOrderStateChanged())
+    );
   }
 
   getActiveOrders(): Observable<OrderDTO[]> {
@@ -93,14 +102,20 @@ export class OrderService {
   }
 
   updateOrderStatus(orderId: number, status: string): Observable<OrderDTO> {
-    return this.http.patch<OrderDTO>(`${this.baseUrl}/${orderId}/status`, { status });
+    return this.http.patch<OrderDTO>(`${this.baseUrl}/${orderId}/status`, { status }).pipe(
+      tap(() => this.notifyOrderStateChanged())
+    );
   }
 
   cancelOrder(orderId: number): Observable<OrderDTO> {
-    return this.http.patch<OrderDTO>(`${this.baseUrl}/${orderId}/cancel`, {});
+    return this.http.patch<OrderDTO>(`${this.baseUrl}/${orderId}/cancel`, {}).pipe(
+      tap(() => this.notifyOrderStateChanged())
+    );
   }
 
   payOrder(orderId: number, payload: PaymentRequest): Observable<OrderDTO> {
-    return this.http.post<OrderDTO>(`${this.baseUrl}/${orderId}/pay`, payload);
+    return this.http.post<OrderDTO>(`${this.baseUrl}/${orderId}/pay`, payload).pipe(
+      tap(() => this.notifyOrderStateChanged())
+    );
   }
 }

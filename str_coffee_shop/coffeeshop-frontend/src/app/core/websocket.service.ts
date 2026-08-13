@@ -64,6 +64,14 @@ export class WebSocketService {
 
   private getWebSocketUrl(): string {
     let baseUrl = environment.apiUrl || 'http://localhost:8080';
+
+    if (window?.location?.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      if (baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1')) {
+        const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+        baseUrl = `${protocol}//${window.location.hostname}:8080`;
+      }
+    }
+
     if (baseUrl.startsWith('http://')) {
       baseUrl = baseUrl.replace('http://', 'ws://');
     } else if (baseUrl.startsWith('https://')) {
